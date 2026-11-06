@@ -15,3 +15,12 @@
 ## Decisions
 - Research outputs go in `docs/research/0N-*.md`. `00-synthesis.md` is the entry point.
 - Work happens on branch `research/agent-assessment`, one commit per research report.
+
+## Data checks (2026-11-06), see docs/research/00-synthesis.md
+- The `cost` field is NOT cumulative, despite DATA_MODEL.pdf (range −0.003..0.009 €). Recompute the bill as Σ(import·buyPrice − export·sellPrice).
+- Prices are time-varying (134 distinct buyPrice values, €0.035–0.132) and identical in both datasets. Violations, throttling and penalty are all 0 in both.
+- **The runs are not controlled.** PV is 93.1 kWh (A) vs 69.1 kWh (B), and SoC start is 0.57 (A) vs 0.15 (B). Compare via baselines on each run's own PV/load, plus a terminal-SoC correction.
+- Raw bills: A ≈ €3.23, B ≈ €5.15. LLM cost at $0.40/$2.00 per M tokens: A ≈ $5.51/wk, B ≈ $9.56/wk (+73%).
+
+## Decisions
+- KPI catalogue = synthesis §2. Baselines: no-battery, rule-based self-consumption, perfect-foresight LP.

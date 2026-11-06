@@ -1,12 +1,14 @@
 # Backlog
 
-- [ ] Research sprint (literature, frameworks, market, external data) → `docs/research/`
-- [ ] Agree on the KPI catalogue with formulas mapped to JSON fields
-- [ ] Pull external data: carbon intensity for 5–12 Jan 2026, Devstral pricing
-- [ ] Load + clean both datasets (sort by datetime, handle the missing sample in 002, diff cumulative fields)
-- [ ] Compute KPIs per config and per day (`analysis/`)
-- [ ] Time-series analysis: BESS dispatch, SoC, grid interaction profiles, anomalies
-- [ ] Trade-off matrix: cost vs sustainability (incl. inference cost)
+- [x] Research sprint → `docs/research/00..04`
+- [ ] Ask Sense Reply: meaning of the `cost` field, why PV differs between runs, sustainability agent inputs, agent proposal logs
+- [ ] Agree on the KPI catalogue (synthesis §2)
+- [ ] Pull the ENTSO-E A75 Italy carbon series for 5–13 Jan 2026; confirm Devstral 2 price on Mistral's page
+- [ ] `analysis/` loader: sort by datetime, pivot assets, handle the missing sample in 002
+- [ ] KPIs per config and per day (E, G, B, S, A, T groups)
+- [ ] Baselines: no-battery, rule-based, perfect-foresight LP (cost-only and cost + carbon)
+- [ ] Time-series analysis: dispatch vs price, SoC, grid profiles, anomalies
+- [ ] Trade-off matrix (energy + degradation + inference cost vs CO2)
 - [ ] KPI dashboard
 - [ ] Executive summary + recommendations
-- [ ] Agentic framework improvement proposals
+- [ ] Agentic framework improvement proposals (synthesis §5)
