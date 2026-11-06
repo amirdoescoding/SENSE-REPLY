@@ -1,4 +1,20 @@
-# VENCHI-BDD
+# SENSE-REPLY BDD
+
+## 0. Project context
+
+Albert School 2nd-year Business Deep Dive with **Sense Reply** (Reply group): performance assessment of
+LLM edge agents that dispatch a home battery (PV + BESS + grid + residential load).
+
+- **Mission:** define KPIs (with formulas), compare two agent configurations, quantify the cost vs
+  sustainability trade-off, and suggest improvements to the agentic decision framework.
+- **Deliverables:** KPI dashboard, time-series analysis report, trade-off matrix, executive summary,
+  framework improvement proposals.
+- **Data:** `data/DatasetV3/`. `dataset-001.json` = Orchestrator + Cost agent;
+  `dataset-002.json` = Orchestrator + Cost + Sustainability agent. Field definitions are in `DATA_MODEL.pdf`,
+  and LLM usage per config is in `DataIndex.xlsx`. Key facts are in @MEMORY.md.
+- **Brief:** `docs/Albert_School_BDD_Template - Second Year - v1.2.docx`, `docs/SENSE_REPLY_TRANSCRIPT.md`,
+  `docs/Sense Reply BDD 2026 - v1.1.pdf`. Research is in `docs/research/` (start at `00-synthesis.md`).
+- Every KPI must map to a real JSON field or a named external source. Flag assumptions (e.g. site = Italy).
 
 ## 1. Think Before Coding
 
