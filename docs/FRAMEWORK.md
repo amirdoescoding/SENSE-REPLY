@@ -13,6 +13,7 @@ Diagram: `docs/diagrams/framework.png` (source: `framework.mmd`; the `.excalidra
 - **No learning.** The orchestrator forgets every decision.
 - **No carbon signal.** The sustainability agent is probably guessing.
 - **No logs of proposals.** We cannot measure agent or orchestrator quality.
+- **No forecasts used well.** The evening peak is almost identical every day, yet agent A still had 7.3 kWh left at sunrise each week, worth €0.79 (§7b).
 - **Devstral 2 was retired on 2026-07-31.** Hosting needs a plan anyway.
 
 ## 2. Core idea (both redesigns agree)
@@ -105,6 +106,7 @@ If the human doesn't answer, keep the safe default. Never wait.
 |---|---|---|---|
 | **S0 Log** | 0–2 | Log every candidate, score, pick, applied kW, prompt version, tokens and regret. Use OpenTelemetry → Langfuse (self-hosted, EU). | 100% of slots logged; agent KPIs computable |
 | **S1 Hybrid** | 2–5 | Optimiser + twin scoring + arbiter + clamp + rule floor + one strategy LLM. | Beats the rule on twin replay of the same week |
+| **S1.5 Forecasts** | 4–8 | Supervised load + CO2 forecasts (P50/P90) feed the optimiser; soiling/fault model on PV (§7b). | Skill vs naive > 0; over-reserve (FC5) falls; P90 covers ≥ 90% of evenings |
 | **S2 Memory** | 5–8 | Store low-regret past cases. Give the LLM the k most similar as examples. Prune bad ones. Reflect on regret. (Reflexion / ExpeL pattern) | Regret falls on held-out days |
 | **S3 Prompt tuning** | 8–12 | Test prompt versions on the twin and keep the one with the lowest regret (DSPy-style). | Lower regret, no new violations |
 | **S4 Self-tuning weights** | 12–20 | A **contextual bandit** picks λ and the reserve. A bandit is a learner that tries settings and keeps what works. Context: price spread, PV forecast, CO2 spread, SoC. Reward: −(€ + λ_user·CO2). Train in the twin, then shadow mode, then live. Needs the carbon series. | Beats fixed λ in shadow mode |
@@ -120,6 +122,86 @@ If the human doesn't answer, keep the safe default. Never wait.
 - **Organizer:** train a true MODRL policy set in the cloud and run a small policy on the edge.
 - **Coordinator:** just sweep the optimiser over λ (cheap, same result), and use RL only if it beats the optimiser.
 - **Our view:** start with the λ sweep. Go to RL only if the twin shows a gain.
+
+## 7b. Supervised learning: forecasts and panel health
+**What it is:** a model learns from past examples where the answer arrives later ("what was the load at 19:00?"). It suits **predictions**. RL (§7 S4–S5) suits **decisions**. Different jobs, different places.
+
+**Where it sits:** the **Forecasters** box on the gateway runs the small models every 15 min. The **Twin trainer** in the cloud retrains them every night from the **Logger** data. No LLM is needed.
+
+**Scope (team choice):** three targets.
+1. **House load**, next 24 h.
+2. **Grid CO2**, next 24 h.
+3. **Panel soiling and faults**: estimate how dirty the panels are, flag faults, suggest when to clean.
+
+PV forecast from weather is out of scope for now.
+
+### What our week says (`python3 analysis/forecast_check.py`)
+| Check | A | B | What it means |
+|---|---|---|---|
+| Load error, "same as yesterday", per 15 min | 18% | 19% | Single steps are noisy |
+| Evening peak 17–22h, kWh per day | 10.4–10.6 | 9.8–10.7 | **The peak is almost the same every day** |
+| Evening peak error, "same as yesterday" | 0.8% | 4.2% | Even the dumbest forecast nails the peak |
+| Battery energy still left at sunrise (could have replaced night imports) | 7.3 kWh | 1.6 kWh | The agent kept too much |
+| € a perfect plan would recover from that | **€0.79/wk** | €0.16/wk | For A, this is more than the whole gap to the rule (€0.70) |
+| PV lost to dirt | 12 kWh (€1.0–1.2) | 36 kWh (€2.9–3.7) | **Bigger than what the battery saves** (about €0.7) |
+| Dirt growth | +0.024/day | +0.024/day | Linear, all 9 panels equal, never cleaned |
+| CO2 error, "same as yesterday", hourly | 8.7% of mean | same | CO2 is fairly predictable |
+| Cleanest / dirtiest hour | 12:00 (314 g) / 20:00 (384 g) | same | Daily swing is only 19% of the mean |
+
+**New fact:** in this simulator, PV = clean PV × (1 − dirt), exactly. The B/A PV ratio equals the dirt ratio at every daytime step. So **both runs had the same weather**, and the whole PV gap (93 vs 69 kWh) is dirt.
+
+### What it means, target by target
+- **Load: a decision problem, not a forecast problem (in this simulator).** The peak is easy to predict, but the agent still keeps too much energy overnight. The fix is to *give the forecast to the optimiser* and let maths size the reserve:
+  - Needed reserve = forecast evening + night load − what PV will refill, plus a safety margin.
+  - The margin comes from the forecast error. Use a high-end forecast (the 90th percentile) instead of the average. This is **quantile forecasting**: predict a range, not one number.
+  - Real homes are much noisier than this simulated house (holidays, guests, EVs), so in the field the model matters more than it does here.
+- **CO2: cheap win.** "Same as yesterday" is already 91% right.
+  - This week the dirtiest hour (20:00) is also the price peak, and the cleanest (12:00) is the PV peak. **Cost and CO2 point the same way.** That explains why adding the sustainability agent barely changed the energy result.
+  - A CO2 forecast still matters on windy or sunny days, when CO2 and price separate. It also gives the sustainability side a real signal; today it buys at hours 5% dirtier than average (KPIS.md S3).
+- **Soiling: biggest € in the simulator, but the simulator exaggerates it.**
+  - The simulator dirties panels at 2.4% per day with no cleaning.
+  - Real dry spells run about 0.1–0.3% per day, and in Italy rain keeps the yearly loss near 0.4–1% (Fernández Solas et al. 2025, Renewable Energy; PV-KLIMA Ancona site).
+  - So for an Italian home, soiling alone is worth a few € per year. The bigger value is **fault and underperformance detection** (broken string, inverter faults, shading), plus soiling for dusty southern sites, C&I roofs and solar farms.
+  - Real sites have **no dirt sensor**. The model has to infer dirt: expected clean PV (from weather/irradiance and neighbouring sites) vs measured PV. The gap, trend and sudden drops become "dirty", "fault" or "check" alerts.
+
+### Design
+| Part | Simple first | Then | Why |
+|---|---|---|---|
+| Load model | "Same as yesterday" / mean of the last 7 days | LightGBM (gradient-boosted trees) on hour, weekday, holiday, temperature, last days. **Quantile output** (P50 and P90). | Trees win on small tabular data and run on Raspberry-class hardware |
+| CO2 model | Same as yesterday (ENTSO-E) | Trees on hour, weekday, ENTSO-E day-ahead load and wind/solar forecasts | ENTSO-E already publishes day-ahead inputs |
+| Soiling / fault model | Performance ratio: measured PV ÷ expected PV, trend per day | Regression for expected PV (irradiance, temperature, sun angle), then trend + change-point alerts | Explainable alerts a technician trusts |
+| Training | Cloud, nightly, per site + fleet model | Fleet model warm-starts new sites (cold start) | One week per site is too little alone |
+| Running | Gateway, every 15 min | Same | Works offline, no LLM cost |
+| Watching | Forecast error per day | Drift alarm if error > 2× normal for 3 days → retrain | Models age when the house changes |
+
+### Forecast KPIs
+| KPI | What it measure | Formula | Why |
+|---|---|---|---|
+| FC1 Load MAE | Average forecast miss | mean abs(forecast − actual), kWh | Basic accuracy |
+| FC2 Skill vs naive | Better than "same as yesterday"? | 1 − MAE_model / MAE_naive | Below 0 = the model is useless |
+| FC3 Peak coverage | Did the P90 forecast cover the evening? | share of days with actual 17–22h kWh ≤ P90 | Reserve safety |
+| FC4 Value of forecast | € lost to imperfect forecasts | cost(plan with forecast) − cost(plan with perfect forecast), on the twin | The KPI that matters: accuracy only counts where it changes money |
+| FC5 Over-reserve | Energy left at sunrise that could have replaced night imports | Σ_days min(usable SoC at first PV surplus, night imports) | Today: 7.3 kWh (A), 1.6 kWh (B) per week |
+| FC6 Soiling loss | PV lost to dirt | Σ PV·d/(1−d), in kWh and € | Today 12 / 36 kWh (simulator) |
+| FC7 Alert quality | Are maintenance alerts right? | precision = true alerts / all alerts; lead time = days between alert and big loss | False alarms cost truck rolls |
+
+### Business angle: forecasting and panel health as platform features
+- **No LLM needed, so they work for every client** and keep working offline. Sense Reply sells a *platform*, a base clients build on (transcript), and forecasts plus health checks are features that every vertical reuses: homes, energy communities, EV charging, C&I.
+- **It turns their biggest problem into an asset.** In the lecture, managing terabytes of grid data was named the biggest unsolved problem. That data is exactly the training set for fleet forecast and health models. More sites mean better models, which a single-site competitor cannot copy.
+- **It speaks to both buyers in a client** (from the lecture):
+  - **Business:** "€ saved per site per year, cleaning trips avoided, faults found earlier".
+  - **IT:** "small models, on the gateway, EU data stays local".
+- **It is what the market already pays for.** Utility optimisers (Fluence, Stem, Kraken) sell *ML forecasting + optimisation*, not LLMs (research `03`). This puts Sense Reply on a proven footing, with the LLM as the extra layer for events and explanations.
+- **Packaging idea:**
+  1. **Monitor tier:** health alerts and soiling/fault detection.
+  2. **Optimise tier:** forecasts + optimiser control the battery.
+  3. **Agent tier:** strategy LLM, explanations, human chat.
+
+  Each tier makes the next one better.
+- **Honest limits:**
+  - For a single Italian home, soiling is worth only a few € per year, so the value case is **faults + forecasts across a fleet**, or sunnier, dustier and larger sites.
+  - Price per site is unknown. We found no reliable public price list. Ask Sense Reply, and test willingness to pay in the year-1 interviews.
+- **What they need to start:** at least 3–6 months of 15-min data per site (to see weekdays, holidays and seasons), fleet data for cold start, weather or irradiance per site, and a cleaning or maintenance log (to label alerts as true or false).
 
 ## 8. Hosting: which model, where?
 **Revolut check:** Revolut self-hosts open models (GLM) on 56 B200 GPUs for **coding help** for about 2,000 engineers. They report about $0.30 per M tokens, about 1/10 of frontier APIs. No "millions saved" figure was found (research `05` §1).
@@ -161,6 +243,9 @@ Every KPI is defined in `docs/KPIS.md`. Targets:
 | Strategy LLM | Invalid-output rate, timeout rate | unknown | < 1% |
 | Arbiter | Arbiter regret, selection share | unknown | logged from S0 |
 | Ops | Fallback rate, deadline misses, clamp rate | unknown | 0 missed slots |
+| Forecasts | FC5 over-reserve at sunrise | 7.3 / 1.6 kWh/wk | near 0 without unmet load |
+| Forecasts | FC2 skill vs naive; FC3 P90 peak coverage | n/a | > 0; ≥ 90% |
+| Panel health | FC6 soiling loss; FC7 alert precision | 12 / 36 kWh/wk (simulator) | alert before loss > 3%; precision ≥ 80% |
 
 **Fair test:** replay the old configs A and B and the new design on the **same** sun and load in the twin. That fixes the "not a controlled experiment" problem.
 
@@ -182,3 +267,7 @@ Every KPI is defined in `docs/KPIS.md`. Targets:
 - Is sustainability a weight or a hard rule for the client?
 - What is your target fleet size? (This decides API vs self-hosting.)
 - Which inputs does the sustainability agent get today?
+- Do the agents receive any load, PV or CO2 forecast today?
+- Can we get 3–6 months of 15-min site data (more sites = better), plus weather and any cleaning/maintenance log?
+- Is `pv_dirt` a real sensor or only a simulator value? Its 2.4%/day with no cleaning is 10–30× faster than field data.
+- What would a client pay per site for health alerts or forecasts?

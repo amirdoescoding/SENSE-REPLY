@@ -36,3 +36,9 @@
 - Devstral 2 retired 2026-07-31 (replacement Mistral Medium 3.5, ~10× Small 4 price). Revolut self-hosts GLM for coding; no "millions" figure found.
 - Redesign decision: optimiser sets kW on the edge, 1 strategy LLM every 1–4 h, twin-scored arbiter, clamp, rule floor; sustainability = λ weight, not an agent.
 - Web diagram: https://claude.ai/artifact/ENAndsWgSqt9YYqYxMuY9W
+
+## Supervised learning check (2026-11-08), see FRAMEWORK.md §7b, analysis/forecast_check.py
+- Simulator fact: PV = clean PV × (1 − pv_dirt) exactly; A and B had the SAME weather. PV gap is only dirt (B starts 0.26 vs A 0.03, both +0.024/day, never cleaned; 10–30× faster than field data).
+- Evening peak 17–22h is ~10.5 kWh every day (naive error 1–4%): hoarding is a decision problem. A leaves 7.3 kWh at sunrise/week = €0.79 recoverable.
+- CO2 naive day-ahead error 8.7%; dirtiest hour 20:00 = price peak, cleanest 12:00: cost and CO2 aligned this week.
+- Team scope for supervised learning: load, CO2, soiling/faults (not PV-from-weather). User commits themselves now.

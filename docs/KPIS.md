@@ -3,8 +3,8 @@
 For: team consolidation session. Simple words. Numbers come from `python3 analysis/kpis.py`.
 
 ## Read this first (big warnings)
-- **Two runs, not a fair test.** Same week (5–12 Jan 2026) and same prices, but different sun.
-  - PV: A = 93.1 kWh, B = 69.1 kWh. Likely cause: panels are dirtier in B (`pv_dirt` 0.20 vs 0.42 at the end of the week).
+- **Two runs, not a fair test.** Same week (5–12 Jan 2026), same prices, **same weather**, but dirtier panels in B.
+  - PV: A = 93.1 kWh, B = 69.1 kWh. The cause is **only dirt**: PV = clean PV × (1 − `pv_dirt`) exactly, and B started dirtier (0.26 vs 0.03, both +0.024/day). See `analysis/forecast_check.py`.
   - Start battery: A = 0.57, B = 0.15.
   - So **never compare raw € between A and B.** Compare each run against its own baseline (same sun, same load).
 - **A** = Orchestrator + Cost agent (`dataset-001.json`). **B** = Orchestrator + Cost + Sustainability agent (`dataset-002.json`).
