@@ -2,7 +2,7 @@
 
 For: team consolidation session. Simple words.
 Built from: the KPI results (`docs/KPIS.md`), research reports `docs/research/00`, `05`, `06`, and two independent redesigns (agent-organizer and multi-agent-coordinator). Where they disagree, both views are shown.
-Diagram: `docs/diagrams/framework.png` (editable: `framework.excalidraw`). Web version: link in §10.
+Diagram: `docs/diagrams/framework.png` (source: `framework.mmd`; the `.excalidraw` opens as one image, not box by box). Web version: https://claude.ai/artifact/ENAndsWgSqt9YYqYxMuY9W
 
 ## 1. What is wrong today (from the data)
 - **The LLM is both the brain and the hands.** It picks the kW every 15 min. That is expensive and slow, and it is not better than a simple rule.
@@ -165,7 +165,7 @@ Every KPI is defined in `docs/KPIS.md`. Targets:
 
 ## 10. Diagram
 - Repo: `docs/diagrams/framework.png` (+ `.svg`, `.excalidraw`)
-- Web: _link added after publishing_
+- Web: https://claude.ai/artifact/ENAndsWgSqt9YYqYxMuY9W (private claude.ai page; use Share to give teammates access)
 
 ## 11. Top risks
 1. **Bad forecasts drive bad plans.** Fix: replan every 15 min, event calls on forecast error, rule fallback.
