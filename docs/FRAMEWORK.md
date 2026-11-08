@@ -153,7 +153,8 @@ Every KPI is defined in `docs/KPIS.md`. Targets:
 | System | F1 net value vs rule (€/wk) | −5.4 / −8.6 | > 0 |
 | System | F2 LLM cost / savings | 7× / 11× | < 0.2× |
 | System | C3 savings vs rule | −30% / −9% | ≥ 0 by design (rule is a candidate) |
-| System | S2b CO2 vs rule (hourly CI) | −6.5 / −3.6 kg | ≥ 0 |
+| System | S2b CO2 vs rule (hourly CI) | −12.2 / −6.7 kg | ≥ 0 |
+| System | S3 import CI vs grid mean | +4.8% / +4.8% (dirty hours) | below the grid mean |
 | System | Pareto points (cost vs CO2) | 2 | slider, many points |
 | Strategy LLM | O1 calls / decision | 4.4 / 8.2 | < 0.3 |
 | Strategy LLM | Regret per day | unknown | falling each stage |

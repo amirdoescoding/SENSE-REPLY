@@ -9,7 +9,7 @@ For: team consolidation session. Simple words. Numbers come from `python3 analys
   - So **never compare raw € between A and B.** Compare each run against its own baseline (same sun, same load).
 - **A** = Orchestrator + Cost agent (`dataset-001.json`). **B** = Orchestrator + Cost + Sustainability agent (`dataset-002.json`).
 - **Site assumed Italy.** The data does not say where it is.
-- **Carbon:** no CO2 field in the data. We use one static factor for now: **198.9 gCO2/kWh** (ISPRA 2024 preliminary, consumption factor, Rapporti 413/2025 Tab. 1.3). A static factor cannot reward charging at "clean" hours. The upgrade is the hourly ENTSO-E series (steps at the end).
+- **Carbon:** no CO2 field in the data. We use the **hourly ENTSO-E generation mix for Italy** (5–13 Jan 2026, UTC converted to Italian time) × IPCC AR5 lifecycle factors. That week the grid ran **214–439 g/kWh (mean 362)**. Imports are ignored. Lifecycle factors give higher numbers than ISPRA's direct-CO2 annual factor (198.9 g/kWh), which `analysis/carbon.py` uses as the fallback when no CSV is present. Alignment caveat: the dataset clock looks odd (next bullet), so the hour-by-hour match is approximate.
 - **Clock looks odd.** PV runs about 03:00–17:00 and peaks at 10:00. Real Italian January has about 9 h of sun, peaking near 12:00. The simulator clock or location may not be real Italy. Ask Sense Reply.
 - **LLM price** uses Devstral 2 at $0.40 in / $2.00 out per M tokens, aggregator figure, FX 0.86 €/$. Devstral 2 was retired on 2026-07-31 (see `research/05`).
 - One week, one site, one run each. Call it **pilot evidence**, not proof.
@@ -61,10 +61,10 @@ Only in B. It has no carbon signal in the data, so it probably chases a proxy (m
 
 | KPI | What it measure | Formula | Why | A | B | Tag |
 |---|---|---|---|---|---|---|
-| S1 Grid CO2 | How much CO2 the grid energy caused. | Σ E_imp,t · CI_t / 1000 (kg) | Main green KPI. Exports not credited (conservative). | 12.7 kg | 12.0 kg | now (static CI) |
-| S2a CO2 avoided vs no battery | CO2 saved versus battery off. | S1_nobat − S1 | Shows the green value of the battery plus agent. | 4.1 kg | 4.7 kg | now (static CI) |
-| **S2b CO2 avoided vs rule** | CO2 saved versus the dumb rule. | S1_rule − S1 | **Main green KPI.** Negative means the rule is greener. | **−6.5 kg** | **−3.6 kg** | now (static CI) |
-| S3 Import carbon intensity | How dirty the bought power was, on average. | 1000·S1 / Σ E_imp (g/kWh) | Only means something with hourly CI. Lower than the grid average means it buys at clean hours. | 198.9 | 198.9 | needs ENTSO-E |
+| S1 Grid CO2 | How much CO2 the grid energy caused. | Σ E_imp,t · CI_t / 1000 (kg) | Main green KPI. Exports not credited (conservative). | 23.8 kg | 22.5 kg | now (hourly CI) |
+| S2a CO2 avoided vs no battery | CO2 saved versus battery off. | S1_nobat − S1 | Shows the green value of the battery plus agent. | 7.7 kg | 8.9 kg | now (hourly CI) |
+| **S2b CO2 avoided vs rule** | CO2 saved versus the dumb rule. | S1_rule − S1 | **Main green KPI.** Negative means the rule is greener. | **−12.2 kg** | **−6.7 kg** | now (hourly CI) |
+| S3 Import carbon intensity | How dirty the bought power was, on average. | 1000·S1 / Σ E_imp (g/kWh) | Compare with the grid mean (356 g/kWh over the samples). Above the mean = buys at dirty hours. | 372.5 (+4.8%) | 372.6 (+4.8%) | now (hourly CI) |
 | S4 Self-consumption | Share of own PV used at home (directly or via battery). | (ΣE_pv − ΣE_exp) / ΣE_pv | Classic green KPI (Luthander 2015). Probably what the sustainability agent optimises. | 51.6% | 74.6% | now |
 | S5 Self-sufficiency | Share of house need covered without the grid. | 1 − ΣE_imp / ΣE_load | Independence from the grid. | 39.3% | 42.0% | now |
 | S6 Green charging share | Share of battery charge that came from PV surplus. | Σ min(E_chg, max(E_pv − E_load, 0)) / ΣE_chg | Battery filled by sun = green. Filled by grid = not. | 82.6% | 84.8% | now |
@@ -116,20 +116,18 @@ Its outputs (which proposal won, the scores) are not logged. Its cost is visible
 ## What the numbers say
 1. **The AI costs about 10× what it saves.** LLM spend is €4.7–8.2 per week. Savings vs no battery are only about €0.7 per week (A €0.67, B €0.72). This holds whatever the wear price.
 2. **On energy alone, a free rule is about as good.** The rule beats both setups by €0.40–0.70 per week. Count battery wear and A edges ahead, B does not. The cause: the agents hoard battery for the evening and export sun cheaply.
-3. **Adding the sustainability agent is not bad for energy.** Against its own rule baseline, B is €0.30 cheaper and 2.9 kg CO2 cleaner than A. Its only real price is the extra LLM spend: +€3.5 per week, from 8.2 vs 4.4 calls per decision.
+3. **Adding the sustainability agent is not bad for energy.** Against its own rule baseline, B is €0.30 cheaper and 5.5 kg CO2 cleaner than A. Its only real price is the extra LLM spend: +€3.5 per week, from 8.2 vs 4.4 calls per decision.
 4. **Winter week, small money.** The battery only pays for its own wear if wear costs under €0.017/kWh, and the realistic range is €0.06–0.15. Sunnier weeks will look better. Repeat the analysis on a summer week.
 5. **Agent-level and orchestrator-level quality cannot be judged yet.** The proposals and scores are not logged. That is the first fix to ask for.
-6. With a static CO2 factor, "green" = "import less". Hourly CI is needed to reward clean timing.
+6. **The sustainability agent does not time imports to clean hours.** Both A and B buy grid power at hours about 5% dirtier than average (S3), and B is no better than A. B is greener only because it imports less. This fits the suspicion that it has no carbon signal.
 
-## Upgrade: hourly carbon from ENTSO-E (you do this by hand)
-1. Go to transparency.entsoe.eu and log in (free account, no API token needed for the CSV export).
-2. Generation → **Actual Generation per Production Type**.
-3. Area: **Italy** (country / bidding zone IT). Dates: **05.01.2026 – 13.01.2026**. Time zone: **CET**.
-4. Export → **CSV**. Save as `data/external/entsoe_IT_gen_2026-01.csv`.
-5. Run `python3 analysis/kpis.py`. It picks up the file automatically:
-   - CI_t = Σ_k gen_k,t·EF_k / Σ_k gen_k,t
-   - EF_k = IPCC AR5 lifecycle medians: gas 490, coal 820, hydro 24, solar 48, wind 11 g/kWh. Oil 650 and other 700 are assumed.
-   - Imports are ignored.
+## Carbon data: how it was pulled (repeat for other weeks)
+1. On transparency.entsoe.eu (free login, no API token needed): Generation → **Aggregated Generation per Type**, area **Italy (IT)**, CSV export. The site limits the range, so split it (we used 05–12 Jan and 12–14 Jan).
+2. Drop the files in `data/external/` as they come (`AGGREGATED_GENERATION_PER_TYPE_GENERATION_*.csv`). The script merges all of them.
+3. Run `python3 analysis/kpis.py`. It:
+   - converts the `MTU (UTC)` timestamps to Italian time;
+   - computes CI_t = Σ_k gen_k,t·EF_k / Σ_k gen_k,t, averaged per hour. EF_k = IPCC AR5 lifecycle medians: gas 490, coal 820, hydro 24, solar 48, wind 11, nuclear 12, biomass 230 g/kWh. Oil 650 and other 700 are assumed; storage counts as 0;
+   - stops with an error if under 90% of samples find an hourly value.
 
 To unlock the "logs" KPIs, ask Sense Reply for:
 - per decision: each agent's proposed kW and self-scores, the orchestrator's pick, and the prompt version
