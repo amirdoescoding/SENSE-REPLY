@@ -6,6 +6,8 @@ Formulas are documented in docs/KPIS.md.
 import json
 from pathlib import Path
 
+from carbon import ci_lookup
+
 ROOT = Path(__file__).resolve().parent.parent
 DT = 0.25  # h per sample
 C_DEG = 0.10  # €/kWh discharged, assumed mid of 0.06-0.15 range (docs/research/04 §4)
@@ -65,7 +67,7 @@ def rule_baseline(rows, soc0):
     return imp, exp, soc
 
 
-def kpis(name, rows):
+def kpis(name, rows, ci):
     n = len(rows)
     g = [r["grid"] for r in rows]
     b = [r["bess"] for r in rows]
@@ -114,6 +116,16 @@ def kpis(name, rows):
     k["G4 peak import kW"] = max(x["power"] for x in g)
     k["G5 violations / penalty €"] = f'{sum(x["violation"] for x in g)} / {sum(x["penalty"] for x in g):.2f}'
     k["  rule-based import kWh"] = sum(r_imp)
+    # --- sustainability (needs carbon intensity CI_t, g/kWh) ---
+    cis = [ci(r["dt"]) for r in rows]
+    co2 = lambda imps: sum(i * c for i, c in zip(imps, cis)) / 1000  # kg
+    k["S1 grid CO2 kg"] = s1 = co2(imp)
+    k["S2a CO2 avoided vs no-battery kg"] = co2(nb_imp) - s1
+    k["S2b CO2 avoided vs rule-based kg"] = co2(r_imp) - s1
+    k["S3 CO2 intensity of imports g/kWh"] = 1000 * s1 / sum(imp)
+    k["  mean grid CI g/kWh"] = sum(cis) / n
+    k["_excess_cost"] = e2 - c_rule  # used for T1/T2, hidden
+    k["_excess_co2"] = s1 - co2(r_imp)
     # --- battery ---
     k["B1 round-trip efficiency"] = (sum(dis) + (soc_end - soc0) * b0["capacityKwh"] * b0["dischargeEfficiency"]) / sum(chg)
     k["B2 equivalent full cycles"] = (sum(chg) + sum(dis)) / (2 * b0["capacityKwh"])
@@ -150,7 +162,8 @@ def fmt(v):
 
 
 def main():
-    res = {n: kpis(n, load(ROOT / "data/DatasetV3" / f)) for n, f in FILES.items()}
+    ci, src = ci_lookup()
+    res = {n: kpis(n, load(ROOT / "data/DatasetV3" / f), ci) for n, f in FILES.items()}
     a, b = res["A"], res["B"]
     # self-check: must reproduce docs/research/00-synthesis.md §1
     for key, va, vb in [
@@ -160,9 +173,21 @@ def main():
         ("  grid export kWh", 45.09, 17.57),
     ]:
         assert abs(a[key] - va) < 0.01 and abs(b[key] - vb) < 0.01, (key, a[key], b[key])
+    print(f"carbon source: {src}\n")
     print("| KPI | A (Orch+Cost) | B (Orch+Cost+Sust) |\n|---|---|---|")
     for key in a:
-        print(f"| {key} | {fmt(a[key])} | {fmt(b[key])} |")
+        if not key.startswith("_"):
+            print(f"| {key} | {fmt(a[key])} | {fmt(b[key])} |")
+    # trade-off B vs A, both measured against their own rule baseline (removes PV/SoC difference)
+    d_cost = b["_excess_cost"] - a["_excess_cost"]
+    d_co2 = a["_excess_co2"] - b["_excess_co2"]  # kg CO2 saved by B
+    d_llm = b["O5 LLM cost per week €"] - a["O5 LLM cost per week €"]
+    d_deg = b["B3 degradation cost € (c_deg 0.10)"] - a["B3 degradation cost € (c_deg 0.10)"]
+    print(f"\nT1 B-vs-A extra energy cost € (baseline-relative): {d_cost:.2f}")
+    print(f"T1 B-vs-A CO2 saved kg (baseline-relative): {d_co2:.2f}")
+    print(f"T1 marginal abatement cost €/kg: {d_cost / d_co2:.2f}" if d_co2 > 0 and d_cost > 0
+          else "T1 marginal abatement cost: n/a (B dominates or is dominated)")
+    print(f"T2 total cost of sustainability € (energy+wear+LLM): {d_cost + d_deg + d_llm:.2f}")
 
 
 if __name__ == "__main__":
