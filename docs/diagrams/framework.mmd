@@ -7,7 +7,7 @@ graph LR
   end
   subgraph sgEdge["EDGE GATEWAY - fast control loop (every 15 min, no cloud needed)"]
     BB["Blackboard<br/>shared state + expiry"]
-    FC["Forecasters<br/>PV, load, CO2"]
+    FC["ML forecasters<br/>load + CO2 (P50/P90), soiling"]
     LOCAL["Local small LLM<br/>Jetson, offline strategist"]
     OPT["Optimiser LP/MPC<br/>24 h plan, candidate kW"]
     RULE["Rule fallback<br/>self-consumption"]
@@ -20,7 +20,7 @@ graph LR
     FEEDS["External feeds<br/>price, weather, ENTSO-E CO2"]
     LLM["Strategy LLM<br/>Mistral Small 4 / Haiku 5.5 EU<br/>every 1-4 h or on event"]
     MEM["Memory store<br/>low-regret past cases"]
-    TRAIN["Twin trainer<br/>bandit λ, prompt tuning, λ-sweep"]
+    TRAIN["Twin trainer<br/>retrain forecasts, bandit λ, prompts"]
     HUMAN["Human console<br/>approvals, cost-vs-CO2 slider"]
   end
   PV -->|measure| BB
