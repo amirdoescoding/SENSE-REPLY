@@ -10,6 +10,7 @@ from carbon import ci_lookup
 
 ROOT = Path(__file__).resolve().parent.parent
 DT = 0.25  # h per sample
+P_MAX = 5.0  # kW inverter limit (max of maximumCharge/DischargePower in data)
 C_DEG = 0.10  # €/kWh discharged, assumed mid of 0.06-0.15 range (docs/research/04 §4)
 USD_EUR = 0.86  # assumed FX for LLM cost
 P_IN, P_OUT = 0.40, 2.00  # $/M tokens Devstral 2 (aggregator figure, docs/research/04 §2)
@@ -45,26 +46,29 @@ def soc_value(d_soc, b, mean_buy):
     return d_soc * b["capacityKwh"] * b["dischargeEfficiency"] * mean_buy
 
 
-def rule_baseline(rows, soc0):
-    """Self-consumption rule: charge on PV surplus, discharge to cover deficit, within live limits."""
-    soc, imp, exp, chg_tot = soc0, [], [], 0.0
+def rule_baseline(rows, soc0, floor=None):
+    """Self-consumption rule: charge on PV surplus, discharge to cover deficit.
+    Power limits come from the rule's OWN SoC, using the formula the data follows
+    (maxCharge = min(5, (SoCmax - SoC)*Cap per h), fits within 0.08 kW). floor = optional reserve SoC."""
+    soc, imp, exp, dis_tot = soc0, [], [], 0.0
     for r in rows:
         b, net = r["bess"], r["pv"] - r["load"]
         cap, ec, ed = b["capacityKwh"], b["chargeEfficiency"], b["dischargeEfficiency"]
+        lo = max(b["minimumStateOfCharge"], floor or 0)
         if net > 0:
-            c = min(net, b["maximumChargePower"] * DT, (b["maximumStateOfCharge"] - soc) * cap / ec)
-            c = max(c, 0)
+            p_max = min(P_MAX, (b["maximumStateOfCharge"] - soc) * cap)
+            c = max(min(net, p_max * DT, (b["maximumStateOfCharge"] - soc) * cap / ec), 0)
             soc += c * ec / cap
-            chg_tot += c
             imp.append(0.0)
             exp.append(net - c)
         else:
-            d = min(-net, b["maximumDischargePower"] * DT, (soc - b["minimumStateOfCharge"]) * cap * ed)
-            d = max(d, 0)
+            p_max = min(P_MAX, (soc - b["minimumStateOfCharge"]) * cap)
+            d = max(min(-net, p_max * DT, (soc - lo) * cap * ed), 0)
             soc -= d / ed / cap
+            dis_tot += d
             imp.append(-net - d)
             exp.append(0.0)
-    return imp, exp, soc
+    return imp, exp, soc, dis_tot
 
 
 def kpis(name, rows, ci):
@@ -92,12 +96,23 @@ def kpis(name, rows, ci):
     nb_imp = [max(r["load"] - r["pv"], 0) for r in rows]
     nb_exp = [max(r["pv"] - r["load"], 0) for r in rows]
     c_nb = bill(nb_imp, nb_exp, rows)
-    r_imp, r_exp, r_soc = rule_baseline(rows, soc0)
+    r_imp, r_exp, r_soc, r_dis = rule_baseline(rows, soc0)
     c_rule = bill(r_imp, r_exp, rows) - soc_value(r_soc - soc0, b0, mean_buy)
+    f_imp, f_exp, f_soc, f_dis = rule_baseline(rows, soc0, floor=0.3)
+    c_rule30 = bill(f_imp, f_exp, rows) - soc_value(f_soc - soc0, b0, mean_buy)
     k["  baseline no-battery bill €"] = c_nb
     k["  baseline rule-based bill € (SoC-adj)"] = c_rule
+    k["  baseline rule + 30% reserve bill €"] = c_rule30
     k["E4a savings vs no-battery %"] = 100 * (c_nb - e2) / c_nb
+    k["E4a savings vs no-battery €"] = c_nb - e2
     k["E4b savings vs rule-based %"] = 100 * (c_rule - e2) / c_rule
+    k["E4b savings vs rule-based €"] = c_rule - e2
+    k["E4c savings vs rule+30% reserve €"] = c_rule30 - e2
+    # wear-inclusive: add c_deg * discharged energy to agent and rule
+    k["  discharged kWh agent / rule"] = f"{sum(dis):.1f} / {r_dis:.1f}"
+    k["E4d savings vs rule incl. wear €"] = (c_rule + C_DEG * r_dis) - (e2 + C_DEG * sum(dis))
+    k["E7 break-even c_deg agent=rule €/kWh"] = (e2 - c_rule) / (r_dis - sum(dis)) if r_dis > sum(dis) else float("nan")
+    k["E8 break-even c_deg battery pays off €/kWh"] = (c_nb - e2) / sum(dis)
     k["E5 price-timing spread €/kWh"] = (
         sum(d * p for d, p in zip(dis, buy)) / sum(dis) - sum(c * p for c, p in zip(chg, buy)) / sum(chg)
     )
@@ -145,6 +160,7 @@ def kpis(name, rows, ci):
     k["O4 LLM cost per decision €"] = llm_eur / n
     k["O5 LLM cost per week €"] = llm_eur
     k["F1 net value vs rule-based €/week"] = c_rule - e2 - llm_eur
+    k["F1w net value vs rule incl. wear €/week"] = k["E4d savings vs rule incl. wear €"] - llm_eur
     k["F2 LLM cost / energy savings vs no-battery"] = llm_eur / (c_nb - e2)
     p = [x["power"] for x in b]
     modes = [x > 0 for x in p if x != 0]  # charge/discharge sequence, idle skipped
