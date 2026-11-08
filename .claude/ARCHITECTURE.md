@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Analysis repo for the Sense Reply BDD (agent performance assessment). No application code yet.
+Analysis repo for the Sense Reply BDD (agent performance assessment). Stdlib-only Python KPI scripts + markdown deliverables.
 
 ## 1. Project Structure
 
@@ -13,8 +13,14 @@ SENSE-REPLY/
 │   ├── DATA_MODEL.pdf    # Field definitions, units, sign conventions
 │   └── DataIndex.xlsx    # LLM requests / tokens / latency per dataset
 ├── docs/                 # Case brief, transcript, slides, background briefing
-│   └── research/         # Research sprint outputs (00-synthesis.md = entry point)
-└── analysis/             # (planned) KPI computation notebooks/scripts
+│   ├── KPIS.md           # KPI pack (caveman English): agent / orchestrator / framework levels
+│   ├── FRAMEWORK.md      # Redesign proposal (optimiser + 1 strategy LLM + twin + learning loop)
+│   ├── diagrams/         # framework.mmd (source) → .svg/.png/.excalidraw
+│   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning
+├── data/external/        # Hand-downloaded ENTSO-E CSV goes here (optional)
+└── analysis/
+    ├── kpis.py           # python3 analysis/kpis.py → KPI table A vs B, baselines, self-check
+    └── carbon.py         # CI_t from ENTSO-E CSV, else static ISPRA 198.9 g/kWh
 ```
 
 ## 2. System under assessment
@@ -54,4 +60,4 @@ SENSE-REPLY/
 - **Orchestrator**: workflow that discovers agents, runs the discussion, picks one proposal.
 - **BDD**: Business Deep Dive (Albert School case format).
 
-Date of last update: 2026-11-06
+Date of last update: 2026-11-08

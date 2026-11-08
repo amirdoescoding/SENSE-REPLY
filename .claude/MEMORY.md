@@ -24,3 +24,13 @@
 
 ## Decisions
 - KPI catalogue = synthesis §2. Baselines: no-battery, rule-based self-consumption, perfect-foresight LP.
+
+## KPI work (2026-11-08), see docs/KPIS.md, docs/FRAMEWORK.md
+- `analysis/kpis.py` (stdlib) asserts it reproduces synthesis §1 before printing. Rule baseline derives power limits from its own SoC: data follows maxCharge = min(5, (0.9−SoC)·10), fits within 0.08 kW.
+- Headline (robust): LLM cost ≈ 7× (A) / 11× (B) the savings vs no battery (~€0.7/wk). Gap to rule baseline is small (€0.40–0.70/wk) and flips for A once wear (c_deg €0.10) is counted, so present it as a sensitivity.
+- B vs A, each vs own rule baseline: B €0.30 cheaper, 2.9 kg CO2 cleaner. Total cost of sustainability ≈ €3.3/wk, almost all LLM.
+- PV gap partly soiling: `pv_dirt` 0.20 (A) vs 0.42 (B). PV profile peaks 10:00 and runs ~14 h/day: not Italian January. Flag it.
+- Static CI = ISPRA 2024 prelim. consumption factor 198.9 g/kWh (Rapporti 413/2025 Tab. 1.3; 2023 = 234.7).
+- Devstral 2 retired 2026-07-31 (replacement Mistral Medium 3.5, ~10× Small 4 price). Revolut self-hosts GLM for coding; no "millions" figure found.
+- Redesign decision: optimiser sets kW on the edge, 1 strategy LLM every 1–4 h, twin-scored arbiter, clamp, rule floor; sustainability = λ weight, not an agent.
+- Web diagram: https://claude.ai/artifact/ENAndsWgSqt9YYqYxMuY9W
