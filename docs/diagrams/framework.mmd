@@ -1,0 +1,46 @@
+graph LR
+  subgraph sgPhys["PHYSICAL SITE"]
+    PV["PV 9 panels"]
+    LOAD["House load"]
+    BESS["BESS 10 kWh + inverter"]
+    GRID["Grid meter"]
+  end
+  subgraph sgEdge["EDGE GATEWAY - fast control loop (every 15 min, no cloud needed)"]
+    BB["Blackboard<br/>shared state + expiry"]
+    FC["ML forecasters<br/>load + CO2 (P50/P90), soiling"]
+    LOCAL["Local small LLM<br/>Jetson, offline strategist"]
+    OPT["Optimiser LP/MPC<br/>24 h plan, candidate kW"]
+    RULE["Rule fallback<br/>self-consumption"]
+    TWIN["Digital twin verifier<br/>scores €, CO2, SoC"]
+    ARB["Arbiter<br/>feasible, cheapest within ε, lowest CO2"]
+    CLAMP["Safety clamp<br/>writes setpoint"]
+    LOG["Logger<br/>regret at T+24 h"]
+  end
+  subgraph sgCloud["CLOUD - slow learning loop (hours / nightly)"]
+    FEEDS["External feeds<br/>price, weather, ENTSO-E CO2"]
+    LLM["Strategy LLM<br/>Mistral Small 4 / Haiku 5.5 EU<br/>every 1-4 h or on event"]
+    MEM["Memory store<br/>low-regret past cases"]
+    TRAIN["Twin trainer<br/>retrain forecasts, bandit λ, prompts"]
+    HUMAN["Human console<br/>approvals, cost-vs-CO2 slider"]
+  end
+  PV -->|measure| BB
+  LOAD -->|measure| BB
+  GRID -->|measure| BB
+  BESS -->|SoC| BB
+  FEEDS -->|series| FC
+  FC -->|forecasts| BB
+  BB -.->|snapshot on event| LLM
+  MEM -.->|similar cases| LLM
+  LLM -.->|λ, reserve, mode| BB
+  LOCAL -.->|strategy if cloud down| BB
+  BB -->|state + strategy| OPT
+  OPT -->|candidate plans| TWIN
+  RULE -->|rule plan| TWIN
+  TWIN -->|real scores| ARB
+  ARB -->|chosen kW| CLAMP
+  ARB -.->|escalation| HUMAN
+  CLAMP ==>|setpoint| BESS
+  CLAMP -->|applied kW| LOG
+  LOG -.->|outcomes + regret| MEM
+  LOG -.->|logs| TRAIN
+  TRAIN -.->|tuned λ after shadow test| BB

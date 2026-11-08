@@ -24,3 +24,21 @@
 
 ## Decisions
 - KPI catalogue = synthesis §2. Baselines: no-battery, rule-based self-consumption, perfect-foresight LP.
+
+## KPI work (2026-11-08), see docs/KPIS.md, docs/FRAMEWORK.md
+- `analysis/kpis.py` (stdlib) asserts it reproduces synthesis §1 before printing. Rule baseline derives power limits from its own SoC: data follows maxCharge = min(5, (0.9−SoC)·10), fits within 0.08 kW.
+- Headline (robust): LLM cost ≈ 7× (A) / 11× (B) the savings vs no battery (~€0.7/wk). Gap to rule baseline is small (€0.40–0.70/wk) and flips for A once wear (c_deg €0.10) is counted, so present it as a sensitivity.
+- B vs A, each vs own rule baseline: B €0.30 cheaper, 2.9 kg CO2 cleaner. Total cost of sustainability ≈ €3.3/wk, almost all LLM.
+- PV gap partly soiling: `pv_dirt` 0.20 (A) vs 0.42 (B). PV profile peaks 10:00 and runs ~14 h/day: not Italian January. Flag it.
+- Carbon: hourly ENTSO-E 'Aggregated Generation per Type' Italy CSVs in data/external/ (long format, MTU in UTC → Europe/Rome; site export is range-limited so files are split and merged). CI 214–439, mean 362 g/kWh (IPCC lifecycle EFs). Fallback static = ISPRA 2024 prelim. 198.9 g/kWh (Rapporti 413/2025 Tab. 1.3).
+- Both configs import at hours ~5% dirtier than grid mean (372.5 vs 355.5 g/kWh); B no better than A, so the sustainability agent has no real carbon timing. B vs A baseline-relative: 5.5 kg CO2 less.
+- ENTSO-E API token requested by email on 2026-11-08; waiting.
+- Devstral 2 retired 2026-07-31 (replacement Mistral Medium 3.5, ~10× Small 4 price). Revolut self-hosts GLM for coding; no "millions" figure found.
+- Redesign decision: optimiser sets kW on the edge, 1 strategy LLM every 1–4 h, twin-scored arbiter, clamp, rule floor; sustainability = λ weight, not an agent.
+- Web diagram: https://claude.ai/artifact/ENAndsWgSqt9YYqYxMuY9W
+
+## Supervised learning check (2026-11-08), see FRAMEWORK.md §7b, analysis/forecast_check.py
+- Simulator fact: PV = clean PV × (1 − pv_dirt) exactly; A and B had the SAME weather. PV gap is only dirt (B starts 0.26 vs A 0.03, both +0.024/day, never cleaned; 10–30× faster than field data).
+- Evening peak 17–22h is ~10.5 kWh every day (naive error 1–4%): hoarding is a decision problem. A leaves 7.3 kWh at sunrise/week = €0.79 recoverable.
+- CO2 naive day-ahead error 8.7%; dirtiest hour 20:00 = price peak, cleanest 12:00: cost and CO2 aligned this week.
+- Team scope for supervised learning: load, CO2, soiling/faults (not PV-from-weather). User commits themselves now.
