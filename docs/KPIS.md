@@ -49,6 +49,11 @@ Today we only see the final battery value, not the cost agent's own proposal. So
 
 **But the € gap is small and depends on wear.** It is €0.40–0.70 per week. Once battery wear is counted, A beats the rule (the rule cycles harder) and B still loses. So treat "loses to the rule" as a **sensitivity result**, not the headline. The robust headline is in §4: the AI costs about 10× what the battery earns.
 
+**What does wear really cost? Three sources, one answer for A:**
+- Assumed: c_deg = €0.10/kWh (`research/04` §4, range €0.06–0.15).
+- From the data's own `soh`: the battery lost 0.023% SoH while discharging 39.6 kWh. With a €6,000 pack that is "dead" at 70–80% SoH (`research/04` §4), wear ≈ 0.00023 / (0.20–0.30) × €6,000 / 39.6 kWh = **€0.12–0.17/kWh**. This is an upper bound: 0.023% per week ≈ 1.2% per year, about the same as normal calendar ageing, so part of the loss would happen even with no cycling.
+- Every estimate is above A's break-even of €0.051 (C8). So **with wear, A beats the rule**. B's break-even is €0.40, so **B still loses**.
+
 How the rule is built: its power limits come from **its own** SoC, using the same formula the data follows (max power = min(5 kW, room left in battery per hour); this fits the data within 0.08 kW).
 
 ## 2. Sustainability agent

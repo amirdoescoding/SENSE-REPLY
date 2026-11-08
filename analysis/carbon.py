@@ -63,15 +63,17 @@ def load_entsoe(path=CSV):
 
 
 def ci_lookup():
-    """Return (fn(datetime_str) -> g/kWh, source label). Dataset time assumed Italian local time (CET)."""
+    """Return (fn(datetime_str) -> g/kWh, source label, hourly keys or None).
+    Dataset time assumed Italian local time (CET). Missing hours fall back to STATIC, so callers check coverage."""
     if CSV.exists():
-        ci = load_entsoe()
-        return (lambda dt: ci.get(dt[:13], STATIC)), f"ENTSO-E hourly mix x IPCC AR5 lifecycle EFs ({len(ci)} h)"
-    return (lambda dt: STATIC), STATIC_SRC
+        ci = load_entsoe(CSV)
+        assert ci, f"no usable rows in {CSV}: check the MTU column and [MW] headers"
+        return (lambda dt: ci.get(dt[:13], STATIC)), f"ENTSO-E hourly mix x IPCC AR5 lifecycle EFs ({len(ci)} h)", set(ci)
+    return (lambda dt: STATIC), STATIC_SRC, None
 
 
 if __name__ == "__main__":
-    fn, src = ci_lookup()
+    fn, src, _ = ci_lookup()
     print("source:", src)
     if CSV.exists():
         vals = list(load_entsoe().values())

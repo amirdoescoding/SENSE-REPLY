@@ -178,8 +178,14 @@ def fmt(v):
 
 
 def main():
-    ci, src = ci_lookup()
-    res = {n: kpis(n, load(ROOT / "data/DatasetV3" / f), ci) for n, f in FILES.items()}
+    ci, src, hours = ci_lookup()
+    data = {n: load(ROOT / "data/DatasetV3" / f) for n, f in FILES.items()}
+    if hours is not None:  # hourly CSV: make sure timestamps actually line up, else misses silently use STATIC
+        rows = [r for d in data.values() for r in d]
+        cov = sum(r["dt"][:13] in hours for r in rows) / len(rows)
+        src += f", coverage {100 * cov:.0f}%"
+        assert cov > 0.9, f"ENTSO-E CSV covers only {100 * cov:.0f}% of samples: check dates and time zone"
+    res = {n: kpis(n, rows, ci) for n, rows in data.items()}
     a, b = res["A"], res["B"]
     # self-check: must reproduce docs/research/00-synthesis.md §1
     for key, va, vb in [
