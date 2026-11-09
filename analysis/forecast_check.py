@@ -4,7 +4,7 @@ Run: python3 analysis/forecast_check.py   (uses kpis.load and carbon.ci_lookup)
 """
 from collections import defaultdict
 
-from carbon import DIR, PATTERN, load_entsoe
+from carbon import WEEK, hourly_ci
 from kpis import DT, FILES, ROOT, load
 
 STEPS_DAY = 96
@@ -77,7 +77,7 @@ def soiling(rows, path):
 
 
 def co2_check():
-    ci = load_entsoe(sorted(DIR.glob(PATTERN)))
+    ci = hourly_ci(*WEEK)
     hours = sorted(ci)
     yday = [(ci[hours[i - 24]], ci[hours[i]]) for i in range(24, len(hours))]
     mean = sum(ci.values()) / len(ci)
