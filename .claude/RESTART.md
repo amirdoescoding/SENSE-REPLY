@@ -1,6 +1,6 @@
 # Restart point
 
-2026-11-08: Branch `kpi-framework` (from main). Done: `analysis/kpis.py` + `carbon.py`, `docs/KPIS.md`,
-`docs/FRAMEWORK.md`, `docs/diagrams/framework.*`, research `05` (hosting) and `06` (loop/learning).
-Hourly ENTSO-E carbon done (CSVs in data/external/). Stopped before: LP oracle (waiting for scipy approval),
-per-day KPIs. Next: Monday team consolidation; then the questions for Sense Reply in FRAMEWORK.md §12.
+2026-11-09: Branch `entsoe-api` (from main, not pushed). Done: carbon.py pulls ENTSO-E A75 via API (token in `.env`),
+CSVs deleted, KPI output unchanged. forecast_check.py CO2 day-ahead test: FC2 0.40. Docs updated (KPIS how-to, FRAMEWORK §7b).
+Next: push + PR when the user asks; LP oracle (scipy approval), per-day KPIs, re-run CO2 test on more weeks;
+questions for Sense Reply in FRAMEWORK.md §12.
