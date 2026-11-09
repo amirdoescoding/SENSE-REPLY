@@ -1,13 +1,16 @@
 """How predictable are load, grid CO2 and panel soiling, and what is a better forecast worth? Stdlib only.
 
-Run: python3 analysis/forecast_check.py   (uses kpis.load and carbon.ci_lookup)
+Run: python3 analysis/forecast_check.py   (uses kpis.load and the ENTSO-E API via carbon.py, needs ENTSO_API)
 """
+import statistics
 from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 
-from carbon import WEEK, hourly_ci
+from carbon import IT, LOCAL, WEEK, ci_mix, fetch, hourly
 from kpis import DT, FILES, ROOT, load
 
 STEPS_DAY = 96
+TRAIN_START = "202512010000"  # UTC; training = 1 Dec 2025 -> start of the dataset week (incl. Christmas/New Year)
 
 
 def mae(pairs):
@@ -76,18 +79,52 @@ def soiling(rows, path):
     return dirts[0], dirts[-1], rate, lost, lost_lo, lost_hi
 
 
+def _prev(h):
+    """'YYYY-MM-DDTHH' -> same hour the day before."""
+    return (datetime.strptime(h, "%Y-%m-%dT%H") - timedelta(hours=24)).strftime("%Y-%m-%dT%H")
+
+
 def co2_check():
-    ci = hourly_ci(*WEEK)
-    hours = sorted(ci)
-    yday = [(ci[hours[i - 24]], ci[hours[i]]) for i in range(24, len(hours))]
-    mean = sum(ci.values()) / len(ci)
+    """Naive 'same as yesterday' CI vs persistence + day-ahead correction:
+    CI_t = CI_{t-24} + a + b * (x_t - x_{t-24}),  x = 1 - (wind+solar day-ahead forecast) / (load day-ahead forecast).
+    b = 0 is the naive model, so FC2 = 1 - MAE_model / MAE_naive measures only what the ENTSO-E forecasts add.
+    Fit on TRAIN_START -> week start, test on the dataset week (same hours as the earlier CSV check)."""
+    start, end = TRAIN_START, WEEK[1]
+    ci = hourly(ci_mix(fetch({"documentType": "A75", "processType": "A16", "in_Domain": IT}, start, end)))
+    ws = fetch({"documentType": "A69", "processType": "A01", "in_Domain": IT}, start, end)  # solar + wind
+    load_fc = hourly(fetch({"documentType": "A65", "processType": "A01", "outBiddingZone_Domain": IT}, start, end,
+                           side="outBiddingZone_Domain")[""])
+    ws_sum = {}
+    for s in ws.values():
+        for t, mw in s.items():
+            ws_sum[t] = ws_sum.get(t, 0.0) + mw
+    ws_h = hourly(ws_sum)
+    x = {h: 1 - ws_h[h] / load_fc[h] for h in load_fc if h in ws_h}
+
+    week0 = datetime.strptime(WEEK[0], "%Y%m%d%H%M").replace(tzinfo=timezone.utc).astimezone(LOCAL)
+    week = sorted(h for h in ci if h >= week0.strftime("%Y-%m-%dT%H"))
+    usable = lambda h: _prev(h) in ci and h in x and _prev(h) in x
+    train = [h for h in ci if h < week[0] and usable(h)]
+    test = [h for h in week[24:] if usable(h)]
+    dx = [x[h] - x[_prev(h)] for h in train]
+    dy = [ci[h] - ci[_prev(h)] for h in train]
+    b, a = statistics.linear_regression(dx, dy)
+    naive = [(ci[_prev(h)], ci[h]) for h in test]
+    model = [(ci[_prev(h)] + a + b * (x[h] - x[_prev(h)]), ci[h]) for h in test]
+
+    wk = {h: ci[h] for h in week}
+    mean = sum(wk.values()) / len(wk)
     by_hour = defaultdict(list)
-    for h in hours:
+    for h in week:
         by_hour[int(h[11:13])].append(ci[h])
     prof = {h: sum(v) / len(v) for h, v in by_hour.items()}
     clean, dirty = min(prof, key=prof.get), max(prof, key=prof.get)
     return {
-        "CO2 MAE same-as-yesterday, % of mean": 100 * mae(yday) / mean,
+        "CO2 MAE same-as-yesterday, % of mean": 100 * mae(naive) / mean,
+        "CO2 MAE yesterday + day-ahead wind/solar/load correction, % of mean": 100 * mae(model) / mean,
+        "FC2 skill vs naive (1 - MAE_model / MAE_naive)": 1 - mae(model) / mae(naive),
+        "fit: g/kWh per +0.1 residual-load share / corr(dx, dCI) / train h / test h":
+            f"{0.1 * b:.0f} / {statistics.correlation(dx, dy):.2f} / {len(train)} / {len(test)}",
         "cleanest / dirtiest hour (avg g/kWh)": f"{clean}h {prof[clean]:.0f} / {dirty}h {prof[dirty]:.0f}",
         "daily swing / mean": (prof[dirty] - prof[clean]) / mean,
     }
@@ -113,8 +150,10 @@ def main():
         f = lambda x: x if isinstance(x, str) else f"{x:.2f}"
         print(f"| {k} | {f(v['A'])} | {f(v['B'])} |")
     print()
-    for k, v in co2_check().items():
+    co2 = co2_check()
+    for k, v in co2.items():
         print(f"{k}: {v if isinstance(v, str) else f'{v:.2f}'}")
+    assert abs(co2["CO2 MAE same-as-yesterday, % of mean"] - 8.69) < 0.05  # same as the CSV-era check
     assert out["dirt growth per day"]["A"] > 0  # soiling grows, no cleaning in the week
 
 
