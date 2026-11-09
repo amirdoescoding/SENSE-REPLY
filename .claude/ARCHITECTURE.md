@@ -17,10 +17,10 @@ SENSE-REPLY/
 │   ├── FRAMEWORK.md      # Redesign proposal (optimiser + 1 strategy LLM + twin + learning loop)
 │   ├── diagrams/         # framework.mmd (source) → .svg/.png/.excalidraw
 │   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning
-├── data/external/        # Hand-downloaded ENTSO-E CSV goes here (optional)
 └── analysis/
     ├── kpis.py           # python3 analysis/kpis.py → KPI table A vs B, baselines, self-check
-    └── carbon.py         # CI_t from ENTSO-E CSV, else static ISPRA 198.9 g/kWh
+    ├── carbon.py         # CI_t from ENTSO-E API (token ENTSO_API in .env), else static ISPRA 198.9 g/kWh
+    └── forecast_check.py # load/CO2/soiling predictability; CO2 day-ahead forecast test (FC2)
 ```
 
 ## 2. System under assessment

@@ -146,6 +146,7 @@ PV forecast from weather is out of scope for now.
 | PV lost to dirt | 12 kWh (€1.0–1.2) | 36 kWh (€2.9–3.7) | **Bigger than what the battery saves** (about €0.7) |
 | Dirt growth | +0.024/day | +0.024/day | Linear, all 9 panels equal, never cleaned |
 | CO2 error, "same as yesterday", hourly | 8.7% of mean | same | CO2 is fairly predictable |
+| CO2 error, yesterday + ENTSO-E day-ahead wind/solar/load correction | **5.2% of mean** | same | **FC2 skill 0.40**: the public forecasts cut the error by 40% |
 | Cleanest / dirtiest hour | 12:00 (314 g) / 20:00 (384 g) | same | Daily swing is only 19% of the mean |
 
 **New fact:** in this simulator, PV = clean PV × (1 − dirt), exactly. The B/A PV ratio equals the dirt ratio at every daytime step. So **both runs had the same weather**, and the whole PV gap (93 vs 69 kWh) is dirt.
@@ -155,7 +156,9 @@ PV forecast from weather is out of scope for now.
   - Needed reserve = forecast evening + night load − what PV will refill, plus a safety margin.
   - The margin comes from the forecast error. Use a high-end forecast (the 90th percentile) instead of the average. This is **quantile forecasting**: predict a range, not one number.
   - Real homes are much noisier than this simulated house (holidays, guests, EVs), so in the field the model matters more than it does here.
-- **CO2: cheap win.** "Same as yesterday" is already 91% right.
+- **CO2: cheap win, and the day-ahead data makes it better.** "Same as yesterday" is already 91% right. Adding ENTSO-E's free day-ahead wind/solar and load forecasts brings it to about 95% (error 8.7% → 5.2%, FC2 = 0.40).
+  - Model: CI_t = CI_{t−24} + a + b·Δx, where x = 1 − (wind+solar forecast)/(load forecast), the share of load left for thermal plants. One slope, stdlib only, trained 1 Dec–4 Jan and tested on the dataset week (`analysis/forecast_check.py`). Each +0.1 of residual-load share adds about 56 g/kWh (correlation 0.89).
+  - Caveat: one test week. Training covers Christmas/New Year, and the test week has 6 Jan (Epiphany). Treat 0.40 as indicative and re-run on more weeks.
   - This week the dirtiest hour (20:00) is also the price peak, and the cleanest (12:00) is the PV peak. **Cost and CO2 point the same way.** That explains why adding the sustainability agent barely changed the energy result.
   - A CO2 forecast still matters on windy or sunny days, when CO2 and price separate. It also gives the sustainability side a real signal; today it buys at hours 5% dirtier than average (KPIS.md S3).
 - **Soiling: biggest € in the simulator, but the simulator exaggerates it.**
@@ -168,7 +171,7 @@ PV forecast from weather is out of scope for now.
 | Part | Simple first | Then | Why |
 |---|---|---|---|
 | Load model | "Same as yesterday" / mean of the last 7 days | LightGBM (gradient-boosted trees) on hour, weekday, holiday, temperature, last days. **Quantile output** (P50 and P90). | Trees win on small tabular data and run on Raspberry-class hardware |
-| CO2 model | Same as yesterday (ENTSO-E) | Trees on hour, weekday, ENTSO-E day-ahead load and wind/solar forecasts | ENTSO-E already publishes day-ahead inputs |
+| CO2 model | Same as yesterday + day-ahead correction (tested: FC2 0.40) | Trees on hour, weekday, ENTSO-E day-ahead load and wind/solar forecasts | ENTSO-E already publishes day-ahead inputs |
 | Soiling / fault model | Performance ratio: measured PV ÷ expected PV, trend per day | Regression for expected PV (irradiance, temperature, sun angle), then trend + change-point alerts | Explainable alerts a technician trusts |
 | Training | Cloud, nightly, per site + fleet model | Fleet model warm-starts new sites (cold start) | One week per site is too little alone |
 | Running | Gateway, every 15 min | Same | Works offline, no LLM cost |
