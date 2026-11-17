@@ -87,14 +87,14 @@ Every column in this row is SoC-adjusted, and each run is measured against its o
 
 | Option | Energy € (SoC-adj) | Grid CO2 | Import | Wear | LLM € | Latency/decision | Status |
 |---|---|---|---|---|---|---|---|
-| A: Cost agent | 3.01 | 23.8 kg | 63.8 kWh | 0.20 | 4.74 | ~10 s | measured |
-| C: Cost + Sust. agents | 2.98 | 21.8 kg | 58.7 kWh | 0.23 | 7.71 | ~18 s | measured |
+| A: Cost agent | 3.01 | 23.0 kg | 61.7 kWh | 0.20 | 4.74 | ~10 s | measured |
+| C: Cost + Sust. agents | 2.98 | 22.2 kg | 59.7 kWh | 0.23 | 7.71 | ~18 s | measured |
 | Rule baseline (no AI) | 2.32 | 11.5 kg | 30.9 kWh | 0.27 | 0 | < 1 ms | replayed on same data |
 | Rule + 20% reserve knob | 2.44 | 13.7 kg | 36.5 kWh | ~0.25 | 0 | < 1 ms | replayed (`replay.py`) |
 | Rule + night grid charge to 30% | 2.45 | 16.2 kg | 43.7 kWh | ~0.3 | 0 | < 1 ms | replayed |
 | Proposal (1 agent, daily knobs, rule executes) | target ≤ rule; enforced by replay gate | target ≤ rule | target ≤ rule | ~0.27 | ~€0.01–0.05 | < 1 ms (LLM off the control path) | **knob values replayed; LLM choice not yet tested** |
 
-CO2 and import in the table above are SoC-adjusted (A's measured run: 23.0 kg, 61.7 kWh).
+CO2 and import in this table are SoC-adjusted (raw: A 23.8 kg / 63.8 kWh, C 21.8 kg / 58.7 kWh). The C row uses C's own sun and load, which is nearly identical to A's.
 
 **Replay lesson (`analysis/replay.py`):** this January week, every knob that holds energy back loses to the plain rule. A 20% reserve costs +€0.12/wk; a night grid charge costs +€0.13–0.22/wk and adds 5–10 kg CO2, because grid energy pushes out free morning PV. A wrongly set knob loses money, so the replay gate is essential, and in this week the best plan is "no reserve, no grid charge".
 
@@ -141,8 +141,8 @@ Same frame as theirs: what the source says, what the telemetry proves, and what 
 2. **A free rule beats all three runs on energy** by €0.40–0.70/wk, now also with wear counted, since wear is small.
    - **Cause:** the battery fills to the 80% target by 11:00 and sits there. Midday sun is then exported at €0.09.
    - The battery empties fast at 18–19h and partly exports while doing so. It then stops at ~20% SoC while the house imports at 20–21h.
-3. **The second agent changes almost nothing.** C vs A on the same panels: same € (−€0.02), 1.8 kg less CO2, +€3/wk LLM.
-   - (SoC-adjusted: −1.5 kg, −3.8 kWh.) Its prompt gets no price and no CO2, so it can only push "import less". Imports are still at hours 5% dirtier than average (S3).
+3. **The second agent changes almost nothing.** C vs A on the same panels: same € (−€0.02), 1.5 kg less CO2 and 3.8 kWh less import (baseline-relative, SoC-adjusted), +€3/wk LLM.
+   - Its prompt gets no price and no CO2, so it can only push "import less". Imports are still at hours 5% dirtier than average (S3).
 4. **No grid penalties in any run.** C's peak import is lower (2.8 vs 5.0 kW), but A's peak is one sample. At P99 the gap is small (2.5 vs 3.1 kW).
 5. **Agent and orchestrator quality cannot be judged** without the proposal logs.
 
