@@ -1,0 +1,23 @@
+METHOD & CONTEXT,
+,
+"Separation of what the source says, what the telemetry proves, and what requires new experiments.",
+,
+THE BUSINESS DECISION,
+Business question,Is the sustainability agent worth its additional cost and complexity relative to the cost-only controller?
+Scope,A cost-optimizing agent and a dual agent have been piloted on PV + BESS + building + grid telemetry.
+Architecture,"Edge gateway, IoT platform and orchestration layer; telemetry connects OT assets with cloud agents."
+Important discrepancy,The BDD case describes an industrial site; the supplied DATA_MODEL.pdf explicitly says residential building.
+Validity limitation,The operating traces have different PV soiling and different initial BESS SOC: not a controlled A/B experiment.
+Observation window,"2026-01-05 11:00 to 2026-01-12 10:45, 15-minute timestamps, includes weekend and partial days."
+Primary data source,DatasetV3/dataset-001.json and dataset-002.json plus DatasetV3/DataIndex.xlsx.
+Units,"Power kW, interval energy kWh, prices EUR/kWh, battery SOC fractional."
+Cost formula,Net energy expense = SUM(grid import kWh x buy tariff - grid export kWh x sell tariff).
+Price field anomaly,grid.cost is described as cumulative but is numerically equal to grid.power x applicable price / 60 at each sample.
+Carbon limitation,"No grid carbon intensity signal; report no verified CO2 impact, only defined proxies or scenario assumptions."
+Self-consumption limitation,Exported energy can be battery discharge rather than only surplus PV; true PV self-consumption is unidentifiable.
+Efficiency limitation,Device chargeEfficiency and dischargeEfficiency are known (95% each). Ratios of weekly charge/discharge are NOT standalone round-trip efficiency.
+Missing-sample treatment,Recover B 2026-01-09 20:00 energy flows via next cumulative - previous cumulative - next interval.
+Load limitation,Building load kWh is estimated as instantaneous load kW x 0.25; B missing interval load not recovered.
+Energy balance,"Power balance is exact in recorded snapshots; interval energy integration differs within samples, so do not confuse them."
+No agent tracing,Telemetry does not include negotiation/decision logs; stated motives are not directly observable.
+Grid resilience,"No observed violations or outages in the sample, so stress testing is needed to compare resilience."
