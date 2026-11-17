@@ -49,7 +49,9 @@
 
 ## DatasetV4 + proposal (2026-11-17), branch `dataset-v4`, see docs/PROPOSAL.md, KPIS.md, TIMESERIES.md
 - V4 moved to `data/DatasetV4/`. 001/002 byte-identical to V3. **dataset-003 = C** = Orch+Cost+Sust with A's panel dirt: 5,118 req, 18.79M/0.72M tokens, 2,384 ms. Plus `Prompts/` and `Assets/` (BSS.json, PV.json).
-- **C vs A is the main comparison.** SoC still differs: A 0.57→0.80, C 0.80→0.70. Use the SoC-adjusted bill and compare each run vs its own rule. Result: −€0.02 energy, −1.8 kg CO2, +€2.97 LLM, so ≈ €1,660/t CO2 incl. LLM.
+- **C vs A is the main comparison.** SoC still differs: A 0.57→0.80, C 0.80→0.70. Use the SoC-adjusted bill and compare each run vs its own rule. Result (all SoC-adjusted, from 2026-11-17 fix): −€0.02 energy, −1.5 kg CO2, −3.8 kWh import, +€2.97 LLM, so ≈ €2,000/t CO2 incl. LLM. B vs A: −5.0 kg, €640/t.
+- Replay (`analysis/replay.py`): in this January week, the plain rule beats every knob. A 20% reserve costs +€0.12/wk; a night grid charge costs +€0.13–0.22/wk and adds 5–10 kg CO2. So the replay gate is essential, and the LLM must win on other weeks to earn its place.
+- Peak import: A's 4.95 kW is one sample. Use P99 (A 3.1, C 2.5 kW).
 - Wear comes from BSS.json: €100/kWh × 0.005%/EFC, so C_DEG = €0.005/kWh discharged (telemetry ΔSoH/EFC = 5e-5). The old €0.10 was 20× too high; "A beats rule with wear" is dead.
 - **Prompts explain the behaviour:**
   - `targetStateOfCharge` 80% causes hoarding: SoC ~0.8 for 31% of the time in A/C.
