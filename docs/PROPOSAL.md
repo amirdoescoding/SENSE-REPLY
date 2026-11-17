@@ -72,15 +72,9 @@ So a wrong knob loses money, and the gate is not optional. The LLM earns its pla
 - an optimiser instead of the rule;
 - a LoRA fine-tune once ≥ 2–5k good days are pooled across sites.
 
-```
- 13:00 daily ─┐
- prices + CO2 forecast + 3–5 similar past days ──► ONE agent (small LLM) ──► 3–4 knobs + "why"
-                                                                                │
- every 15 min: live SoC, PV, load ──► rule turns knobs into kW ──► safety clamp ──► battery
-                                                                                │
- every evening: log day (context, knobs, €, CO2, regret) ──► memory ◄────────────┘
- LLM down / bad output → yesterday's plan → self-consumption rule
-```
+![New framework: one agent, daily settings, rule + clamp every 15 min, memory of good days](diagrams/proposal.png)
+
+Source: `diagrams/proposal.mmd`. Re-render with the command in its header.
 
 ## 4. Time and space: today vs proposal
 
