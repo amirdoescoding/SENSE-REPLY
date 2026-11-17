@@ -11,17 +11,17 @@ Details are in `KPIS.md` (dashboard and trade-off matrix), `TIMESERIES.md` and `
 ## 1. Verdict
 **Keep sustainability as a goal, but drop the second agent.** Merge the two into one agent and give it the inputs it lacks.
 
-The clean test is run C (Cost + Sustainability) vs run A (Cost only), on the same panels. Each run is measured against its own rule baseline.
+The clean test is run C (Cost + Sustainability) vs run A (Cost only), on the same panels. Each run is measured against its own rule baseline, and all figures are corrected for the different battery level at the end of the week.
 
 | What adding the Sustainability agent changed | Per week |
 |---|---|
 | Energy bill | **€0.02 lower** (no real change) |
-| Grid CO2 | **1.8 kg less** (−8%) |
-| Grid import | 5 kWh less |
-| Peak grid draw | 2.8 kW instead of 5.0 kW |
+| Grid CO2 | **1.5 kg less** (−6%) |
+| Grid import | 3.8 kWh less |
+| Peak grid draw (99th percentile) | 2.5 kW instead of 3.1 kW |
 | Grid penalties | none in either run |
 | LLM bill | **+€3.0** (7.6 instead of 4.4 calls per 15-min decision) |
-| **Cost per tonne of CO2 avoided** | **≈ €1,660/t**, about 20× the EU carbon price |
+| **Cost per tonne of CO2 avoided** | **≈ €2,000/t**, 20–25× the EU carbon price |
 
 There is a bigger problem than the choice between 1 and 2 agents:
 - **A free rule beats both setups**: €0.40–0.70 cheaper and 10–12 kg less CO2 a week.
@@ -59,6 +59,13 @@ Built on the existing prompt stack. Each step is small and is measured before th
 - **Honest test:** compare the agent against a plain "copy the knobs of the most similar good day". If a small model doesn't beat that, its value is the explanation, not the decision.
 
 **Ship gate:** each step goes live only if a replay on logged weeks beats the rule baseline.
+
+We ran this replay for the knobs (`analysis/replay.py`). This January week:
+- the best setting is "no reserve, no grid charge" = the plain rule;
+- a 20% reserve costs +€0.12/wk;
+- a night grid charge costs +€0.13–0.22/wk and adds 5–10 kg CO2.
+
+So a wrong knob loses money, and the gate is not optional. The LLM earns its place only on days where a different knob wins: summer surplus, price or CO2 spikes, the owner away. Test this on more weeks. If it never wins, run the rule and keep the LLM for explanations.
 
 **Later scenarios (only if the data justifies them):**
 - ML forecasts for load and CO2 (our test already cuts CO2 forecast error by 40%: FC2 = 0.40);

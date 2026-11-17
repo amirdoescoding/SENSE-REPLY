@@ -18,7 +18,7 @@ Numbers come from `python3 analysis/timeseries.py`. A = Cost agent. B and C = Co
 2. **It hoards at 80% and exports the surplus.** The battery spends ~31% of the week near 0.8 (A and C), and only 14% in B, whose dirtier panels rarely reach it.
    - Both prompts call leftover surplus "not valued", so the agents see no loss in exporting it.
    - Meanwhile the evening is fed from the grid.
-3. **It discharges too fast at 18–19h, then runs dry at 20–21h.** About 10.5 kWh a week leaves the battery as export (A 10.5, B 10.1, C 10.8). That energy could have covered the 20–21h imports, at the dirtiest hours.
+3. **It discharges too fast at 18–19h, then runs dry at 20–21h.** Up to ~10.5 kWh a week is exported while the battery is discharging (A 10.5, B 10.1, C 10.8). This is an upper bound: it counts all export in those slots. That energy could have covered the 20–21h imports, at the dirtiest hours.
    - A also stops at ~20% SoC instead of the 10% minimum, leaving ~1 kWh unused each night.
 
 **Price and CO2 point the same way this week.** The cheap and clean hour is midday, and the dear and dirty hours are 18–21h. So a cost-only agent that fixed these habits would cut CO2 too. That is why adding a sustainability agent changes so little.
@@ -47,11 +47,12 @@ Agent minus its own rule baseline, € corrected for the battery-level gap:
 |---|---|---|---|
 | Import | 63.8 kWh | 60.5 kWh | 58.7 kWh |
 | Export | 45.1 kWh | 17.6 kWh | 42.9 kWh |
-| Peak import | 4.95 kW | 3.93 kW | **2.83 kW** |
+| Peak import (single max) | 4.95 kW | 3.93 kW | 2.83 kW |
+| P99 import | 3.12 kW | 2.95 kW | 2.52 kW |
 | Violations / penalties / grid outages / BESS throttling or faults | 0 | 0 | 0 |
 
 - The grid contract is never stressed, so penalty exposure and resilience cannot be told apart this week.
-- C's lower peak is the one grid benefit we can see from the two-agent setup.
+- C's lower peak is the one grid benefit we can see from the two-agent setup, but it is small. A's 4.95 kW max is one sample (Sun 11, 19:15, battery empty), and at P99 the gap is 2.5 vs 3.1 kW.
 
 ## 4. Coordination patterns (what we can infer without logs)
 
