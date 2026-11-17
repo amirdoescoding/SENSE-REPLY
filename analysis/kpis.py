@@ -51,7 +51,7 @@ def soc_value(d_soc, b, mean_buy):
     return d_soc * b["capacityKwh"] * b["dischargeEfficiency"] * mean_buy
 
 
-def rule_baseline(rows, soc0, floor=None):
+def rule_baseline(rows, soc0, floor=None, socs=None):
     """Self-consumption rule: charge on PV surplus, discharge to cover deficit.
     Power limits come from the rule's OWN SoC, using the formula the data follows
     (maxCharge = min(5, (SoCmax - SoC)*Cap per h), fits within 0.08 kW). floor = optional reserve SoC."""
@@ -73,6 +73,8 @@ def rule_baseline(rows, soc0, floor=None):
             dis_tot += d
             imp.append(-net - d)
             exp.append(0.0)
+        if socs is not None:  # optional SoC trace, used by timeseries.py
+            socs.append(soc)
     return imp, exp, soc, dis_tot
 
 
