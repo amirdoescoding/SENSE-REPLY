@@ -9,8 +9,9 @@ LLM edge agents that dispatch a home battery (PV + BESS + grid + residential loa
   sustainability trade-off, and suggest improvements to the agentic decision framework.
 - **Deliverables:** KPI dashboard, time-series analysis report, trade-off matrix, executive summary,
   framework improvement proposals.
-- **Data:** `data/DatasetV3/`. `dataset-001.json` = Orchestrator + Cost agent;
-  `dataset-002.json` = Orchestrator + Cost + Sustainability agent. Field definitions are in `DATA_MODEL.pdf`,
+- **Data:** `data/DatasetV4/` (V3 kept for history). `dataset-001.json` = Orchestrator + Cost agent;
+  `dataset-002.json` = Orchestrator + Cost + Sustainability agent; `dataset-003.json` = same as 002 but same panel dirt as 001.
+  `Prompts/` = agent prompts, `Assets/` = BSS/PV specs. Field definitions are in `DATA_MODEL.pdf`,
   and LLM usage per config is in `DataIndex.xlsx`. Key facts are in @MEMORY.md.
 - **Brief:** `docs/Albert_School_BDD_Template - Second Year - v1.2.docx`, `docs/SENSE_REPLY_TRANSCRIPT.md`,
   `docs/Sense Reply BDD 2026 - v1.1.pdf`. Research is in `docs/research/` (start at `00-synthesis.md`).

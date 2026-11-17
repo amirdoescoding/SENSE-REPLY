@@ -9,13 +9,19 @@
 - [ ] Push `entsoe-api` + PR
 - [x] `analysis/kpis.py` loader
 - [x] KPIs per config (`analysis/kpis.py`)
-- [ ] KPIs per day
+- [x] KPIs per day (`analysis/timeseries.py`)
 - [x] Baselines: no-battery, rule-based (+30% reserve variant)
 - [ ] Perfect-foresight LP oracle (needs `pip install scipy` approval)
-- [ ] Time-series analysis: dispatch vs price, SoC, grid profiles, anomalies
+- [x] Time-series analysis → `docs/TIMESERIES.md`
 - [x] Trade-off T1/T2 (B vs A, baseline-relative)
 - [x] Carbon KPIs on hourly ENTSO-E CI
-- [ ] KPI dashboard
-- [ ] Executive summary + recommendations
+- [x] KPI dashboard → `docs/KPIS.md` §1 (markdown, no artifact)
+- [x] Executive summary + recommendations → `docs/PROPOSAL.md`
 - [x] Framework redesign → `docs/FRAMEWORK.md` + diagram
 - [ ] Ask Sense Reply: PV clock (peak 10:00, 14 h/day in Jan), site location, twin accuracy, target fleet size
+- [x] DatasetV4 / dataset-003 analysis (C vs A) + research/07 self-hosting
+- [ ] Replay test: simulate the proposal's Step 1 (evening-sized reserve, export valued) as a rule variant on A/C data
+- [ ] Summer-week data to test "different generation conditions" (day-type split is weak in January)
+- [ ] Re-verify unverified hardware/price figures in research/07 before final deck
+- [ ] Decide: delete or archive the superseded docs/FRAMEWORK.md + diagrams
+- [ ] Push `dataset-v4` + PR
