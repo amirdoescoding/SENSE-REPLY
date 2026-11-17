@@ -1,0 +1,52 @@
+{
+  "thingId": "reply.energymgmt.dev.asset:mc0003-panel-01",
+  "policyId": "reply.energymgmt.dev.policy:mc0003-panel-01",
+  "attributes": {
+    "siteId": "reply.energymgmt.dev.site:mc0003",
+    "name": "MC0003 Panel 01",
+    "cimClass": "PhotovoltaicUnit",
+    "dataModel": {
+      "assetId": "urn:uuid:e5a811a3-ffdc-4bfb-9828-2fa0599b6e97",
+      "format": "CIM/JSON"
+    },
+    "kind": "photovoltaicUnit",
+    "technicalSpecifications": {
+      "ratedActivePower": {
+        "value": 0.4,
+        "unit": "kW"
+      },
+      "conversionEfficiency": {
+        "value": 95,
+        "unit": "%"
+      },
+      "inverterEfficiency": {
+        "value": 96,
+        "unit": "%"
+      },
+      "orientationFactor": {
+        "value": 95,
+        "unit": "%"
+      },
+      "annualDegradation": {
+        "value": 0.005,
+        "unit": "%"
+      },
+      "dirtAccumulationRateBase": {
+        "value": 0.001,
+        "unit": "ratio/h"
+      },
+      "dirtAccumulationRateWind": {
+        "value": 0.002,
+        "unit": "ratio/h"
+      },
+      "rainCleaningRate": {
+        "value": 0.5,
+        "unit": "ratio/h"
+      },
+      "rainThreshold": {
+        "value": 1,
+        "unit": "mm"
+      }
+    }
+  }
+}

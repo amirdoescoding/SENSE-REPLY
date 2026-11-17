@@ -1,0 +1,76 @@
+{
+  "thingId": "reply.energymgmt.dev.asset:mc0003-bess-01",
+  "policyId": "reply.energymgmt.dev.policy:mc0003-bess-01",
+  "attributes": {
+    "siteId": "reply.energymgmt.dev.site:mc0003",
+    "name": "MC0003 BESS 01",
+    "cimClass": "BatteryUnit",
+    "dataModel": {
+      "assetId": "urn:uuid:faed0c43-297e-438d-bc56-2ae62769478f",
+      "format": "CIM/JSON"
+    },
+    "kind": "batteryUnit",
+    "technicalSpecifications": {
+      "ratedEnergy": {
+        "value": 10,
+        "unit": "kWh"
+      },
+      "maximumChargePower": {
+        "value": 5,
+        "unit": "kW"
+      },
+      "maximumDischargePower": {
+        "value": 5,
+        "unit": "kW"
+      },
+      "minimumStateOfCharge": {
+        "value": 10,
+        "unit": "%"
+      },
+      "maximumStateOfCharge": {
+        "value": 90,
+        "unit": "%"
+      },
+      "targetStateOfCharge": {
+        "value": 80,
+        "unit": "%"
+      },
+      "chargeEfficiency": {
+        "value": 95,
+        "unit": "%"
+      },
+      "dischargeEfficiency": {
+        "value": 0.95,
+        "unit": "%"
+      },
+      "cycleDegradationPerEquivalentCycle": {
+        "value": 0.005,
+        "unit": "%"
+      },
+      "calendarAgingPerHour": {
+        "value": 1e-7,
+        "unit": "ratio/h"
+      },
+      "selfDischargePerHour": {
+        "value": 0.00003,
+        "unit": "ratio/h"
+      },
+      "maximumInternalTemperature": {
+        "value": 55,
+        "unit": "C"
+      },
+      "replacementCostPerEnergy": {
+        "value": 100,
+        "unit": "EUR/kWh"
+      },
+      "thermalHeatingCoefficient": {
+        "value": 0.01,
+        "unit": "degC/(kW^2 h)"
+      },
+      "thermalCoolingCoefficient": {
+        "value": 0.01,
+        "unit": "ratio/h"
+      }
+    }
+  }
+}
