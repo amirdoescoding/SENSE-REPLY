@@ -147,7 +147,11 @@ def kpis(name, rows, ci):
     k["S3 CO2 intensity of imports g/kWh"] = 1000 * s1 / sum(imp)
     k["  mean grid CI g/kWh"] = sum(cis) / n
     k["_excess_cost"] = e2 - c_rule  # used for T1/T2, hidden
-    k["_excess_co2"] = s1 - co2(r_imp)
+    # same end-SoC correction as €: energy the agent holds above the rule at the end replaces future imports
+    d_store = (soc_end - r_soc) * b0["capacityKwh"] * b0["dischargeEfficiency"]  # kWh
+    k["_excess_co2"] = s1 - co2(r_imp) - d_store * sum(cis) / n / 1000
+    k["  excess import vs rule kWh (SoC-adj)"] = sum(imp) - sum(r_imp) - d_store
+    k["G6 P99 import kW"] = sorted(x["power"] for x in g)[int(0.99 * n)]
     # --- battery ---
     k["B1 apparent storage efficiency (device 0.95²=0.90)"] = (sum(dis) + (soc_end - soc0) * b0["capacityKwh"] * b0["dischargeEfficiency"]) / sum(chg)
     k["B2 equivalent full cycles"] = (sum(chg) + sum(dis)) / (2 * b0["capacityKwh"])
@@ -216,9 +220,11 @@ def main():
     for name, x in [("C", c), ("B", b)]:
         d_cost = x["_excess_cost"] - a["_excess_cost"]
         d_co2 = a["_excess_co2"] - x["_excess_co2"]  # kg CO2 saved vs A
+        d_imp = a["  excess import vs rule kWh (SoC-adj)"] - x["  excess import vs rule kWh (SoC-adj)"]
+        print(f"\nT1 {name}-vs-A import saved kWh (baseline-relative, SoC-adj): {d_imp:.2f}")
         d_llm = x["O5 LLM cost per week €"] - a["O5 LLM cost per week €"]
         d_deg = x["B3 degradation cost € (BSS.json wear)"] - a["B3 degradation cost € (BSS.json wear)"]
-        print(f"\nT1 {name}-vs-A extra energy cost € (baseline-relative): {d_cost:.2f}")
+        print(f"T1 {name}-vs-A extra energy cost € (baseline-relative): {d_cost:.2f}")
         print(f"T1 {name}-vs-A CO2 saved kg (baseline-relative): {d_co2:.2f}")
         print(f"T1 marginal abatement cost €/kg: {d_cost / d_co2:.2f}" if d_co2 > 0 and d_cost > 0
               else "T1 marginal abatement cost: n/a (dominates or is dominated)")
