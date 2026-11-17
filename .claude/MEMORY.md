@@ -30,9 +30,9 @@
 - Headline (robust): LLM cost ≈ 7× (A) / 11× (B) the savings vs no battery (~€0.7/wk). Gap to rule baseline is small (€0.40–0.70/wk) and flips for A once wear (c_deg €0.10) is counted, so present it as a sensitivity.
 - B vs A, each vs own rule baseline: B €0.30 cheaper, 2.9 kg CO2 cleaner. Total cost of sustainability ≈ €3.3/wk, almost all LLM.
 - PV gap partly soiling: `pv_dirt` 0.20 (A) vs 0.42 (B). PV profile peaks 10:00 and runs ~14 h/day: not Italian January. Flag it.
-- Carbon: hourly ENTSO-E 'Aggregated Generation per Type' Italy CSVs in data/external/ (long format, MTU in UTC → Europe/Rome; site export is range-limited so files are split and merged). CI 214–439, mean 362 g/kWh (IPCC lifecycle EFs). Fallback static = ISPRA 2024 prelim. 198.9 g/kWh (Rapporti 413/2025 Tab. 1.3).
+- Carbon: hourly ENTSO-E A75 actual generation for Italy (10YIT-GRTN-----B) from the API, UTC → Europe/Rome. CSVs deleted 2026-11-09 (API parity 0.0 g/kWh on 216 h). CI 214–439, mean 362 g/kWh (IPCC lifecycle EFs). Fallback static = ISPRA 2024 prelim. 198.9 g/kWh (Rapporti 413/2025 Tab. 1.3).
 - Both configs import at hours ~5% dirtier than grid mean (372.5 vs 355.5 g/kWh); B no better than A, so the sustainability agent has no real carbon timing. B vs A baseline-relative: 5.5 kg CO2 less.
-- ENTSO-E API token requested by email on 2026-11-08; waiting.
+- ENTSO-E API token arrived 2026-11-09: `ENTSO_API` in `.env` (gitignored). No token means the static fallback, so CO2 KPIs change. Each teammate needs their own token.
 - Devstral 2 retired 2026-07-31 (replacement Mistral Medium 3.5, ~10× Small 4 price). Revolut self-hosts GLM for coding; no "millions" figure found.
 - Redesign decision: optimiser sets kW on the edge, 1 strategy LLM every 1–4 h, twin-scored arbiter, clamp, rule floor; sustainability = λ weight, not an agent.
 - Web diagram: https://claude.ai/artifact/ENAndsWgSqt9YYqYxMuY9W
@@ -42,3 +42,7 @@
 - Evening peak 17–22h is ~10.5 kWh every day (naive error 1–4%): hoarding is a decision problem. A leaves 7.3 kWh at sunrise/week = €0.79 recoverable.
 - CO2 naive day-ahead error 8.7%; dirtiest hour 20:00 = price peak, cleanest 12:00: cost and CO2 aligned this week.
 - Team scope for supervised learning: load, CO2, soiling/faults (not PV-from-weather). User commits themselves now.
+
+## ENTSO-E API + CO2 forecast (2026-11-09), branch `entsoe-api`
+- API quirks: errors come back as HTTP 200 `Acknowledgement_MarketDocument`. A03 curves skip repeated points (forward-fill to period end). A75 pumped/storage consumption series use `outBiddingZone_Domain` (skip them). A65 load uses `outBiddingZone_Domain`. ElementTree `iter()` ignores `{*}`, so use `iterfind`.
+- CO2 forecast test (FRAMEWORK §7b): CI_{t−24} + a + b·Δ(1 − wind+solar DA / load DA), trained 1 Dec–4 Jan. Error 8.7% → 5.2%, **FC2 0.40**, ~56 g/kWh per +0.1 residual share, corr 0.89. One test week, holidays in training: indicative.

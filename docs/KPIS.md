@@ -9,7 +9,7 @@ For: team consolidation session. Simple words. Numbers come from `python3 analys
   - So **never compare raw € between A and B.** Compare each run against its own baseline (same sun, same load).
 - **A** = Orchestrator + Cost agent (`dataset-001.json`). **B** = Orchestrator + Cost + Sustainability agent (`dataset-002.json`).
 - **Site assumed Italy.** The data does not say where it is.
-- **Carbon:** no CO2 field in the data. We use the **hourly ENTSO-E generation mix for Italy** (5–13 Jan 2026, UTC converted to Italian time) × IPCC AR5 lifecycle factors. That week the grid ran **214–439 g/kWh (mean 362)**. Imports are ignored. Lifecycle factors give higher numbers than ISPRA's direct-CO2 annual factor (198.9 g/kWh), which `analysis/carbon.py` uses as the fallback when no CSV is present. Alignment caveat: the dataset clock looks odd (next bullet), so the hour-by-hour match is approximate.
+- **Carbon:** no CO2 field in the data. We use the **hourly ENTSO-E generation mix for Italy** (5–13 Jan 2026, UTC converted to Italian time) × IPCC AR5 lifecycle factors. That week the grid ran **214–439 g/kWh (mean 362)**. Imports are ignored. Lifecycle factors give higher numbers than ISPRA's direct-CO2 annual factor (198.9 g/kWh), which `analysis/carbon.py` uses as the fallback when no ENTSO-E token is set. Alignment caveat: the dataset clock looks odd (next bullet), so the hour-by-hour match is approximate.
 - **Clock looks odd.** PV runs about 03:00–17:00 and peaks at 10:00. Real Italian January has about 9 h of sun, peaking near 12:00. The simulator clock or location may not be real Italy. Ask Sense Reply.
 - **LLM price** uses Devstral 2 at $0.40 in / $2.00 out per M tokens, aggregator figure, FX 0.86 €/$. Devstral 2 was retired on 2026-07-31 (see `research/05`).
 - One week, one site, one run each. Call it **pilot evidence**, not proof.
@@ -121,13 +121,17 @@ Its outputs (which proposal won, the scores) are not logged. Its cost is visible
 5. **Agent-level and orchestrator-level quality cannot be judged yet.** The proposals and scores are not logged. That is the first fix to ask for.
 6. **The sustainability agent does not time imports to clean hours.** Both A and B buy grid power at hours about 5% dirtier than average (S3), and B is no better than A. B is greener only because it imports less. This fits the suspicion that it has no carbon signal.
 
-## Carbon data: how it was pulled (repeat for other weeks)
-1. On transparency.entsoe.eu (free login, no API token needed): Generation → **Aggregated Generation per Type**, area **Italy (IT)**, CSV export. The site limits the range, so split it (we used 05–12 Jan and 12–14 Jan).
-2. Drop the files in `data/external/` as they come (`AGGREGATED_GENERATION_PER_TYPE_GENERATION_*.csv`). The script merges all of them.
-3. Run `python3 analysis/kpis.py`. It:
-   - converts the `MTU (UTC)` timestamps to Italian time;
+## Carbon data: how it is pulled (repeat for other weeks)
+1. Get a free ENTSO-E Transparency API token (register on transparency.entsoe.eu, then email transparency@entsoe.eu with the subject "Restful API access"). Each teammate needs their own.
+2. Put it in the repo `.env` as `ENTSO_API=<token>` (`.env` is gitignored, never commit it), or export `ENTSO_API` in the shell.
+3. Run `python3 analysis/kpis.py`. `analysis/carbon.py`:
+   - calls the API for **A75 Actual Generation per Production Type**, Italy control area `10YIT-GRTN-----B`, 5 Jan 00:00 → 14 Jan 00:00 UTC (change `WEEK` for other weeks);
+   - converts UTC to Italian time;
    - computes CI_t = Σ_k gen_k,t·EF_k / Σ_k gen_k,t, averaged per hour. EF_k = IPCC AR5 lifecycle medians: gas 490, coal 820, hydro 24, solar 48, wind 11, nuclear 12, biomass 230 g/kWh. Oil 650 and other 700 are assumed; storage counts as 0;
    - stops with an error if under 90% of samples find an hourly value.
+4. `python3 analysis/forecast_check.py` also pulls **A69** (day-ahead wind/solar forecast) and **A65** (day-ahead load forecast) for the CO2 forecast test. It takes about 1 minute.
+
+**No token = different numbers.** Without a token the scripts fall back to the static 198.9 g/kWh, so S1–S3 and the T1 CO2 figure (5.5 kg) will not match this page. The API gives exactly the same hourly values as the old hand-downloaded CSVs (checked: 216 h, 0.0 g/kWh difference), and the CSVs have been deleted.
 
 To unlock the "logs" KPIs, ask Sense Reply for:
 - per decision: each agent's proposed kW and self-scores, the orchestrator's pick, and the prompt version

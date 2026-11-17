@@ -3,7 +3,10 @@
 - [x] Research sprint → `docs/research/00..04`
 - [ ] Ask Sense Reply: meaning of the `cost` field, why PV differs between runs, sustainability agent inputs, agent proposal logs
 - [x] KPI catalogue → `docs/KPIS.md` (team to agree at Monday consolidation)
-- [x] ENTSO-E Italy generation CSVs downloaded (data/external/), API-token email sent 2026-11-08 (waiting)
+- [x] ENTSO-E API token in `.env`; carbon.py uses the API, CSVs deleted (2026-11-09)
+- [x] CO2 day-ahead forecast test (FC2 0.40) → FRAMEWORK §7b
+- [ ] Re-run CO2 forecast test on more weeks (incl. a summer week) to firm up FC2
+- [ ] Push `entsoe-api` + PR
 - [x] `analysis/kpis.py` loader
 - [x] KPIs per config (`analysis/kpis.py`)
 - [ ] KPIs per day
