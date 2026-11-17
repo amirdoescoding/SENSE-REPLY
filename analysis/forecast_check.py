@@ -133,7 +133,7 @@ def co2_check():
 def main():
     out = {}
     for name, f in FILES.items():
-        path = ROOT / "data/DatasetV3" / f
+        path = ROOT / "data/DatasetV4" / f
         rows = load(path)
         for k, v in load_check(rows).items():
             out.setdefault(k, {})[name] = v
