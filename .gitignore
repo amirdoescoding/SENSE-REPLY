@@ -5,3 +5,7 @@ graphify-out/
 
 # demo run logs
 demo/out/*.log
+
+# demo web
+demo/web/node_modules/
+demo/web/dist/

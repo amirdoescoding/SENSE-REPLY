@@ -19,7 +19,7 @@ Visual system for the demo app (sessions 4–5 in `.claude/TODOS.md`).
 |---|---|---|
 | `--ink` | `#151F27` | text, structure (Reply ink) |
 | `--ink-2` | `#3F4D5A` | secondary text |
-| `--mute` | `#8D99A5` | labels, axes |
+| `--mute` | `#66727E` | labels, axes (darkened from #8D99A5 on 2026-11-18: 2.9:1 failed WCAG AA, now 4.9:1 on white) |
 | `--line` | `#D6E0EA` | borders, grid, idle paths |
 | `--paper` | `#F4F8FC` | page background |
 | `--card` | `#FFFFFF` | panels |

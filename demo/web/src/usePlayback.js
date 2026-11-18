@@ -1,0 +1,36 @@
+import { useEffect, useRef, useState } from 'react'
+import { MAX_STEP } from './lib.js'
+
+// 1 simulated day (96 steps) takes about 20 s at 1x, so 4.8 steps per second per speed unit.
+export default function usePlayback(initialStep, autoplay) {
+  const [step, setStep] = useState(initialStep)
+  const [speed, setSpeed] = useState(4)
+  const [playing, setPlaying] = useState(autoplay)
+  const acc = useRef(initialStep) // fractional step
+
+  useEffect(() => {
+    if (!playing) return
+    let last = performance.now()
+    let id
+    const tick = (now) => {
+      acc.current = Math.min(MAX_STEP, acc.current + ((now - last) / 1000) * 4.8 * speed)
+      last = now
+      const s = Math.floor(acc.current)
+      setStep(s)
+      if (s >= MAX_STEP) return setPlaying(false)
+      id = requestAnimationFrame(tick)
+    }
+    id = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(id)
+  }, [playing, speed])
+
+  const seek = (n) => {
+    acc.current = Math.max(0, Math.min(MAX_STEP, n))
+    setStep(acc.current)
+  }
+  const toggle = () => {
+    if (!playing && step >= MAX_STEP) seek(0)
+    setPlaying(!playing)
+  }
+  return { step, speed, playing, setSpeed, toggle, seek }
+}
