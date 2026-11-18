@@ -25,7 +25,7 @@ export const eur = (v, n = 2) => (v < 0 ? '−' : '') + '€' + Math.abs(v).toFi
 export const num = (v, n = 2) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(n)
 export const kfmt = (n) => (n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n))
 
-// Per step {alt 0..1, isNight} from the data: sunrise/sunset = first/last step with pv_kw > 0 on each calendar day.
+// Per step {alt 0..1, isNight, p} from the data: sunrise/sunset = first/last step with pv_kw > 0 on each calendar day.
 // The window starts at 11:00 and ends at 10:45, so the partial first/last days borrow the missing edge from the neighbour day.
 export function sunSeries(schedule) {
   const mins = (t) => +t.slice(11, 13) * 60 + +t.slice(14, 16)
@@ -43,6 +43,9 @@ export function sunSeries(schedule) {
     const d = days[r.t.slice(0, 10)]
     const m = mins(r.t)
     const day = d && m >= d.rise && m <= d.set
-    return { alt: day ? Math.sin((Math.PI * (m - d.rise)) / (d.set - d.rise)) : 0, isNight: !day }
+    // p: 0..1 through daylight (sun) or through the night set -> next rise (moon); no day entry = mid-night
+    const night = d ? 1440 - (d.set - d.rise) : 1
+    const p = !d ? 0.5 : day ? (m - d.rise) / (d.set - d.rise) : ((m - d.set + 1440) % 1440) / night
+    return { alt: day ? Math.sin(Math.PI * p) : 0, isNight: !day, p }
   })
 }
