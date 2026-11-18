@@ -23,6 +23,7 @@ RANGES = {"soc_floor": (0.10, 0.50), "evening_reserve_kwh": (0.0, 8.0), "export_
 # Small grid for the hindsight seed (each set costs one 96-step rolling MPC per day)
 GRID = {"soc_floor": (0.10, 0.20), "evening_reserve_kwh": (0.0, 3.0, 6.0), "export_hold_eur": (None, 0.12)}
 GRID_GC = (None, {"from": 0, "to": 6})
+QUOTA_HIT = False
 
 
 def _key():
@@ -139,12 +140,13 @@ Answer JSON only: {{"soc_floor": x, "evening_reserve_kwh": x, "export_hold_eur":
 def ask(text):
     """One Gemini call (cached by prompt hash). Returns dict(raw, explanation, thoughts, tok_in, tok_out, source)
     or None when no key / API error (caller falls back to memory)."""
+    global QUOTA_HIT
     cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
     h = hashlib.sha256((MODEL + text).encode()).hexdigest()[:16]
     if h in cache:
         return cache[h]
     key = _key()
-    if not key:
+    if not key or QUOTA_HIT:
         return None
     body = {"contents": [{"parts": [{"text": text}]}],
             "generationConfig": {"responseMimeType": "application/json", "thinkingConfig": {"includeThoughts": True}}}
@@ -157,8 +159,12 @@ def ask(text):
                 d = json.load(r)
             break
         except (urllib.error.URLError, TimeoutError) as e:  # key never in the message: it is a header
-            print(f"gemini error: {getattr(e, 'code', '')} {getattr(e, 'reason', e)}")
-            if wait is None or getattr(e, "code", 503) not in (429, 500, 503):
+            code = getattr(e, "code", None)
+            print(f"gemini error: {code} {getattr(e, 'reason', e)}", flush=True)
+            if code == 429:  # daily quota gone: no point retrying today; the rest of the run uses memory
+                QUOTA_HIT = True
+                return None
+            if wait is None or code not in (500, 503):
                 return None
             time.sleep(wait)
     parts = d["candidates"][0]["content"]["parts"]

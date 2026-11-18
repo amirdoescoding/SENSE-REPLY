@@ -243,14 +243,14 @@ def apply_step(r, soc, c, d, knobs):
     return soc, c, d, max(g, 0), max(-g, 0)
 
 
-def run_mpc(rows, soc0, knobs_for_day, mode, lam, ci, prior, horizon=96):
+def run_mpc(rows, soc0, knobs_for_day, mode, lam, ci, prior, horizon=96, t0=0, t1=None):
     """Rolling optimiser: every 15 min, plan `horizon` steps on a 24 h persistence forecast (PV and load of
     the same slot yesterday; `prior` = 96 (pv, load) pairs standing in for 'yesterday' on day 1), prices known,
     then apply step 1 to the actual data. knobs_for_day(day_index) -> knobs. Returns flows."""
     buy, sell, cis, hours = _inputs(rows, ci)
     n, soc = len(rows), soc0
     f = dict(imp=[], exp=[], chg=[], dis=[], soc=[], soc0=soc0, viol=0)
-    for t in range(n):
+    for t in range(t0, n if t1 is None else t1):
         knobs = knobs_for_day(t // 96)
         end = min(n, t + horizon)
         fc = [prior[k] if k < 96 else (rows[k - 96]["pv"], rows[k - 96]["load"]) for k in range(t, end)]
@@ -269,6 +269,144 @@ def run_perfect(rows, soc0, knobs, lam, ci):
     c, d, s = plan_lp(pv, ld, buy, sell, cis, hours, soc0, knobs, lam)
     g = [l - p + a - b for l, p, a, b in zip(ld, pv, c, d)]
     return dict(imp=[max(x, 0) for x in g], exp=[max(-x, 0) for x in g], chg=c, dis=d, soc=s, soc0=soc0, viol=0)
+
+
+def day_prior(rows, start):
+    """Persistence 'yesterday' for the 96-step day at `start`. Day 1 has none: use the next day (flagged)."""
+    src = rows[start - 96:start] if start >= 96 else rows[start + 96:start + 192]
+    return [(r["pv"], r["load"]) for r in src]
+
+
+def run_day(rows, start, soc0, knobs, mode, lam, ci):
+    """Rolling MPC over one 96-step day (horizon truncated at day end, terminal value covers the rest)."""
+    return run_mpc(rows[start:start + 96], soc0, lambda _d: knobs, mode, lam, ci, day_prior(rows, start))
+
+
+def day_score(rows, f, lam):
+    """€ + λ·kg for a day: bill + wear - stored-energy value, CO2 at the workbook constant, both SoC-adjusted."""
+    mean_buy = sum(r["grid"]["buyPrice"] for r in rows) / len(rows)
+    d = (f["soc"][-1] - f["soc0"]) * CAP * ETA
+    eur = bill(f["imp"], f["exp"], rows) + C_DEG * sum(f["dis"]) - d * mean_buy
+    kg = (sum(f["imp"]) - d) * CO2_K
+    return eur + lam * kg, eur, kg
+
+
+# ---------------------------------------------------------------- daily loop
+LAMBDAS = (0.0, 0.10, 0.50)
+MODES = ("conservative", "upside")
+HEADLINE = ("conservative", 0.10)
+FLAGS = ["24 h persistence forecast for PV and load; prices assumed known day-ahead",
+         "memory seeded from runs A and C of the same week (leaks); day 1 uses the next day as 'yesterday'",
+         "Gemini is a capability stand-in for Devstral 2, not a proposal",
+         "site = Italy assumed; carbon KPIs at the workbook constant 0.356 kg/kWh",
+         "one January week only"]
+
+
+def gate(rows, start, knobs, mode, lam, ci, mean_buy):
+    """Replay gate: the knobs vs default knobs on YESTERDAY's real data (day 1: the next day, flagged),
+    rolling MPC from the logged SoC. Blocks knobs that lose on € + λ·kg."""
+    g = start - 96 if start >= 96 else start + 96
+    soc = rows[g - 1]["bess"]["soc"] if g else soc0_of(rows)
+    day = rows[g:g + 96]
+    s_k = day_score(day, run_day(rows, g, soc, knobs, mode, lam, ci), lam)[0]
+    s_d = day_score(day, run_day(rows, g, soc, default_knobs(mode, mean_buy), mode, lam, ci), lam)[0]
+    return bool(s_k <= s_d + 1e-6), round(float(s_k), 4), round(float(s_d), 4)
+
+
+def run_ours(rows, mode, lam, ci, mem, soc0=0.80):
+    import agent
+    mean_buy = sum(r["grid"]["buyPrice"] for r in rows) / len(rows)
+    f = dict(imp=[], exp=[], chg=[], dis=[], soc=[], soc0=soc0, viol=0)
+    days, soc, last_ok = [], soc0, None
+    for day in range(len(rows) // 96):
+        start = day * 96
+        ans, ctx, nb = agent.propose(rows, start, soc, ci, mode, lam, mem)
+        knobs, notes = agent.validate(ans["raw"], mode, mean_buy)
+        ok, s_k, s_d = gate(rows, start, knobs, mode, lam, ci, mean_buy)
+        if ok:
+            used, last_ok = "plan", knobs
+        elif last_ok:
+            used, knobs = "previous valid plan", last_ok
+        else:
+            used, knobs = "static rule", None
+        if knobs is None:
+            df = rule_flows(rows[start:start + 96], soc)
+        else:
+            df = run_mpc(rows, soc, lambda _d, k=knobs: k, mode, lam, ci, day_prior(rows, 0), t0=start, t1=start + 96)
+        for key in ("imp", "exp", "chg", "dis", "soc"):
+            f[key] += df[key]
+        days.append(dict(day=day + 1, start=rows[start]["dt"], context=ctx,
+                         neighbours=[f"{n['run']} day {n['day'] + 1}" for n in nb],
+                         proposed=ans["raw"], validator_notes=notes,
+                         gate=dict(passed=ok, score_plan=s_k, score_default=s_d, basis="yesterday" if day else
+                                   "next day (day-1 stand-in)"),
+                         used=used, knobs=knobs, source=ans["source"], explanation=ans["explanation"],
+                         thoughts=ans["thoughts"], tok_in=ans["tok_in"], tok_out=ans["tok_out"]))
+        soc = df["soc"][-1]
+    return f, days
+
+
+def schedule(rows, f):
+    return [dict(t=r["dt"], pv_kw=round(r["pv"] / DT, 3), load_kw=round(r["load"] / DT, 3),
+                 battery_kw=round((c - d) / DT, 3), grid_kw=round((i - e) / DT, 3), soc=round(s, 4))
+            for r, c, d, i, e, s in zip(rows, f["chg"], f["dis"], f["imp"], f["exp"], f["soc"])]
+
+
+def check_run(rows, f, mode):
+    """Acceptance 3: physics and mode rules hold on every step."""
+    assert len(f["soc"]) == len(rows) == 672
+    assert all(0.1 - 1e-6 <= x <= 0.9 + 1e-6 for x in f["soc"])
+    assert all(c <= 5 * DT + 1e-9 and d <= 5 * DT + 1e-9 for c, d in zip(f["chg"], f["dis"]))
+    for r, i, e, c, d in zip(rows, f["imp"], f["exp"], f["chg"], f["dis"]):
+        assert abs(i - e - (r["load"] - r["pv"] + c - d)) < 0.01
+        if mode == "conservative":
+            assert c <= max(r["pv"] - r["load"], 0) + 1e-6, "conservative charged from the grid"
+
+
+def main():
+    import json
+    import agent
+    from carbon import ci_lookup
+    ci, src, hours = ci_lookup()
+    carbon_source = "entsoe-hourly" if hours else "constant-0.356"
+    rows = load_run("C")
+    rule = rule_flows(rows, 0.80)
+    mem = agent.seed_memory(ci)
+    cols = {name: dict(v) for name, v in EXCEL.items()}
+    runs = {}
+    for mode in MODES:
+        for lam in LAMBDAS:
+            f, days = run_ours(rows, mode, lam, ci, mem)
+            check_run(rows, f, mode)
+            calls = sum(d["source"] == "gemini" for d in days)
+            tin, tout = sum(d["tok_in"] for d in days), sum(d["tok_out"] for d in days)
+            ai = ai_cost(calls, tin, tout, 0, len(rows))  # O3 = 0: the LLM is off the 15-min control path
+            k = kpis_excel(rows, f, rule, ai, ci=ci if hours else None)
+            runs[(mode, lam)] = (f, days, k, dict(calls=calls, tok_in=tin, tok_out=tout))
+            print(f"{mode} λ={lam}: S_net {k['S_net']:.3f} VORB {k['VORB']:+.3f} N1 {k['N1']:.3f} "
+                  f"S1 {k['S1']:.1f} kg, gemini days {calls}/7, gate blocks {sum(not d['gate']['passed'] for d in days)}")
+    for (mode, lam), (f, days, k, tok) in runs.items():
+        k["MAC"] = None
+        if lam:  # € per kg avoided by the carbon weight, incl. AI cost (workbook: λ 0 -> 0.10)
+            k0 = runs[(mode, 0.0)][2]
+            d_kg = k0["S1"] - k["S1"]
+            d_eur = (k["C1"] + k["B3"] + k["O5"]) - (k0["C1"] + k0["B3"] + k0["O5"])
+            k["MAC"] = d_eur / d_kg if d_kg > 0 else None
+        cols[f"Ours {mode} λ={lam}"] = k
+        plan = dict(window=dict(start=rows[0]["dt"], step_min=15), mode=mode, lambda_eur_per_kg=lam,
+                    model=agent.MODEL, knobs=[d["knobs"] for d in days], schedule=schedule(rows, f),
+                    kpis={x: (round(v, 4) if isinstance(v, float) else v) for x, v in k.items()},
+                    explanation=" ".join(d["explanation"] for d in days), days=days, tokens=tok,
+                    carbon_source=carbon_source, carbon_note=src, honesty_flags=FLAGS)
+        (agent.OUT / f"run_{mode}_{lam}.json").write_text(json.dumps(plan, indent=1, ensure_ascii=False))
+    table = dict(headline=f"Ours {HEADLINE[0]} λ={HEADLINE[1]}", s_star=S_STAR, carbon_source=carbon_source,
+                 thresholds={x: dict(direction=d, threshold=t) for x, (d, t) in THRESH.items()},
+                 columns={c: {x: dict(value=None if v.get(x) is None else round(v[x], 4), verdict=verdict(x, v.get(x)))
+                              for x in THRESH} for c, v in cols.items()},
+                 source={c: "workbook" for c in EXCEL} | {c: "computed" for c in cols if c.startswith("Ours")})
+    table["good_counts"] = {c: sum(v["verdict"] == "Good" for v in kv.values()) for c, kv in table["columns"].items()}
+    (agent.OUT / "kpis.json").write_text(json.dumps(table, indent=1, ensure_ascii=False))
+    print("good counts:", table["good_counts"])
 
 
 def check_excel():
@@ -323,4 +461,19 @@ if __name__ == "__main__":
     if "--check" in sys.argv:
         from carbon import ci_lookup
         check_excel()
-        check_lp(ci_lookup()[0])
+        ci = ci_lookup()[0]
+        check_lp(ci)
+        c = load_run("C")
+        mb = sum(r["grid"]["buyPrice"] for r in c) / len(c)
+        bad = dict(soc_floor=0.5, evening_reserve_kwh=8.0, export_hold_eur=0.0, grid_charge=None)
+        ok, s_k, s_d = gate(c, 96 * 3, bad, "conservative", 0.10, ci, mb)
+        assert not ok, (s_k, s_d)
+        print(f"check 5 ok: gate blocks floor 0.5 / reserve 8 kWh ({s_k:.3f} vs default {s_d:.3f} €)")
+        import agent
+        key = agent._key()
+        if key:
+            hits = [p.name for p in agent.OUT.glob("*") if p.is_file() and key[:12] in p.read_text(errors="ignore")]
+            assert not hits, f"API key prefix found in {hits}"
+            print("check 7 ok: no API key in demo/out")
+    else:
+        main()

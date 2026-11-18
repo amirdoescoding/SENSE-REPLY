@@ -1,0 +1,1497 @@
+{
+ "headline": "Ours conservative λ=0.1",
+ "s_star": 2.184,
+ "carbon_source": "entsoe-hourly",
+ "thresholds": {
+  "S_net": {
+   "direction": 1,
+   "threshold": 1.03
+  },
+  "VCR": {
+   "direction": 1,
+   "threshold": 0.6
+  },
+  "VORB": {
+   "direction": 1,
+   "threshold": 0
+  },
+  "N1": {
+   "direction": 1,
+   "threshold": 0
+  },
+  "N2": {
+   "direction": -1,
+   "threshold": 0.2
+  },
+  "F1": {
+   "direction": 1,
+   "threshold": 0
+  },
+  "O5": {
+   "direction": -1,
+   "threshold": 0.5
+  },
+  "S2b": {
+   "direction": 1,
+   "threshold": 0
+  },
+  "S3": {
+   "direction": -1,
+   "threshold": 356
+  },
+  "MAC": {
+   "direction": -1,
+   "threshold": 0.09
+  },
+  "S1": {
+   "direction": 0,
+   "threshold": null
+  },
+  "SCR": {
+   "direction": 1,
+   "threshold": 0.7
+  },
+  "SSR": {
+   "direction": 1,
+   "threshold": 0.6
+  },
+  "PSR": {
+   "direction": 1,
+   "threshold": 0.25
+  },
+  "G2": {
+   "direction": -1,
+   "threshold": 0
+  },
+  "G1": {
+   "direction": 0,
+   "threshold": null
+  },
+  "B1": {
+   "direction": 1,
+   "threshold": 0.88
+  },
+  "B2": {
+   "direction": -1,
+   "threshold": 7
+  },
+  "B4": {
+   "direction": -1,
+   "threshold": 0.25
+  },
+  "B3": {
+   "direction": 0,
+   "threshold": null
+  },
+  "B6": {
+   "direction": 0,
+   "threshold": null
+  },
+  "C5": {
+   "direction": -1,
+   "threshold": 0.5
+  },
+  "C4": {
+   "direction": 0,
+   "threshold": null
+  },
+  "O1": {
+   "direction": -1,
+   "threshold": 0.3
+  },
+  "O3": {
+   "direction": -1,
+   "threshold": 0.1
+  },
+  "C1": {
+   "direction": 0,
+   "threshold": null
+  },
+  "S": {
+   "direction": 0,
+   "threshold": null
+  },
+  "IMP": {
+   "direction": 0,
+   "threshold": null
+  },
+  "EXP": {
+   "direction": 0,
+   "threshold": null
+  },
+  "PV": {
+   "direction": 0,
+   "threshold": null
+  }
+ },
+ "columns": {
+  "A": {
+   "S_net": {
+    "value": 0.4071,
+    "verdict": "Improvable"
+   },
+   "VCR": {
+    "value": 0.2769,
+    "verdict": "Improvable"
+   },
+   "VORB": {
+    "value": -0.7261,
+    "verdict": "Improvable"
+   },
+   "N1": {
+    "value": -4.3341,
+    "verdict": "Improvable"
+   },
+   "N2": {
+    "value": 7.8375,
+    "verdict": "Improvable"
+   },
+   "F1": {
+    "value": -5.4673,
+    "verdict": "Improvable"
+   },
+   "O5": {
+    "value": 4.7412,
+    "verdict": "Improvable"
+   },
+   "S2b": {
+    "value": -10.0493,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": 372.5,
+    "verdict": "Improvable"
+   },
+   "MAC": {
+    "value": null,
+    "verdict": "n/a"
+   },
+   "S1": {
+    "value": 21.9475,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.5158,
+    "verdict": "Improvable"
+   },
+   "SSR": {
+    "value": 0.3931,
+    "verdict": "Improvable"
+   },
+   "PSR": {
+    "value": 0.0002,
+    "verdict": "Improvable"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 4.8053,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.902,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 4.2919,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "B3": {
+    "value": 0.1979,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.3155,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.8143,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0124,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 4.387,
+    "verdict": "Improvable"
+   },
+   "O3": {
+    "value": 0.0115,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 3.0128,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 0.6049,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 63.8152,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 45.093,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.13,
+    "verdict": "Context"
+   }
+  },
+  "C": {
+   "S_net": {
+    "value": 0.4026,
+    "verdict": "Improvable"
+   },
+   "VCR": {
+    "value": 0.2883,
+    "verdict": "Improvable"
+   },
+   "VORB": {
+    "value": -0.67,
+    "verdict": "Improvable"
+   },
+   "N1": {
+    "value": -7.306,
+    "verdict": "Improvable"
+   },
+   "N2": {
+    "value": 12.2416,
+    "verdict": "Improvable"
+   },
+   "F1": {
+    "value": -8.3786,
+    "verdict": "Improvable"
+   },
+   "O5": {
+    "value": 7.7086,
+    "verdict": "Improvable"
+   },
+   "S2b": {
+    "value": -9.357,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": 372,
+    "verdict": "Improvable"
+   },
+   "MAC": {
+    "value": 4.293,
+    "verdict": "Improvable"
+   },
+   "S1": {
+    "value": 21.2553,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.5393,
+    "verdict": "Improvable"
+   },
+   "SSR": {
+    "value": 0.441,
+    "verdict": "Improvable"
+   },
+   "PSR": {
+    "value": 0.3892,
+    "verdict": "Good"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 2.9312,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9021,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 4.7343,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "B3": {
+    "value": 0.2271,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.3065,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.8019,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0104,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 7.616,
+    "verdict": "Improvable"
+   },
+   "O3": {
+    "value": 0.0202,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 2.9828,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 0.6297,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 58.7329,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 42.8702,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.06,
+    "verdict": "Context"
+   }
+  },
+  "Static rule": {
+   "S_net": {
+    "value": 1.034,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.595,
+    "verdict": "Improvable"
+   },
+   "VORB": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.034,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "S3": {
+    "value": null,
+    "verdict": "n/a"
+   },
+   "MAC": {
+    "value": null,
+    "verdict": "n/a"
+   },
+   "S1": {
+    "value": 11.8983,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.8291,
+    "verdict": "Good"
+   },
+   "SSR": {
+    "value": 0.7028,
+    "verdict": "Good"
+   },
+   "PSR": {
+    "value": 0.5325,
+    "verdict": "Good"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 2.2434,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 5.4793,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.4048,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.2657,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.0461,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.7756,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0105,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 2.3128,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 1.2997,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 31.2315,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 15.9067,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.06,
+    "verdict": "Context"
+   }
+  },
+  "S5 conservative": {
+   "S_net": {
+    "value": 1.1156,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.6303,
+    "verdict": "Good"
+   },
+   "VORB": {
+    "value": 0.0772,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.1043,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0.0082,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0.0659,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0.0113,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": -1.6223,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": null,
+    "verdict": "n/a"
+   },
+   "MAC": {
+    "value": 0.0317,
+    "verdict": "Good"
+   },
+   "S1": {
+    "value": 13.5205,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.7774,
+    "verdict": "Good"
+   },
+   "SSR": {
+    "value": 0.673,
+    "verdict": "Good"
+   },
+   "PSR": {
+    "value": 0.5325,
+    "verdict": "Good"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 2.2434,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 5.3057,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.2946,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.2612,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.0506,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.7467,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0144,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0.0104,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 2.2357,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 1.3768,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 34.3586,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 20.7148,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.06,
+    "verdict": "Context"
+   }
+  },
+  "S5 upside": {
+   "S_net": {
+    "value": 1.7957,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.958,
+    "verdict": "Good"
+   },
+   "VORB": {
+    "value": 0.793,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.7844,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0.0054,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0.7817,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0.0113,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": -10.3422,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": null,
+    "verdict": "n/a"
+   },
+   "MAC": {
+    "value": 0.0317,
+    "verdict": "Good"
+   },
+   "S1": {
+    "value": 22.2405,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.5278,
+    "verdict": "Improvable"
+   },
+   "SSR": {
+    "value": 0.3967,
+    "verdict": "Improvable"
+   },
+   "PSR": {
+    "value": -0.0651,
+    "verdict": "Improvable"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 5.1114,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 6.3122,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.3378,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.297,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.0759,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.3914,
+    "verdict": "Good"
+   },
+   "C4": {
+    "value": 0.0339,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0.0104,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 1.5198,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 2.0927,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 63.3894,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 43.9449,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.06,
+    "verdict": "Context"
+   }
+  },
+  "Ours conservative λ=0.0": {
+   "S_net": {
+    "value": 1.1733,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.6547,
+    "verdict": "Good"
+   },
+   "VORB": {
+    "value": 0.1303,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.1733,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0.1303,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": -1.2548,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": 373.5405,
+    "verdict": "Improvable"
+   },
+   "MAC": {
+    "value": null,
+    "verdict": "n/a"
+   },
+   "S1": {
+    "value": 13.1531,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.7871,
+    "verdict": "Good"
+   },
+   "SSR": {
+    "value": 0.6855,
+    "verdict": "Good"
+   },
+   "PSR": {
+    "value": 0.5301,
+    "verdict": "Good"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 2.2551,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 5.1932,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.2574,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.2566,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.058,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.7692,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0151,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 2.1825,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 1.4299,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 33.0477,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 19.8123,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.0637,
+    "verdict": "Context"
+   }
+  },
+  "Ours conservative λ=0.1": {
+   "S_net": {
+    "value": 1.1561,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.6473,
+    "verdict": "Good"
+   },
+   "VORB": {
+    "value": 0.1141,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.1561,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0.1141,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": -0.2606,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": 372.5787,
+    "verdict": "Improvable"
+   },
+   "MAC": {
+    "value": 0.0174,
+    "verdict": "Good"
+   },
+   "S1": {
+    "value": 12.1589,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.8204,
+    "verdict": "Good"
+   },
+   "SSR": {
+    "value": 0.6876,
+    "verdict": "Good"
+   },
+   "PSR": {
+    "value": 0.2965,
+    "verdict": "Good"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 3.3761,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 5.3592,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.2961,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.2577,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.0491,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.7752,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0138,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 2.1987,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 1.4138,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 32.8212,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 16.718,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.0637,
+    "verdict": "Context"
+   }
+  },
+  "Ours conservative λ=0.5": {
+   "S_net": {
+    "value": 1.1275,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.6336,
+    "verdict": "Good"
+   },
+   "VORB": {
+    "value": 0.084,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.1275,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0.084,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": -0.0732,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": 370.156,
+    "verdict": "Improvable"
+   },
+   "MAC": {
+    "value": 0.0388,
+    "verdict": "Good"
+   },
+   "S1": {
+    "value": 11.9715,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.8266,
+    "verdict": "Good"
+   },
+   "SSR": {
+    "value": 0.6847,
+    "verdict": "Good"
+   },
+   "PSR": {
+    "value": 0.0,
+    "verdict": "Improvable"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 4.7992,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 5.373,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.3571,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.2562,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.0402,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.7857,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0132,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 2.2288,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 1.3837,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 33.1284,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 16.1348,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.0637,
+    "verdict": "Context"
+   }
+  },
+  "Ours upside λ=0.0": {
+   "S_net": {
+    "value": 1.8294,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.9587,
+    "verdict": "Good"
+   },
+   "VORB": {
+    "value": 0.7941,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.8294,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0.7941,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": -12.6141,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": 379.831,
+    "verdict": "Improvable"
+   },
+   "MAC": {
+    "value": null,
+    "verdict": "n/a"
+   },
+   "S1": {
+    "value": 24.5124,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.4516,
+    "verdict": "Improvable"
+   },
+   "SSR": {
+    "value": 0.336,
+    "verdict": "Improvable"
+   },
+   "PSR": {
+    "value": -0.0665,
+    "verdict": "Improvable"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 5.1183,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 5.6236,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.3631,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.2644,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.0685,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.3481,
+    "verdict": "Good"
+   },
+   "C4": {
+    "value": 0.0391,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 1.5187,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 2.0938,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 69.7685,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 51.0328,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.0637,
+    "verdict": "Context"
+   }
+  },
+  "Ours upside λ=0.1": {
+   "S_net": {
+    "value": 1.5683,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.8375,
+    "verdict": "Good"
+   },
+   "VORB": {
+    "value": 0.5295,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.5683,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0.5295,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": -3.6675,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": 373.9234,
+    "verdict": "Improvable"
+   },
+   "MAC": {
+    "value": 0.0292,
+    "verdict": "Good"
+   },
+   "S1": {
+    "value": 15.5658,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.7195,
+    "verdict": "Good"
+   },
+   "SSR": {
+    "value": 0.586,
+    "verdict": "Improvable"
+   },
+   "PSR": {
+    "value": -0.0626,
+    "verdict": "Improvable"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 5.0998,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 5.4869,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.2872,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.2609,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.0476,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.5706,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0249,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 1.7833,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 1.8292,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 43.503,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 26.1,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.0637,
+    "verdict": "Context"
+   }
+  },
+  "Ours upside λ=0.5": {
+   "S_net": {
+    "value": 1.129,
+    "verdict": "Good"
+   },
+   "VCR": {
+    "value": 0.6343,
+    "verdict": "Good"
+   },
+   "VORB": {
+    "value": 0.0856,
+    "verdict": "Good"
+   },
+   "N1": {
+    "value": 1.129,
+    "verdict": "Good"
+   },
+   "N2": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "F1": {
+    "value": 0.0856,
+    "verdict": "Good"
+   },
+   "O5": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "S2b": {
+    "value": -0.1199,
+    "verdict": "Improvable"
+   },
+   "S3": {
+    "value": 370.2687,
+    "verdict": "Improvable"
+   },
+   "MAC": {
+    "value": 0.0561,
+    "verdict": "Good"
+   },
+   "S1": {
+    "value": 12.0182,
+    "verdict": "Context"
+   },
+   "SCR": {
+    "value": 0.8253,
+    "verdict": "Good"
+   },
+   "SSR": {
+    "value": 0.6828,
+    "verdict": "Good"
+   },
+   "PSR": {
+    "value": 0.0,
+    "verdict": "Improvable"
+   },
+   "G2": {
+    "value": 0,
+    "verdict": "Good"
+   },
+   "G1": {
+    "value": 4.7992,
+    "verdict": "Context"
+   },
+   "B1": {
+    "value": 0.9025,
+    "verdict": "Good"
+   },
+   "B2": {
+    "value": 5.3772,
+    "verdict": "Good"
+   },
+   "B4": {
+    "value": 0.3557,
+    "verdict": "Improvable"
+   },
+   "B3": {
+    "value": 0.2562,
+    "verdict": "Context"
+   },
+   "B6": {
+    "value": 0.0402,
+    "verdict": "Context"
+   },
+   "C5": {
+    "value": 0.7809,
+    "verdict": "Improvable"
+   },
+   "C4": {
+    "value": 0.0133,
+    "verdict": "Context"
+   },
+   "O1": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "O3": {
+    "value": 0.0,
+    "verdict": "Good"
+   },
+   "C1": {
+    "value": 2.2272,
+    "verdict": "Context"
+   },
+   "S": {
+    "value": 1.3852,
+    "verdict": "Context"
+   },
+   "IMP": {
+    "value": 33.3301,
+    "verdict": "Context"
+   },
+   "EXP": {
+    "value": 16.2581,
+    "verdict": "Context"
+   },
+   "PV": {
+    "value": 93.0637,
+    "verdict": "Context"
+   }
+  }
+ },
+ "source": {
+  "A": "workbook",
+  "C": "workbook",
+  "Static rule": "workbook",
+  "S5 conservative": "workbook",
+  "S5 upside": "workbook",
+  "Ours conservative λ=0.0": "computed",
+  "Ours conservative λ=0.1": "computed",
+  "Ours conservative λ=0.5": "computed",
+  "Ours upside λ=0.0": "computed",
+  "Ours upside λ=0.1": "computed",
+  "Ours upside λ=0.5": "computed"
+ },
+ "good_counts": {
+  "A": 5,
+  "C": 6,
+  "Static rule": 15,
+  "S5 conservative": 16,
+  "S5 upside": 14,
+  "Ours conservative λ=0.0": 15,
+  "Ours conservative λ=0.1": 16,
+  "Ours conservative λ=0.5": 15,
+  "Ours upside λ=0.0": 13,
+  "Ours upside λ=0.1": 14,
+  "Ours upside λ=0.5": 15
+ }
+}
