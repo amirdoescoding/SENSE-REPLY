@@ -46,3 +46,23 @@
 ## ENTSO-E API + CO2 forecast (2026-11-09), branch `entsoe-api`
 - API quirks: errors come back as HTTP 200 `Acknowledgement_MarketDocument`. A03 curves skip repeated points (forward-fill to period end). A75 pumped/storage consumption series use `outBiddingZone_Domain` (skip them). A65 load uses `outBiddingZone_Domain`. ElementTree `iter()` ignores `{*}`, so use `iterfind`.
 - CO2 forecast test (FRAMEWORK §7b): CI_{t−24} + a + b·Δ(1 − wind+solar DA / load DA), trained 1 Dec–4 Jan. Error 8.7% → 5.2%, **FC2 0.40**, ~56 g/kWh per +0.1 residual share, corr 0.89. One test week, holidays in training: indicative.
+
+## DatasetV4 + proposal (2026-11-17), branch `dataset-v4`, see docs/PROPOSAL.md, KPIS.md, TIMESERIES.md
+- V4 moved to `data/DatasetV4/`. 001/002 byte-identical to V3. **dataset-003 = C** = Orch+Cost+Sust with A's panel dirt: 5,118 req, 18.79M/0.72M tokens, 2,384 ms. Plus `Prompts/` and `Assets/` (BSS.json, PV.json).
+- **C vs A is the main comparison.** SoC still differs: A 0.57→0.80, C 0.80→0.70. Use the SoC-adjusted bill and compare each run vs its own rule. Result (all SoC-adjusted, from 2026-11-17 fix): −€0.02 energy, −1.5 kg CO2, −3.8 kWh import, +€2.97 LLM, so ≈ €2,000/t CO2 incl. LLM. B vs A: −5.0 kg, €640/t.
+- Replay (`analysis/replay.py`): in this January week, the plain rule beats every knob. A 20% reserve costs +€0.12/wk; a night grid charge costs +€0.13–0.22/wk and adds 5–10 kg CO2. So the replay gate is essential, and the LLM must win on other weeks to earn its place.
+- Peak import: A's 4.95 kW is one sample. Use P99 (A 3.1, C 2.5 kW).
+- Wear comes from BSS.json: €100/kWh × 0.005%/EFC, so C_DEG = €0.005/kWh discharged (telemetry ΔSoH/EFC = 5e-5). The old €0.10 was 20× too high; "A beats rule with wear" is dead.
+- **Prompts explain the behaviour:**
+  - `targetStateOfCharge` 80% causes hoarding: SoC ~0.8 for 31% of the time in A/C.
+  - Both prompts value export at 0.
+  - The Sust. prompt has no price and no CO2 input; it only minimises import kWh.
+- Hourly habit: fills to 80% by 11:00 (partly from the grid at morning prices) → exports ~4 kWh/day at midday → dumps 18–19h with ~1.4 kWh/day exported → imports at 20–21h (dirtiest hours). Agents lose to the rule every day.
+- Decision: the old FRAMEWORK.md is superseded (user: "forget it"). The new design is in PROPOSAL.md:
+  - one merged agent, € + λ·CO2, with λ as an owner dial;
+  - daily knobs (reserve kWh, grid-charge window, discharge priority) executed by a rule, plus a clamp;
+  - k-NN memory of low-regret days, with no training;
+  - LoRA, forecasts and an optimiser kept as "later".
+- Client feedback: they like the carbon data; they want self-hosting plus learning; they are sceptical of anything slow to build (they chose 2 prompt agents for speed).
+- Self-hosting: after the call cut (~180–540× fewer tokens), an EU API costs ~€2–9/site/yr vs a Jetson at ~€90/site/yr. Argue for self-hosting on residency, offline operation and model churn, not cost. Medium 3.5 is deprecated (→ Large 4). See research/07.
+- User wants work split into commits (one per logical step).

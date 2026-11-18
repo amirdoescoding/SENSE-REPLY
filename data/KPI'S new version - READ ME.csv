@@ -1,0 +1,13 @@
+SENSE REPLY | VERIFIED EVIDENCE WORKBOOK
+Rebuilt 18 Nov 2026 from DatasetV4; prior original workbook is retained separately.
+A = cost only; B = dual agent with dirtier panels; C = dual agent with matched PV.
+OBSERVED and DERIVED metrics use actual 15-minute interval fields.
+"MODELLED policy replay (separate sheet) uses snapshot PV/load x 0.25h, and same 50% starting/terminal SOC."
+Do not compare B vs A bills causally; PV and initial SOC differ. C and A also start at different SOC.
+"No measured carbon factor supplied. Static sensitivity is a scenario, not observed emissions."
+Cost model: import_kWh * buy_price - export_kWh * sell_price.
+Correct SoC accounting: soc_end = soc_start + (eta*charge_kWh - discharge_kWh/eta)/capacity_kWh.
+Blank B interval at 2026-01-09 20:00 is NOT imputed in RAW B. Recovered separately in DATA QA.
+Original financial and power-flow reports may use different assumptions; match definitions before comparing.
+"Sources: DatasetV4 JSON, DataIndex.xlsx, Assets/BSS.json, Prompts/*.txt, DATA_MODEL.pdf."
+Sensitivity assumptions: grid CO2 200/350/500 g/kWh; illustrative; excludes export credits.

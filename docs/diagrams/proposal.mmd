@@ -1,0 +1,62 @@
+%%{init: {"theme":"base","themeVariables":{"fontSize":"20px","fontFamily":"Helvetica, Arial, sans-serif","lineColor":"#475569"},"flowchart":{"nodeSpacing":45,"rankSpacing":60,"wrappingWidth":300,"padding":16,"curve":"basis"}}}%%
+%% Render: npx -y @mermaid-js/mermaid-cli@11.4.2 -i proposal.mmd -o proposal.png -w 1800 -s 2 -b white
+graph TB
+  subgraph IN["① INPUTS · once a day at 13:00, after day-ahead prices are published"]
+    direction LR
+    PRICE["Tomorrow's grid prices<br/>buy + sell €/kWh"]
+    CO2["Grid CO2 per hour<br/>ENTSO-E Italy, g/kWh"]
+    STATE["Battery + site state<br/>SoC, PV and load of last days"]
+    DIAL["Owner dial λ<br/>€ per kg CO2, set once in config"]
+  end
+
+  AGENT["ONE AGENT · small LLM, 7–8B<br/>goal: lowest € + λ × kg CO2<br/>runs 1×/day (+1 replan if SoC drifts > 1 kWh)"]
+
+  KNOBS["Daily plan = 3–4 settings + a short 'why'<br/>• evening reserve (kWh)<br/>• grid-charge window (or none)<br/>• discharge priority hours"]
+
+  CHECK{{"Validator<br/>valid JSON? values in range?<br/>replay beats the simple rule?"}}
+
+  subgraph CTRL["② CONTROL · every 15 minutes on the edge gateway · no LLM, < 1 ms"]
+    direction LR
+    RULE["Simple rule<br/>turns the settings into kW<br/>using live SoC, PV, load"]
+    CLAMP["Safety clamp<br/>SoC 10–90 %, ±5 kW,<br/>grid limits"]
+    SITE["Site<br/>PV · battery · house · grid"]
+    RULE --> CLAMP --> SITE
+  end
+
+  subgraph LEARN["③ LEARN · every evening · no training"]
+    direction LR
+    LOG["Log 1 row per day<br/>context · settings · € · CO2<br/>regret vs simple rule"]
+    STORE["Memory store<br/>~1 KB/day, < 1 MB/site/year<br/>keep good days, recent first"]
+    LOG --> STORE
+  end
+
+  FALL["Fallback<br/>LLM down or bad output →<br/>keep yesterday's plan (24 h) →<br/>then plain self-consumption rule"]
+
+  PRICE --> AGENT
+  CO2 --> AGENT
+  STATE --> AGENT
+  DIAL --> AGENT
+  AGENT --> KNOBS --> CHECK
+  CHECK -- "pass" --> RULE
+  CHECK -- "fail" --> FALL
+  FALL --> RULE
+  SITE -- "measured € and CO2" --> LOG
+  STORE == "next day: 3–5 most similar GOOD past days<br/>(their settings + € + CO2 result)" ==> AGENT
+
+  classDef input fill:#e0f2fe,stroke:#0369a1,stroke-width:2px,color:#0c4a6e
+  classDef agent fill:#ede9fe,stroke:#6d28d9,stroke-width:3px,color:#3b0764
+  classDef plan fill:#f5f3ff,stroke:#7c3aed,stroke-width:2px,color:#3b0764
+  classDef check fill:#fef9c3,stroke:#a16207,stroke-width:2px,color:#713f12
+  classDef ctrl fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d
+  classDef learn fill:#ffedd5,stroke:#c2410c,stroke-width:2px,color:#7c2d12
+  classDef fall fill:#fee2e2,stroke:#b91c1c,stroke-width:2px,color:#7f1d1d
+  class PRICE,CO2,STATE,DIAL input
+  class AGENT agent
+  class KNOBS plan
+  class CHECK check
+  class RULE,CLAMP,SITE ctrl
+  class LOG,STORE learn
+  class FALL fall
+  style IN fill:#f8fafc,stroke:#0369a1,stroke-width:2px
+  style CTRL fill:#f0fdf4,stroke:#15803d,stroke-width:2px
+  style LEARN fill:#fff7ed,stroke:#c2410c,stroke-width:2px

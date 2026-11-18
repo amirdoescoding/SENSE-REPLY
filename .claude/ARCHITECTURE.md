@@ -7,18 +7,25 @@ Analysis repo for the Sense Reply BDD (agent performance assessment). Stdlib-onl
 ```
 SENSE-REPLY/
 ├── .claude/              # Agent context: CLAUDE, MEMORY, RESTART, BACKLOG, ARCHITECTURE, agents/
-├── data/DatasetV3/       # Source data (read-only)
-│   ├── dataset-001.json  # Orchestrator + Cost agent, 672 x 15-min samples
-│   ├── dataset-002.json  # Orchestrator + Cost + Sustainability, 671 samples
+├── data/DatasetV4/       # Source data (read-only); DatasetV3 kept (001/002 identical)
+│   ├── dataset-001.json  # A: Orchestrator + Cost agent, 672 x 15-min samples
+│   ├── dataset-002.json  # B: Orchestrator + Cost + Sustainability, 671 samples, dirtier panels
+│   ├── dataset-003.json  # C: same agents as B, same panel dirt as A (main comparison C vs A)
+│   ├── Prompts/          # Cost.txt, Sustainability.txt (agent system prompts)
+│   ├── Assets/           # BSS.json (wear, target SoC 80%), PV.json (dirt rates)
 │   ├── DATA_MODEL.pdf    # Field definitions, units, sign conventions
 │   └── DataIndex.xlsx    # LLM requests / tokens / latency per dataset
+├── data/SENSE REPLY - Method & Context.csv  # teammate's method notes
 ├── docs/                 # Case brief, transcript, slides, background briefing
-│   ├── KPIS.md           # KPI pack (caveman English): agent / orchestrator / framework levels
-│   ├── FRAMEWORK.md      # Redesign proposal (optimiser + 1 strategy LLM + twin + learning loop)
+│   ├── PROPOSAL.md       # Executive summary + simple framework (1 agent, carbon dial, daily knobs, memory)
+│   ├── KPIS.md           # KPI dashboard A/B/C, trade-off matrix, teammate reconciliation
+│   ├── TIMESERIES.md     # Time-series report: daily pattern, per day, grid, coordination, anomalies
+│   ├── FRAMEWORK.md      # OLD redesign, superseded by PROPOSAL.md
 │   ├── diagrams/         # framework.mmd (source) → .svg/.png/.excalidraw
-│   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning
+│   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning, 07 self-hosting + simple framework
 └── analysis/
-    ├── kpis.py           # python3 analysis/kpis.py → KPI table A vs B, baselines, self-check
+    ├── kpis.py           # python3 analysis/kpis.py → KPI table A/B/C, baselines, T1-T3, self-check
+    ├── timeseries.py     # per-day KPIs, day-type trade-off, hourly profile, anomalies
     ├── carbon.py         # CI_t from ENTSO-E API (token ENTSO_API in .env), else static ISPRA 198.9 g/kWh
     └── forecast_check.py # load/CO2/soiling predictability; CO2 day-ahead forecast test (FC2)
 ```
@@ -60,4 +67,4 @@ SENSE-REPLY/
 - **Orchestrator**: workflow that discovers agents, runs the discussion, picks one proposal.
 - **BDD**: Business Deep Dive (Albert School case format).
 
-Date of last update: 2026-11-08
+Date of last update: 2026-11-17

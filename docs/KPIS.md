@@ -1,138 +1,152 @@
-# KPI pack: how good are the agents?
+# KPI pack and dashboard: how good are the agents?
 
-For: team consolidation session. Simple words. Numbers come from `python3 analysis/kpis.py`.
+Written in simple words. The numbers come from `python3 analysis/kpis.py` (weekly) and `python3 analysis/timeseries.py` (per day and per hour). Data: `data/DatasetV4/`.
 
-## Read this first (big warnings)
-- **Two runs, not a fair test.** Same week (5–12 Jan 2026), same prices, **same weather**, but dirtier panels in B.
-  - PV: A = 93.1 kWh, B = 69.1 kWh. The cause is **only dirt**: PV = clean PV × (1 − `pv_dirt`) exactly, and B started dirtier (0.26 vs 0.03, both +0.024/day). See `analysis/forecast_check.py`.
-  - Start battery: A = 0.57, B = 0.15.
-  - So **never compare raw € between A and B.** Compare each run against its own baseline (same sun, same load).
-- **A** = Orchestrator + Cost agent (`dataset-001.json`). **B** = Orchestrator + Cost + Sustainability agent (`dataset-002.json`).
+## Read this first
+- **Three runs, one week (5–12 Jan 2026), same prices, same weather:**
+  - **A** = Orchestrator + Cost agent (`dataset-001.json`).
+  - **B** = Orchestrator + Cost + Sustainability (`dataset-002.json`). Its panels start much dirtier (`pv_dirt` 0.26 vs 0.03), so PV is 69 vs 93 kWh.
+  - **C** = same agents as B (`dataset-003.json`), but **same dirt as A**. PV is 93.06 vs 93.13 kWh and load 104.5 vs 105.1 kWh. **C vs A is the main comparison.**
+- **C vs A is still not a perfect A/B test.** The battery starts at a different level: A goes 0.57 → 0.80, C goes 0.80 → 0.70.
+  - About €0.25 of the €0.34 raw bill gap is only this SoC swing.
+  - So we always compare the **SoC-adjusted** bill, and each run against **its own rule baseline** (same sun, same load).
 - **Site assumed Italy.** The data does not say where it is.
-- **Carbon:** no CO2 field in the data. We use the **hourly ENTSO-E generation mix for Italy** (5–13 Jan 2026, UTC converted to Italian time) × IPCC AR5 lifecycle factors. That week the grid ran **214–439 g/kWh (mean 362)**. Imports are ignored. Lifecycle factors give higher numbers than ISPRA's direct-CO2 annual factor (198.9 g/kWh), which `analysis/carbon.py` uses as the fallback when no ENTSO-E token is set. Alignment caveat: the dataset clock looks odd (next bullet), so the hour-by-hour match is approximate.
-- **Clock looks odd.** PV runs about 03:00–17:00 and peaks at 10:00. Real Italian January has about 9 h of sun, peaking near 12:00. The simulator clock or location may not be real Italy. Ask Sense Reply.
-- **LLM price** uses Devstral 2 at $0.40 in / $2.00 out per M tokens, aggregator figure, FX 0.86 €/$. Devstral 2 was retired on 2026-07-31 (see `research/05`).
-- One week, one site, one run each. Call it **pilot evidence**, not proof.
+  - The brief says "industrial site", but `DATA_MODEL.pdf` says residential building. We follow the data.
+  - The PV clock looks odd: it peaks at 10:00 and runs ~14 h in January.
+- **Carbon:** there is no CO2 field. We use the hourly ENTSO-E generation mix for Italy × IPCC lifecycle factors: 214–439 g/kWh, mean 356 over the samples.
+  - This is an **estimate under the Italy assumption**, not a measured site value.
+  - Without an API token, `carbon.py` falls back to static ISPRA 198.9 g/kWh, so the CO2 numbers change.
+- **Battery wear now comes from the client's asset file**, not our guess.
+  - `Assets/BSS.json`: replacement €100/kWh, degradation 0.005% per equivalent full cycle.
+  - The telemetry agrees: SoH falls 5.0e-5 per cycle in all 3 runs.
+  - That means **€0.005 per kWh discharged**, 20× less than the €0.10 we assumed before. Wear is about €0.2 a week and changes no conclusion.
+- **LLM price:** Devstral 2 at $0.40 in / $2.00 out per M tokens, FX 0.86. Token counts come from `DataIndex.xlsx`.
+- One week, one site, one run per setup: this is **pilot evidence**, not proof.
 
 ## Words and symbols
-- Δt = 0.25 h (one 15-min step). N = number of steps (672 in A, 671 in B).
-- E_imp, E_exp = grid import/export energy per step (kWh). Fields: `energyImportInterval`, `energyExportInterval`.
-- π_buy, π_sell = grid prices €/kWh. Fields: `buyPrice`, `sellPrice`.
-- E_pv = Σ panels `pv_energy_interval`. E_load = `load` × Δt.
-- E_chg, E_dis = battery charge/discharge energy per step. Fields: `energyChargedInterval`, `energyDischargedInterval`.
-- SoC = `soc`. Cap = `capacityKwh` (10). η = `dischargeEfficiency` (0.95). P = BESS `power` (kW; + charge, − discharge).
-- CI_t = grid carbon intensity (g/kWh), from an external source.
-- **Rule baseline** = simple controller on the same sun and load: charge on PV surplus, discharge when the house needs power, within live power and SoC limits. No AI.
-- **No-battery baseline** = same house, battery off: import = max(load − PV, 0).
-- Tag **now** = we can compute it today. Tag **logs** = needs the agent proposal logs, which are not in the JSON. Ask Sense Reply for them.
+- Δt = 0.25 h. E_imp and E_exp = `energyImportInterval` and `energyExportInterval`. π_buy and π_sell = `buyPrice` and `sellPrice`.
+- E_pv = Σ panels `pv_energy_interval`. E_load = `load` × Δt. E_chg and E_dis = `energyChargedInterval` and `energyDischargedInterval`.
+- Cap = `capacityKwh` (10). η = `dischargeEfficiency` (0.95). CI_t = grid carbon intensity (g/kWh, ENTSO-E).
+- **Rule baseline** = charge on PV surplus, discharge when the house needs power, within live limits. No AI.
+- **No-battery baseline:** import = max(load − PV, 0).
+- "logs" = needs each agent's proposal and score per decision, which are not in the data.
 
 ---
 
-## 1. Cost agent
-Today we only see the final battery value, not the cost agent's own proposal. So the cost agent is judged by config A, and in B we can only see the mix.
+## 1. Dashboard: the main numbers
 
-| KPI | What it measure | Formula | Why | A | B | Tag |
-|---|---|---|---|---|---|---|
-| C1 Energy bill, SoC-adjusted | What the house paid for grid energy this week, fair for battery level. | C = Σ(E_imp·π_buy − E_exp·π_sell) − (SoC_end − SoC_start)·Cap·η·mean(π_buy) | The raw bill lies if the battery ends fuller or emptier, so we correct for leftover energy. | €3.01 (raw €3.23) | €4.86 (raw €5.15) | now |
-| C2 Savings vs no battery | How much cheaper than no battery at all. | (C_nobat − C) / C_nobat | Basic "does battery + agent help?" | 18.2% | 13.0% | now |
-| **C3 Savings vs rule baseline** | Does the AI beat a dumb rule? | (C_rule − C) / C_rule | **Main money KPI.** If the AI cannot beat a free rule, the AI cost is not worth it. | **−30% (−€0.70/wk)** | **−9% (−€0.40/wk)** | now |
-| C3r Same, rule keeps 30% reserve | Fairer rule: it also keeps a backup reserve like the agents seem to. | (C_rule30 − C) | Answers "but the agent keeps a reserve for resilience". | −€0.42/wk | −€0.26/wk | now |
-| C3w Same, wear included | Beat the rule once battery wear is paid? | (C_rule + c_deg·ΣE_dis,rule) − (C + c_deg·ΣE_dis) | The rule cycles harder (A: 53 vs 40 kWh discharged), so wear can flip the result. | **+€0.66/wk** | **−€0.30/wk** | now (c_deg 0.10 assumed) |
-| C8 Break-even wear price vs rule | Wear price at which agent and rule cost the same. | (C − C_rule) / (ΣE_dis,rule − ΣE_dis) | If the real wear cost is above this, the agent wins. | €0.051/kWh | €0.40/kWh | now |
-| C9 Break-even wear price vs no battery | Wear price at which using the battery stops paying. | (C_nobat − C) / ΣE_dis | Below the realistic range (€0.06–0.15) = the battery does not pay for its own wear this week. | €0.017/kWh | €0.018/kWh | now |
-| C4 Price-timing spread | Does it discharge when power is expensive and charge when it is cheap? | Σ(E_dis·π_buy)/ΣE_dis − Σ(E_chg·π_buy)/ΣE_chg | Checks that the cost agent uses price signals. Bigger is better. | €0.012/kWh | €0.011/kWh | now |
-| C5 Expensive import share | How much grid energy was bought at above-median price. | Σ E_imp[π_buy > median] / Σ E_imp | Low is good. Shows whether the agent avoids peak prices. | 81% | 82% | now |
-| C6 Oracle capture | How close to the best possible plan (perfect foresight). | (C_nobat − C) / (C_nobat − C_oracle) | Tells how much money is left on the table. Literature LLMs get 97–98%. | – | – | needs LP (scipy) |
-| C7 Cost agent win-rate | How often the cost agent's proposal was the best, scored by a simulator. | (1/T) Σ 1[J(a_cost) ≤ J(a_other)] | Says if the cost agent is actually good at its job. | – | – | logs |
+| KPI | Formula | A | B | C |
+|---|---|---|---|---|
+| **Energy bill, raw** | Σ(E_imp·π_buy − E_exp·π_sell) | €3.23 | €5.15 | €2.89 |
+| **Energy bill, SoC-adjusted (C1)** | raw − (SoC_end − SoC_start)·Cap·η·mean(π_buy) | €3.01 | €4.86 | €2.98 |
+| Rule baseline bill (same sun/load) | same formula, rule dispatch | €2.32 | €4.46 | €2.30 |
+| **C2 Savings vs no battery** | (C_nobat − C)/C_nobat | 18.2% (€0.67) | 13.0% (€0.72) | 18.2% (€0.66) |
+| **C3 Savings vs rule** | (C_rule − C)/C_rule | −30% (−€0.70) | −9% (−€0.40) | −30% (−€0.68) |
+| C3w Same, wear included | (C_rule + c_deg·E_dis,rule) − (C + c_deg·E_dis) | −€0.63 | −€0.40 | −€0.64 |
+| Grid import | ΣE_imp | 63.8 kWh | 60.5 kWh | 58.7 kWh |
+| Grid export | ΣE_exp | 45.1 kWh | 17.6 kWh | 42.9 kWh |
+| **S4 Self-consumption** | (ΣE_pv − ΣE_exp)/ΣE_pv | 51.6% | 74.6% | 53.9% |
+| S5 Self-sufficiency | 1 − ΣE_imp/ΣE_load | 39.3% | 42.0% | 43.8% |
+| **S1 Grid CO2** | ΣE_imp·CI_t/1000 | 23.8 kg | 22.5 kg | 21.8 kg |
+| S2b CO2 vs rule | S1_rule − S1 | −12.2 kg | −6.7 kg | −10.4 kg |
+| S3 Import carbon intensity | 1000·S1/ΣE_imp (grid mean 356) | 373 | 373 | 372 |
+| **G2 Grid penalty exposure** | Σ`violation`, Σ`penalty` | 0 / €0 | 0 / €0 | 0 / €0 |
+| G1 Peak import (single max) | max grid `power` | 4.95 kW | 3.93 kW | 2.83 kW |
+| G6 P99 import | 99th percentile of grid `power` | 3.12 kW | 2.95 kW | 2.52 kW |
+| **B1 Apparent storage efficiency** | (ΣE_dis + ΔSoC·Cap·η)/ΣE_chg (device 0.95² = 0.90) | 0.90 | 0.89 | 0.90 |
+| B2 Equivalent full cycles | (ΣE_chg + ΣE_dis)/(2·Cap) | 4.3 | 4.5 | 4.7 |
+| B3 Wear cost | c_deg·ΣE_dis, c_deg €0.005/kWh (BSS.json) | €0.20 | €0.20 | €0.23 |
+| **B6 Time near target SoC 0.8** | share of t with abs(SoC − 0.8) < 0.03 | 32% | 14% | 31% |
+| O1 LLM calls per decision | requests/N | 4.4 | 8.2 | 7.6 |
+| O3 Decision latency (upper bound) | mean ms × calls/N | 10 s | 20 s | 18 s |
+| **O5 LLM cost per week** | tok_in·p_in + tok_out·p_out | €4.74 | €8.22 | €7.71 |
+| **F1 Net value vs rule** | (C_rule − C) − LLM€ | −€5.44 | −€8.62 | −€8.39 |
+| **F2 AI cost / savings vs no battery** | LLM€/(C_nobat − C) | 7.1× | 11.4× | 11.7× |
+| F3 Mode switches per day | sign changes of P / days | 2.0 | 2.0 | 2.0 |
+| F4 Smoothness | mean abs(P_t − P_t−1) | 0.15 kW | 0.11 kW | 0.12 kW |
 
-**Why C3 is negative (seen in the data):** the agents hold energy for the 18–21h evening peak. Mean SoC is 0.47 (A) and 0.36 (B), and A ends the week 80% full. So they export PV at €0.09 instead of storing it, then buy at night. The simple rule imports 31 kWh (A) where the agent imports 64 kWh.
+**Notes on these numbers:**
+- **B1 note:** this is not true round-trip efficiency. It only checks that the weekly flows match the device's 0.95 × 0.95. Our teammate is right about this.
+- **Data check:** the energy balance closes within 0.05 (A), 0.35 (B) and 0.62 (C) kWh over the week, under 0.6% of load. `load` is a spot kW × 0.25 h, not a true interval energy.
 
-**But the € gap is small and depends on wear.** It is €0.40–0.70 per week. Once battery wear is counted, A beats the rule (the rule cycles harder) and B still loses. So treat "loses to the rule" as a **sensitivity result**, not the headline. The robust headline is in §4: the AI costs about 10× what the battery earns.
+## 2. Trade-off matrix
 
-**What does wear really cost? Three sources, one answer for A:**
-- Assumed: c_deg = €0.10/kWh (`research/04` §4, range €0.06–0.15).
-- From the data's own `soh`: the battery lost 0.023% SoH while discharging 39.6 kWh. With a €6,000 pack that is "dead" at 70–80% SoH (`research/04` §4), wear ≈ 0.00023 / (0.20–0.30) × €6,000 / 39.6 kWh = **€0.12–0.17/kWh**. This is an upper bound: 0.023% per week ≈ 1.2% per year, about the same as normal calendar ageing, so part of the loss would happen even with no cycling.
-- Every estimate is above A's break-even of €0.051 (C8). So **with wear, A beats the rule**. B's break-even is €0.40, so **B still loses**.
+**C vs A. Each run is measured against its own rule baseline, which removes the sun and load differences.**
 
-How the rule is built: its power limits come from **its own** SoC, using the same formula the data follows (max power = min(5 kW, room left in battery per hour); this fits the data within 0.08 kW).
+| | Energy € | CO2 | Grid import | LLM € | **Total** |
+|---|---|---|---|---|---|
+| Adding the Sustainability agent (C − A) | −€0.02/wk (no change) | **−1.5 kg/wk** (−6% of A's grid CO2) | −3.8 kWh | **+€2.97/wk** | **+€2.98/wk** |
 
-## 2. Sustainability agent
-Only in B. It has no carbon signal in the data, so it probably chases a proxy (more self-use of PV). Same limit as above: we only see the mixed result.
+Every column in this row is SoC-adjusted, and each run is measured against its own rule baseline.
 
-| KPI | What it measure | Formula | Why | A | B | Tag |
-|---|---|---|---|---|---|---|
-| S1 Grid CO2 | How much CO2 the grid energy caused. | Σ E_imp,t · CI_t / 1000 (kg) | Main green KPI. Exports not credited (conservative). | 23.8 kg | 22.5 kg | now (hourly CI) |
-| S2a CO2 avoided vs no battery | CO2 saved versus battery off. | S1_nobat − S1 | Shows the green value of the battery plus agent. | 7.7 kg | 8.9 kg | now (hourly CI) |
-| **S2b CO2 avoided vs rule** | CO2 saved versus the dumb rule. | S1_rule − S1 | **Main green KPI.** Negative means the rule is greener. | **−12.2 kg** | **−6.7 kg** | now (hourly CI) |
-| S3 Import carbon intensity | How dirty the bought power was, on average. | 1000·S1 / Σ E_imp (g/kWh) | Compare with the grid mean (356 g/kWh over the samples). Above the mean = buys at dirty hours. | 372.5 (+4.8%) | 372.6 (+4.8%) | now (hourly CI) |
-| S4 Self-consumption | Share of own PV used at home (directly or via battery). | (ΣE_pv − ΣE_exp) / ΣE_pv | Classic green KPI (Luthander 2015). Probably what the sustainability agent optimises. | 51.6% | 74.6% | now |
-| S5 Self-sufficiency | Share of house need covered without the grid. | 1 − ΣE_imp / ΣE_load | Independence from the grid. | 39.3% | 42.0% | now |
-| S6 Green charging share | Share of battery charge that came from PV surplus. | Σ min(E_chg, max(E_pv − E_load, 0)) / ΣE_chg | Battery filled by sun = green. Filled by grid = not. | 82.6% | 84.8% | now |
-| S7 Sustainability agent win-rate | How often its proposal was picked and was best on CO2. | (1/T) Σ 1[a_t = a_sust] | Tells if the agent changes anything at all. | – | – | logs |
-| S8 Value of second agent | Extra KPI gain per extra € of LLM. | ΔKPI(B vs A, baseline-relative) / ΔLLM€ | Is the second agent worth its tokens? | – | see T2 | now (rough) |
+- **Abatement cost incl. LLM: ≈ €2,000 per tonne of CO2.** The EU ETS carbon price is under €100/t.
+- The B − A comparison is less clean (dirt differs). It gives −€0.30, −5.0 kg and +€3.19/wk total (€640/t).
+- **Reading:** the second agent does not cost energy money, as Sense Reply expected it might. It saves a little CO2 because it imports less. But its LLM bill makes that CO2 about 20–25× dearer than the EU carbon price.
 
-Note: S4 jumps a lot in B, but part of that is less sun (less surplus to export), not the agent.
+**All options side by side (per week, A's sun and load):**
 
-## 3. Orchestrator
-Its outputs (which proposal won, the scores) are not logged. Its cost is visible, though.
+| Option | Energy € (SoC-adj) | Grid CO2 | Import | Wear | LLM € | Latency/decision | Status |
+|---|---|---|---|---|---|---|---|
+| A: Cost agent | 3.01 | 23.0 kg | 61.7 kWh | 0.20 | 4.74 | ~10 s | measured |
+| C: Cost + Sust. agents | 2.98 | 22.2 kg | 59.7 kWh | 0.23 | 7.71 | ~18 s | measured |
+| Rule baseline (no AI) | 2.32 | 11.5 kg | 30.9 kWh | 0.27 | 0 | < 1 ms | replayed on same data |
+| Rule + 20% reserve knob | 2.44 | 13.7 kg | 36.5 kWh | ~0.25 | 0 | < 1 ms | replayed (`replay.py`) |
+| Rule + night grid charge to 30% | 2.45 | 16.2 kg | 43.7 kWh | ~0.3 | 0 | < 1 ms | replayed |
+| Proposal (1 agent, daily knobs, rule executes) | target ≤ rule; enforced by replay gate | target ≤ rule | target ≤ rule | ~0.27 | ~€0.01–0.05 | < 1 ms (LLM off the control path) | **knob values replayed; LLM choice not yet tested** |
 
-| KPI | What it measure | Formula | Why | A | B | Tag |
-|---|---|---|---|---|---|---|
-| O1 LLM calls per decision | How many model calls one 15-min decision needs. | requests / N | More calls = more cost, delay and failure points. | 4.39 | 8.15 | now |
-| O2 Input tokens per decision | How much text is sent per decision. | tokens_in / N | Main cost driver. Shows prompt bloat. | 17.4k | 29.9k | now |
-| O3 Decision latency (upper bound) | How long one decision takes. | mean LLM ms × calls / N | Must fit well inside 15 min. It also matters for fast events. | 10.3 s | 20.3 s | now |
-| O4 LLM cost per decision | Money per decision. | (tok_in·p_in + tok_out·p_out) / N | Unit economics. | €0.0071 | €0.0123 | now |
-| O5 LLM cost per week | Money per site per week. | tok_in·p_in + tok_out·p_out | Compare with the energy bill (€3–5/week!). | €4.74 | €8.22 | now |
-| O6 Selection share | How often each agent's proposal gets picked. | (1/T) Σ 1[a_t = a_i] | If one agent always wins, the other is dead weight. | – | – | logs |
-| O7 Agreement rate | How often the agents propose almost the same kW. | (1/T) Σ 1[abs(a_cost − a_sust) ≤ ε] | High agreement means the second agent adds little. | – | – | logs |
-| O8 Orchestrator regret | How much worse the pick was than the best proposal. | (1/T) Σ [J(a_t) − min_i J(a_i)], J = simulator cost | Says if the orchestrator chooses well. | – | – | logs |
-| O9 Self-score calibration | Do the agents' own scores match reality? | Spearman ρ(self-score, simulator score) | Agents grade their own homework; LLMs favour their own output. Low ρ = arbitration is random. | – | – | logs |
-| O10 Judge robustness | Does the pick change if you swap proposal order? | share of picks unchanged after order swap | Catches position bias in the LLM judge. | – | – | logs (test) |
+CO2 and import in this table are SoC-adjusted (raw: A 23.8 kg / 63.8 kWh, C 21.8 kg / 58.7 kWh). The C row uses C's own sun and load, which is nearly identical to A's.
 
-## 4. Whole framework
+**Replay lesson (`analysis/replay.py`):** this January week, every knob that holds energy back loses to the plain rule. A 20% reserve costs +€0.12/wk; a night grid charge costs +€0.13–0.22/wk and adds 5–10 kg CO2, because grid energy pushes out free morning PV. A wrongly set knob loses money, so the replay gate is essential, and in this week the best plan is "no reserve, no grid charge".
 
-| KPI | What it measure | Formula | Why | A | B | Tag |
-|---|---|---|---|---|---|---|
-| **F1 Net value vs rule** | Money gained versus the free rule, after paying for the AI. | (C_rule − C) − LLM€_week | **The one number for the boss.** Negative = the AI loses money. | **−€5.44/wk** | **−€8.62/wk** | now |
-| F1w Same, wear included | As F1, with battery wear for both. | C3w − LLM€_week | Robust check: still very negative. | −€4.08/wk | −€8.52/wk | now (c_deg 0.10) |
-| **F2 AI cost vs savings** | LLM cost divided by savings versus no battery. | LLM€ / (C_nobat − C) | Above 1 = the AI costs more than it saves. **Most robust finding.** | **7.1×** | **11.4×** | now |
-| T1 Abatement cost | € paid per kg of CO2 saved, B vs A. | (ΔC_B − ΔC_A) / (ΔCO2_A − ΔCO2_B), Δ = vs own rule baseline | Standard climate-economics measure. | – | n/a: B is cheaper **and** greener on energy | now |
-| T2 Total cost of sustainability | Extra € per week for adding the sustainability agent. | (ΔC_B − ΔC_A) + (Deg_B − Deg_A) + (LLM_B − LLM_A) | Puts energy, wear and AI cost in one number. | – | **€3.31/wk** (energy −0.30, wear +0.12, LLM +3.48) | now |
-| B1 Round-trip efficiency | Energy out of the battery versus energy in. | (ΣE_dis + ΔSoC·Cap·η) / ΣE_chg | Nominal value is 0.90. Lower means waste. | 0.90 | 0.89 | now |
-| B2 Equivalent full cycles | How hard the battery works. | (ΣE_chg + ΣE_dis) / (2·Cap) | Cycles = battery ageing. | 4.3 | 4.5 | now |
-| B3 Degradation cost | Battery wear in €. | c_deg · ΣE_dis, with c_deg = €0.10/kWh (assumed, range 0.06–0.15) | Wear is a real cost. Here it is as big as the bill, so the c_deg value matters a lot. | €3.96 | €4.08 | now (assumed c_deg) |
-| B4 Time at SoC limit | Share of time the battery sits at empty or full. | share of t with SoC ≤ 0.11 or ≥ 0.89 | Sitting at the limits stresses the cells and leaves no headroom. | 0% | 4.5% | now |
-| B5 Health | SoH loss and maximum temperature. | SoH_start − SoH_end; max `temperature` | Safety and ageing. | 0.023% / 24 °C | 0.024% / 19 °C | now |
-| G1 Peak import | Biggest grid draw. | max grid `power` | Peaks cost grid capacity. | 4.95 kW | 3.93 kW | now |
-| G2 Violations / penalty | Broken grid rules. | Σ `violation`; Σ `penalty` | Must be 0. | 0 / €0 | 0 / €0 | now |
-| F3 Mode switches per day | How often it flips between charge and discharge. | count of sign changes of P (idle skipped) / days | Calm control = less wear. 2/day = one cycle per day. | 2.0 | 2.0 | now |
-| F4 Smoothness | Average power jump between steps. | mean abs(P_t − P_t−1) | Jumpy control = wear and noise. | 0.15 kW | 0.11 kW | now |
-| F5 Fallback rate / uptime | Share of steps decided by fallback (no cloud). | steps_fallback / N | Resilience when the internet drops. | – | – | logs |
+**By day type:** agent minus its own rule, summed over 3 full days each (`timeseries.py`).
 
-**Data check:** the energy balance (import − export = load − PV + charge − discharge) closes to within 0.05 kWh (A) and 0.35 kWh (B) over the week, under 0.5% of load. Small and unexplained. One candidate: `load` is a spot kW reading × 0.25 h, not a true interval energy.
+| Day type | Run | Excess € | Excess CO2 | Excess import |
+|---|---|---|---|---|
+| Sunnier (PV ≥ 13.8 kWh/day) | A | +0.33 | +5.8 kg | +14.8 kWh |
+| | C | +0.31 | +4.7 kg | +12.0 kWh |
+| Duller | A | +0.23 | +4.5 kg | +13.4 kWh |
+| | C | +0.23 | +4.0 kg | +12.1 kWh |
 
----
+- **Small spread:** the week is uniform (12.5–14.1 kWh PV per full day), so the day-type split shows little.
+- **Direction:** the agents lose most to the rule on sunnier days. On those days there is more surplus to store, and they export it instead.
+- **Next step:** a summer week is needed to test "different generation conditions" properly.
 
-## What the numbers say
-1. **The AI costs about 10× what it saves.** LLM spend is €4.7–8.2 per week. Savings vs no battery are only about €0.7 per week (A €0.67, B €0.72). This holds whatever the wear price.
-2. **On energy alone, a free rule is about as good.** The rule beats both setups by €0.40–0.70 per week. Count battery wear and A edges ahead, B does not. The cause: the agents hoard battery for the evening and export sun cheaply.
-3. **Adding the sustainability agent is not bad for energy.** Against its own rule baseline, B is €0.30 cheaper and 5.5 kg CO2 cleaner than A. Its only real price is the extra LLM spend: +€3.5 per week, from 8.2 vs 4.4 calls per decision.
-4. **Winter week, small money.** The battery only pays for its own wear if wear costs under €0.017/kWh, and the realistic range is €0.06–0.15. Sunnier weeks will look better. Repeat the analysis on a summer week.
-5. **Agent-level and orchestrator-level quality cannot be judged yet.** The proposals and scores are not logged. That is the first fix to ask for.
-6. **The sustainability agent does not time imports to clean hours.** Both A and B buy grid power at hours about 5% dirtier than average (S3), and B is no better than A. B is greener only because it imports less. This fits the suspicion that it has no carbon signal.
+## 3. KPIs that need logs (cannot be computed from the JSON)
 
-## Carbon data: how it is pulled (repeat for other weeks)
-1. Get a free ENTSO-E Transparency API token (register on transparency.entsoe.eu, then email transparency@entsoe.eu with the subject "Restful API access"). Each teammate needs their own.
-2. Put it in the repo `.env` as `ENTSO_API=<token>` (`.env` is gitignored, never commit it), or export `ENTSO_API` in the shell.
-3. Run `python3 analysis/kpis.py`. `analysis/carbon.py`:
-   - calls the API for **A75 Actual Generation per Production Type**, Italy control area `10YIT-GRTN-----B`, 5 Jan 00:00 → 14 Jan 00:00 UTC (change `WEEK` for other weeks);
-   - converts UTC to Italian time;
-   - computes CI_t = Σ_k gen_k,t·EF_k / Σ_k gen_k,t, averaged per hour. EF_k = IPCC AR5 lifecycle medians: gas 490, coal 820, hydro 24, solar 48, wind 11, nuclear 12, biomass 230 g/kWh. Oil 650 and other 700 are assumed; storage counts as 0;
-   - stops with an error if under 90% of samples find an hourly value.
-4. `python3 analysis/forecast_check.py` also pulls **A69** (day-ahead wind/solar forecast) and **A65** (day-ahead load forecast) for the CO2 forecast test. It takes about 1 minute.
+| KPI | Formula | Why |
+|---|---|---|
+| Agent win-rate | share of decisions where an agent's proposal was picked | Is the second agent dead weight? |
+| Agreement rate | share with abs(kW_cost − kW_sust) ≤ ε | High = the second agent adds little |
+| Orchestrator regret | J(picked) − min_i J(proposal_i), J = simulated cost | Does the orchestrator choose well? |
+| Self-score calibration | Spearman ρ(self-score, simulated score) | Agents grade their own homework |
 
-**No token = different numbers.** Without a token the scripts fall back to the static 198.9 g/kWh, so S1–S3 and the T1 CO2 figure (5.5 kg) will not match this page. The API gives exactly the same hourly values as the old hand-downloaded CSVs (checked: 216 h, 0.0 g/kWh difference), and the CSVs have been deleted.
+## 4. Reconciliation with the teammate's "Method & Context"
+Same frame as theirs: what the source says, what the telemetry proves, and what needs an experiment.
 
-To unlock the "logs" KPIs, ask Sense Reply for:
-- per decision: each agent's proposed kW and self-scores, the orchestrator's pick, and the prompt version
-- per call: token counts
+| Topic | Source says | Telemetry proves | Our handling |
+|---|---|---|---|
+| Site type | Brief: industrial | DATA_MODEL: residential | Follow the data; flag it |
+| A/B validity | "Two configurations" | B differs in dirt and SoC; C differs only in SoC | C vs A, SoC-adjusted, each vs own rule |
+| `cost` field | "Cumulative" | Per-sample: equals power × price / 60 exactly (checked, max diff ~1e-18) | Recompute the bill from energy × price (agree) |
+| Telemetry scope | Brief lists voltage, current, temperature | Only BESS temperature; no voltage or current fields | KPIs use power/energy only |
+| Carbon | Sust. agent "avoids emissions" | No CO2 field; Sust. prompt has no CO2 or price input | ENTSO-E hourly estimate, labelled Italy assumption. "No verified CO2" holds for the site itself |
+| Efficiency | Device 95% / 95% | Weekly ratio ≈ 0.90 | Renamed B1 "apparent storage efficiency" (agree) |
+| Self-consumption | – | Export can be battery discharge (A: 10.5 kWh exported while discharging) | S4 is an upper bound on true PV self-use |
+| Missing sample | – | B lacks 2026-01-09 20:00 | Cumulative-diff recovery possible; we leave B at 671 samples (B is secondary) |
+| Agent motives | Agents discuss and self-score | No decision logs | Behaviour inferred from prompts + telemetry only |
+| Resilience | – | 0 violations, 0 outages, 0 throttling | Needs stress tests; not comparable here |
+
+## 5. What the numbers say
+1. **The AI costs 7–12× what the battery saves** (€4.7–7.7 LLM vs ~€0.7/wk saved vs no battery). This is the most robust finding.
+2. **A free rule beats all three runs on energy** by €0.40–0.70/wk, now also with wear counted, since wear is small.
+   - **Cause:** the battery fills to the 80% target by 11:00 and sits there. Midday sun is then exported at €0.09.
+   - The battery empties fast at 18–19h and partly exports while doing so. It then stops at ~20% SoC while the house imports at 20–21h.
+3. **The second agent changes almost nothing.** C vs A on the same panels: same € (−€0.02), 1.5 kg less CO2 and 3.8 kWh less import (baseline-relative, SoC-adjusted), +€3/wk LLM.
+   - Its prompt gets no price and no CO2, so it can only push "import less". Imports are still at hours 5% dirtier than average (S3).
+4. **No grid penalties in any run.** C's peak import is lower (2.8 vs 5.0 kW), but A's peak is one sample. At P99 the gap is small (2.5 vs 3.1 kW).
+5. **Agent and orchestrator quality cannot be judged** without the proposal logs.
+
+## Carbon data: how to repeat it
+1. Get a free ENTSO-E Transparency API token and put it in `.env` as `ENTSO_API=<token>` (gitignored).
+2. Run `python3 analysis/kpis.py`. `carbon.py` pulls A75 actual generation for Italy (`10YIT-GRTN-----B`), converts UTC to Europe/Rome, and computes CI_t = Σ gen·EF / Σ gen with IPCC AR5 lifecycle factors. It stops if coverage is under 90%.
+3. `python3 analysis/forecast_check.py` adds the day-ahead CO2 forecast test (skill FC2 = 0.40 vs "same as yesterday").

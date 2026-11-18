@@ -1,4 +1,4 @@
-"""KPIs for Sense Reply agent configs A (Orch+Cost) and B (Orch+Cost+Sust). Stdlib only.
+"""KPIs for Sense Reply configs A (Orch+Cost), B and C (Orch+Cost+Sust; C = same panel dirt as A). Stdlib only.
 
 Run: python3 analysis/kpis.py   -> markdown table on stdout + self-check asserts.
 Formulas are documented in docs/KPIS.md.
@@ -11,12 +11,17 @@ from carbon import ci_lookup
 ROOT = Path(__file__).resolve().parent.parent
 DT = 0.25  # h per sample
 P_MAX = 5.0  # kW inverter limit (max of maximumCharge/DischargePower in data)
-C_DEG = 0.10  # €/kWh discharged, assumed mid of 0.06-0.15 range (docs/research/04 §4)
+# €/kWh discharged. data/DatasetV4/Assets/BSS.json: replacementCostPerEnergy 100 €/kWh x
+# cycleDegradationPerEquivalentCycle 0.005 % (telemetry: dSoH/EFC = 5.0e-5 in all runs).
+# 1 EFC costs 5e-5 x 100 x Cap and discharges ~Cap kWh -> 100 x 5e-5 per kWh.
+C_DEG = 100 * 0.005 / 100
 USD_EUR = 0.86  # assumed FX for LLM cost
 P_IN, P_OUT = 0.40, 2.00  # $/M tokens Devstral 2 (aggregator figure, docs/research/04 §2)
 # From DataIndex.xlsx (see .claude/MEMORY.md): requests, input tok, output tok, mean LLM ms
-LLM = {"A": (2948, 11_690_688, 418_362, 2355), "B": (5472, 20_049_658, 770_858, 2486)}
-FILES = {"A": "dataset-001.json", "B": "dataset-002.json"}
+LLM = {"A": (2948, 11_690_688, 418_362, 2355), "B": (5472, 20_049_658, 770_858, 2486),
+       "C": (5118, 18_792_541, 723_233, 2384)}
+FILES = {"A": "dataset-001.json", "B": "dataset-002.json", "C": "dataset-003.json"}
+TARGET_SOC = 0.80  # BSS.json targetStateOfCharge
 
 
 def load(path):
@@ -46,7 +51,7 @@ def soc_value(d_soc, b, mean_buy):
     return d_soc * b["capacityKwh"] * b["dischargeEfficiency"] * mean_buy
 
 
-def rule_baseline(rows, soc0, floor=None):
+def rule_baseline(rows, soc0, floor=None, socs=None):
     """Self-consumption rule: charge on PV surplus, discharge to cover deficit.
     Power limits come from the rule's OWN SoC, using the formula the data follows
     (maxCharge = min(5, (SoCmax - SoC)*Cap per h), fits within 0.08 kW). floor = optional reserve SoC."""
@@ -68,6 +73,8 @@ def rule_baseline(rows, soc0, floor=None):
             dis_tot += d
             imp.append(-net - d)
             exp.append(0.0)
+        if socs is not None:  # optional SoC trace, used by timeseries.py
+            socs.append(soc)
     return imp, exp, soc, dis_tot
 
 
@@ -140,14 +147,19 @@ def kpis(name, rows, ci):
     k["S3 CO2 intensity of imports g/kWh"] = 1000 * s1 / sum(imp)
     k["  mean grid CI g/kWh"] = sum(cis) / n
     k["_excess_cost"] = e2 - c_rule  # used for T1/T2, hidden
-    k["_excess_co2"] = s1 - co2(r_imp)
+    # same end-SoC correction as €: energy the agent holds above the rule at the end replaces future imports
+    d_store = (soc_end - r_soc) * b0["capacityKwh"] * b0["dischargeEfficiency"]  # kWh
+    k["_excess_co2"] = s1 - co2(r_imp) - d_store * sum(cis) / n / 1000
+    k["  excess import vs rule kWh (SoC-adj)"] = sum(imp) - sum(r_imp) - d_store
+    k["G6 P99 import kW"] = sorted(x["power"] for x in g)[int(0.99 * n)]
     # --- battery ---
-    k["B1 round-trip efficiency"] = (sum(dis) + (soc_end - soc0) * b0["capacityKwh"] * b0["dischargeEfficiency"]) / sum(chg)
+    k["B1 apparent storage efficiency (device 0.95²=0.90)"] = (sum(dis) + (soc_end - soc0) * b0["capacityKwh"] * b0["dischargeEfficiency"]) / sum(chg)
     k["B2 equivalent full cycles"] = (sum(chg) + sum(dis)) / (2 * b0["capacityKwh"])
-    k["B3 degradation cost € (c_deg 0.10)"] = C_DEG * sum(dis)
+    k["B3 degradation cost € (BSS.json wear)"] = C_DEG * sum(dis)
     k["B4 time at SoC limit %"] = 100 * sum(
         x["soc"] <= x["minimumStateOfCharge"] + 0.01 or x["soc"] >= x["maximumStateOfCharge"] - 0.01 for x in b
     ) / n
+    k["B6 time near target SoC 0.8 %"] = 100 * sum(abs(x["soc"] - TARGET_SOC) < 0.03 for x in b) / n
     k["  SoC start -> end"] = f"{soc0:.2f} -> {soc_end:.2f}"
     k["  mean SoC"] = sum(x["soc"] for x in b) / n
     k["B5 SoH loss % / max temp °C"] = f'{100 * (b0["soh"] - b[-1]["soh"]):.3f} / {max(x["temperature"] for x in b):.1f}'
@@ -179,7 +191,7 @@ def fmt(v):
 
 def main():
     ci, src, hours = ci_lookup()
-    data = {n: load(ROOT / "data/DatasetV3" / f) for n, f in FILES.items()}
+    data = {n: load(ROOT / "data/DatasetV4" / f) for n, f in FILES.items()}
     if hours is not None:  # hourly CSV: make sure timestamps actually line up, else misses silently use STATIC
         rows = [r for d in data.values() for r in d]
         cov = sum(r["dt"][:13] in hours for r in rows) / len(rows)
@@ -195,22 +207,30 @@ def main():
         ("  grid export kWh", 45.09, 17.57),
     ]:
         assert abs(a[key] - va) < 0.01 and abs(b[key] - vb) < 0.01, (key, a[key], b[key])
+    c = res["C"]
+    for key, v in [("E1 net energy bill €", 2.89), ("  PV energy kWh", 93.06),
+                   ("  grid import kWh", 58.73), ("  grid export kWh", 42.87)]:
+        assert abs(c[key] - v) < 0.01, (key, c[key])
     print(f"carbon source: {src}\n")
-    print("| KPI | A (Orch+Cost) | B (Orch+Cost+Sust) |\n|---|---|---|")
+    print("| KPI | A (Orch+Cost) | B (Orch+Cost+Sust) | C (Orch+Cost+Sust, same dirt as A) |\n|---|---|---|---|")
     for key in a:
         if not key.startswith("_"):
-            print(f"| {key} | {fmt(a[key])} | {fmt(b[key])} |")
-    # trade-off B vs A, both measured against their own rule baseline (removes PV/SoC difference)
-    d_cost = b["_excess_cost"] - a["_excess_cost"]
-    d_co2 = a["_excess_co2"] - b["_excess_co2"]  # kg CO2 saved by B
-    d_llm = b["O5 LLM cost per week €"] - a["O5 LLM cost per week €"]
-    d_deg = b["B3 degradation cost € (c_deg 0.10)"] - a["B3 degradation cost € (c_deg 0.10)"]
-    print(f"\nT1 B-vs-A extra energy cost € (baseline-relative): {d_cost:.2f}")
-    print(f"T1 B-vs-A CO2 saved kg (baseline-relative): {d_co2:.2f}")
-    print(f"T1 marginal abatement cost €/kg: {d_cost / d_co2:.2f}" if d_co2 > 0 and d_cost > 0
-          else "T1 marginal abatement cost: n/a (B dominates or is dominated)")
-    print(f"T2 total cost of sustainability € (energy+wear+LLM): {d_cost + d_deg + d_llm:.2f}")
-
+            print(f"| {key} | {fmt(a[key])} | {fmt(b[key])} | {fmt(c[key])} |")
+    # trade-off vs A, each run measured against its own rule baseline (removes PV/SoC differences)
+    for name, x in [("C", c), ("B", b)]:
+        d_cost = x["_excess_cost"] - a["_excess_cost"]
+        d_co2 = a["_excess_co2"] - x["_excess_co2"]  # kg CO2 saved vs A
+        d_imp = a["  excess import vs rule kWh (SoC-adj)"] - x["  excess import vs rule kWh (SoC-adj)"]
+        print(f"\nT1 {name}-vs-A import saved kWh (baseline-relative, SoC-adj): {d_imp:.2f}")
+        d_llm = x["O5 LLM cost per week €"] - a["O5 LLM cost per week €"]
+        d_deg = x["B3 degradation cost € (BSS.json wear)"] - a["B3 degradation cost € (BSS.json wear)"]
+        print(f"T1 {name}-vs-A extra energy cost € (baseline-relative): {d_cost:.2f}")
+        print(f"T1 {name}-vs-A CO2 saved kg (baseline-relative): {d_co2:.2f}")
+        print(f"T1 marginal abatement cost €/kg: {d_cost / d_co2:.2f}" if d_co2 > 0 and d_cost > 0
+              else "T1 marginal abatement cost: n/a (dominates or is dominated)")
+        print(f"T2 {name}-vs-A total cost of sustainability € (energy+wear+LLM): {d_cost + d_deg + d_llm:.2f}")
+        if d_co2 > 0:
+            print(f"T3 {name}-vs-A abatement cost incl. LLM €/t CO2: {1000 * (d_cost + d_deg + d_llm) / d_co2:,.0f}")
 
 if __name__ == "__main__":
     main()
