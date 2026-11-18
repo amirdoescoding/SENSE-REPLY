@@ -72,12 +72,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pipeline .link { stroke-width: 1.5; }
 .pipeline .fail-dash { stroke: var(--alert) !important; stroke-dasharray: 5 4; }
 .pipeline .arc { fill: none; stroke: var(--mute); stroke-width: 1; stroke-dasharray: 3 4; }
-.pipeline .arc-label { font: 400 13px var(--sans); fill: var(--mute); paint-order: stroke; stroke: #fff; stroke-width: 8px; }
+.pipeline .arc-label { font: 400 calc(13px * var(--k, 1)) var(--sans); fill: var(--mute); paint-order: stroke; stroke: #fff; stroke-width: 8px; }
 .pipeline .node { fill: #fff; stroke: var(--line); stroke-width: 1.5; transition: fill 180ms ease, stroke 180ms ease; }
 .pipeline .node.active { fill: var(--agent-soft); stroke: var(--agent); }
 .pipeline .node.fail { stroke: var(--alert); }
 .pipeline .icon { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.pipeline .node-label { font: 400 14px var(--sans); fill: var(--ink-2); }
+.pipeline .node-label { font: 400 calc(14px * var(--k, 1)) var(--sans); fill: var(--ink-2); }
 .pipeline .node-label.on { fill: var(--ink); font-weight: 500; }
 
 .pipeline .packet { fill: var(--agent); opacity: 0; pointer-events: none; }

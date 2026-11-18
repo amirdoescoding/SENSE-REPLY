@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DAY_STEPS, MAX_STEP } from './lib.js'
 
 const NODES = [
@@ -23,6 +23,14 @@ export default function Pipeline({ active, fail, step, epoch, playing, speed, re
   const resumed = useRef(false)
   const layer = useRef(null)
   const ov = useRef({})
+  const svg = useRef(null)
+  const [k, setK] = useState(1) // viewBox units per px when the card is narrower than 1400: keeps labels at their real px size
+
+  useEffect(() => {
+    const ro = new ResizeObserver(([e]) => setK(Math.max(1, 1400 / e.contentRect.width)))
+    ro.observe(svg.current)
+    return () => ro.disconnect()
+  }, [])
 
   const go = (el, keys, opts) => {
     const a = el.animate(keys, opts)
@@ -88,7 +96,7 @@ export default function Pipeline({ active, fail, step, epoch, playing, speed, re
 
   return (
     <section className="card pipeline">
-      <svg viewBox="0 0 1400 190" role="img" aria-label="Decision pipeline: inputs, agent, validator and gate, rule, clamp, site, memory">
+      <svg ref={svg} viewBox="0 0 1400 190" style={{ '--k': k }} role="img" aria-label="Decision pipeline: inputs, agent, validator and gate, rule, clamp, site, memory">
         <defs>
           <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
             <path d="M1 1l6 3-6 3" fill="none" stroke="context-stroke" strokeWidth="1.2" />
@@ -112,7 +120,9 @@ export default function Pipeline({ active, fail, step, epoch, playing, speed, re
               <rect ref={(e) => { ov.current[id] = e }} x={X(i) - 28} y={Y - 28} width="56" height="56" rx="14" className={'ov ' + id} />
             )}
             <path d={d} transform={`translate(${X(i) - 12} ${Y - 12})`} className="icon" />
-            <text x={X(i)} y={Y + 58} textAnchor="middle" className={'node-label' + (active === id ? ' on' : '')}>{label}</text>
+            <text x={X(i)} y={Y + 58} textAnchor="middle" className={'node-label' + (active === id ? ' on' : '')}>
+              {k > 1.2 ? label.split(', ').map((t, j) => <tspan key={j} x={X(i)} dy={j ? '1.2em' : 0}>{t}</tspan>) : label}
+            </text>
           </g>
         ))}
         <g ref={layer} />

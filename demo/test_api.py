@@ -20,7 +20,10 @@ for m in ("conservative", "upside"):
 assert get("/api/run?mode=conservative&lambda=0.3").status_code == 422
 assert get("/api/run?mode=foo&lambda=0.1").status_code == 422
 assert get("/api/run?mode=upside&lambda=-0").status_code == 200  # -0.0 must map to the 0.0 file
-assert "columns" in get("/api/kpis").json()
+k = get("/api/kpis").json()
+assert "columns" in k and set(k["meta"]) == set(k["thresholds"])
+r = get("/")  # the SPA must be mounted, else the leak checks below pass on plain 404s
+assert r.status_code == 200 and "<div id=\"root\">" in r.text, "demo/web/dist missing: run npm run build"
 cmp = get("/api/compare")
 assert cmp.status_code == 200 and len(cmp.json()["t"]) == 672
 assert set(cmp.json()["series"]) == {"Static rule", "No battery", "Pilot C", "Pilot A"}
