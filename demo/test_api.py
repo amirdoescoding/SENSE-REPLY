@@ -19,6 +19,7 @@ for m in ("conservative", "upside"):
         assert r.status_code == 200 and len(r.json()["schedule"]) == 672, (m, lam)
 assert get("/api/run?mode=conservative&lambda=0.3").status_code == 422
 assert get("/api/run?mode=foo&lambda=0.1").status_code == 422
+assert get("/api/run?mode=upside&lambda=-0").status_code == 200  # -0.0 must map to the 0.0 file
 assert "columns" in get("/api/kpis").json()
 
 api._cache = (0.0, None)
