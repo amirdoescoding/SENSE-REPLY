@@ -749,19 +749,19 @@
     "verdict": "Good"
    },
    "N1": {
-    "value": 1.1733,
+    "value": 1.1616,
     "verdict": "Good"
    },
    "N2": {
-    "value": 0.0,
+    "value": 0.0082,
     "verdict": "Good"
    },
    "F1": {
-    "value": 0.1303,
+    "value": 0.1185,
     "verdict": "Good"
    },
    "O5": {
-    "value": 0.0,
+    "value": 0.0118,
     "verdict": "Good"
    },
    "S2b": {
@@ -829,7 +829,7 @@
     "verdict": "Context"
    },
    "O1": {
-    "value": 0.0,
+    "value": 0.0104,
     "verdict": "Good"
    },
    "O3": {
@@ -849,7 +849,7 @@
     "verdict": "Context"
    },
    "EXP": {
-    "value": 19.8123,
+    "value": 19.8124,
     "verdict": "Context"
    },
    "PV": {
@@ -863,47 +863,47 @@
     "verdict": "Good"
    },
    "VCR": {
-    "value": 0.6473,
+    "value": 0.6474,
     "verdict": "Good"
    },
    "VORB": {
-    "value": 0.1141,
+    "value": 0.1142,
     "verdict": "Good"
    },
    "N1": {
-    "value": 1.1561,
+    "value": 1.1446,
     "verdict": "Good"
    },
    "N2": {
-    "value": 0.0,
+    "value": 0.0082,
     "verdict": "Good"
    },
    "F1": {
-    "value": 0.1141,
+    "value": 0.1026,
     "verdict": "Good"
    },
    "O5": {
-    "value": 0.0,
+    "value": 0.0115,
     "verdict": "Good"
    },
    "S2b": {
-    "value": -0.2606,
+    "value": -0.2615,
     "verdict": "Improvable"
    },
    "S3": {
-    "value": 372.5787,
+    "value": 372.5754,
     "verdict": "Improvable"
    },
    "MAC": {
-    "value": 0.0174,
+    "value": 0.0171,
     "verdict": "Good"
    },
    "S1": {
-    "value": 12.1589,
+    "value": 12.1597,
     "verdict": "Context"
    },
    "SCR": {
-    "value": 0.8204,
+    "value": 0.8203,
     "verdict": "Good"
    },
    "SSR": {
@@ -927,11 +927,11 @@
     "verdict": "Good"
    },
    "B2": {
-    "value": 5.3592,
+    "value": 5.359,
     "verdict": "Good"
    },
    "B4": {
-    "value": 0.2961,
+    "value": 0.2946,
     "verdict": "Improvable"
    },
    "B3": {
@@ -939,11 +939,11 @@
     "verdict": "Context"
    },
    "B6": {
-    "value": 0.0491,
+    "value": 0.0506,
     "verdict": "Context"
    },
    "C5": {
-    "value": 0.7752,
+    "value": 0.7753,
     "verdict": "Improvable"
    },
    "C4": {
@@ -951,7 +951,7 @@
     "verdict": "Context"
    },
    "O1": {
-    "value": 0.0,
+    "value": 0.0104,
     "verdict": "Good"
    },
    "O3": {
@@ -959,7 +959,7 @@
     "verdict": "Good"
    },
    "C1": {
-    "value": 2.1987,
+    "value": 2.1986,
     "verdict": "Context"
    },
    "S": {
@@ -967,11 +967,11 @@
     "verdict": "Context"
    },
    "IMP": {
-    "value": 32.8212,
+    "value": 32.8235,
     "verdict": "Context"
    },
    "EXP": {
-    "value": 16.718,
+    "value": 16.7206,
     "verdict": "Context"
    },
    "PV": {
@@ -993,19 +993,19 @@
     "verdict": "Good"
    },
    "N1": {
-    "value": 1.1275,
+    "value": 1.116,
     "verdict": "Good"
    },
    "N2": {
-    "value": 0.0,
+    "value": 0.0083,
     "verdict": "Good"
    },
    "F1": {
-    "value": 0.084,
+    "value": 0.0725,
     "verdict": "Good"
    },
    "O5": {
-    "value": 0.0,
+    "value": 0.0115,
     "verdict": "Good"
    },
    "S2b": {
@@ -1017,7 +1017,7 @@
     "verdict": "Improvable"
    },
    "MAC": {
-    "value": 0.0388,
+    "value": 0.0386,
     "verdict": "Good"
    },
    "S1": {
@@ -1073,7 +1073,7 @@
     "verdict": "Context"
    },
    "O1": {
-    "value": 0.0,
+    "value": 0.0104,
     "verdict": "Good"
    },
    "O3": {
@@ -1115,19 +1115,19 @@
     "verdict": "Good"
    },
    "N1": {
-    "value": 1.8294,
+    "value": 1.821,
     "verdict": "Good"
    },
    "N2": {
-    "value": 0.0,
+    "value": 0.004,
     "verdict": "Good"
    },
    "F1": {
-    "value": 0.7941,
+    "value": 0.7857,
     "verdict": "Good"
    },
    "O5": {
-    "value": 0.0,
+    "value": 0.0085,
     "verdict": "Good"
    },
    "S2b": {
@@ -1195,7 +1195,7 @@
     "verdict": "Context"
    },
    "O1": {
-    "value": 0.0,
+    "value": 0.0104,
     "verdict": "Good"
    },
    "O3": {
@@ -1237,19 +1237,19 @@
     "verdict": "Good"
    },
    "N1": {
-    "value": 1.5683,
+    "value": 1.5588,
     "verdict": "Good"
    },
    "N2": {
-    "value": 0.0,
+    "value": 0.0052,
     "verdict": "Good"
    },
    "F1": {
-    "value": 0.5295,
+    "value": 0.52,
     "verdict": "Good"
    },
    "O5": {
-    "value": 0.0,
+    "value": 0.0095,
     "verdict": "Good"
    },
    "S2b": {
@@ -1261,7 +1261,7 @@
     "verdict": "Improvable"
    },
    "MAC": {
-    "value": 0.0292,
+    "value": 0.0293,
     "verdict": "Good"
    },
    "S1": {
@@ -1317,7 +1317,7 @@
     "verdict": "Context"
    },
    "O1": {
-    "value": 0.0,
+    "value": 0.0104,
     "verdict": "Good"
    },
    "O3": {
@@ -1359,19 +1359,19 @@
     "verdict": "Good"
    },
    "N1": {
-    "value": 1.129,
+    "value": 1.1139,
     "verdict": "Good"
    },
    "N2": {
-    "value": 0.0,
+    "value": 0.0109,
     "verdict": "Good"
    },
    "F1": {
-    "value": 0.0856,
+    "value": 0.0705,
     "verdict": "Good"
    },
    "O5": {
-    "value": 0.0,
+    "value": 0.0151,
     "verdict": "Good"
    },
    "S2b": {
@@ -1383,7 +1383,7 @@
     "verdict": "Improvable"
    },
    "MAC": {
-    "value": 0.0561,
+    "value": 0.0566,
     "verdict": "Good"
    },
    "S1": {
@@ -1439,7 +1439,7 @@
     "verdict": "Context"
    },
    "O1": {
-    "value": 0.0,
+    "value": 0.0104,
     "verdict": "Good"
    },
    "O3": {

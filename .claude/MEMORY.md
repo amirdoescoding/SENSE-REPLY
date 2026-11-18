@@ -103,4 +103,9 @@
   - Ours conservative λ0.1: S_net 1.156, VORB +0.114, 16 Good (= S5 conservative).
   - Upside λ0.1: S_net 1.568, VORB +0.53, 14 Good.
   - Knob regret vs the rule is only ±1 cent/day in this week.
-- **Gemini:** model `gemini-3.8-flash`, with frequent 503 "high demand". The free-tier quota was exhausted on 2026-11-18 (429), so `agent.ask` stops calling for the rest of the run once it sees a 429.
+- **Gemini:**
+  - Model: `gemini-3.5-flash-lite` (500 requests/day). The 3.8 and 3.6 Flash free tiers allow only 20/day, and a full run needs 42 calls.
+  - The thought summary needs `thinkingBudget: 2048`.
+  - 503 "high demand" is frequent: retries handle it. On a 429, the rest of the run uses memory.
+  - "Live API" models (unlimited requests) are WebSocket voice/streaming models, not used.
+- **With Gemini (7/7 days):** the knobs stay near the defaults (one reserve of 2 kWh). The KPIs equal the memory-fallback run. O5 = €0.0115/wk (Excel S5: 0.0113). Ours conservative λ0.1: N1 1.145, 16 Good.

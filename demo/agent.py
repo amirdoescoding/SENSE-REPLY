@@ -15,7 +15,8 @@ from pathlib import Path
 from sim import ROOT, day_score, default_knobs, load_run, rule_flows, run_day
 from timeseries import soc0_of  # on sys.path via sim
 
-MODEL = "gemini-3.8-flash"  # listed by the API for this key on 2026-11-18; stable Flash
+# 3.8/3.6 Flash free tier = 20 requests/day; a full run needs 42 calls. Flash-Lite allows 500/day (2026-11-18).
+MODEL = "gemini-3.5-flash-lite"
 OUT = Path(__file__).resolve().parent / "out"
 CACHE = OUT / "gemini_cache.json"
 MEMORY = OUT / "memory.json"
@@ -149,7 +150,7 @@ def ask(text):
     if not key or QUOTA_HIT:
         return None
     body = {"contents": [{"parts": [{"text": text}]}],
-            "generationConfig": {"responseMimeType": "application/json", "thinkingConfig": {"includeThoughts": True}}}
+            "generationConfig": {"responseMimeType": "application/json", "thinkingConfig": {"includeThoughts": True, "thinkingBudget": 2048}}}
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
         data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
