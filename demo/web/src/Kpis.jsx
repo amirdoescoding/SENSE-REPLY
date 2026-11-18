@@ -8,7 +8,7 @@ const VD = { Good: ['g', '✓', 'Good'], Improvable: ['i', '↑', 'Improvable'] 
 
 function fmt(v, unit) {
   if (v === null || v === undefined) return 'n/a'
-  const n = unit.startsWith('kg') || unit.startsWith('g/') || unit.startsWith('kWh') ? 1 : v !== 0 && Math.abs(v) < 0.1 ? 3 : 2
+  const n = unit === 'count' ? 0 : unit.startsWith('kg') || unit.startsWith('g/') || unit.startsWith('kWh') ? 1 : Math.abs(v) >= 0.001 && Math.abs(v) < 0.1 ? 3 : 2
   return num(v, n)
 }
 
@@ -77,7 +77,7 @@ function Counts({ kpis, ours, label }) {
         return (
           <div className="cnt" key={k}>
             <span>{label}</span>
-            <div className="bar-bg"><div className={k === ours ? 'ours' : k.startsWith('S5') ? 's5' : ''} style={{ width: `${(good / n) * 100}%` }} /></div>
+            <div className="bar-bg"><div className={k === ours ? 'ours' : k.startsWith('S5') ? 's5' : k === 'Static rule' ? 'rule' : ''} style={{ width: `${n ? (good / n) * 100 : 0}%` }} /></div>
             <span className="mono">{good}/{n}</span>
           </div>
         )
@@ -125,11 +125,10 @@ function Carbon() {
 
 function Measurable({ run }) {
   const days = run.days
-  const notes = days.flatMap((d) => d.validator_notes)
   const rows = [
     ['F5', 'Fallback rate', `${days.filter((d) => d.used !== 'plan').length} / ${days.length} days`],
     ['P4', 'Invalid-output rate', `${days.filter((d) => d.validator_notes.some((n) => n.includes('invalid'))).length} / ${days.length} plans`],
-    ['P4', 'Clamp rate', `${notes.filter((n) => n.includes('clamped')).length} / ${days.length} plans`],
+    ['P4', 'Clamp rate', `${days.filter((d) => d.validator_notes.some((n) => n.includes('clamped'))).length} / ${days.length} plans`],
     ['P4', 'Explanation share', `${days.filter((d) => d.explanation?.trim()).length} / ${days.length} plans`],
   ]
   return (

@@ -131,13 +131,15 @@ function Sim({ data, mode, lam, setMode, setLam }) {
     const onKey = (e) => {
       if (hashTab() === 'kpis') return // hidden replay: let Space scroll the KPI page
       if (e.target.closest('input, textarea, select, summary')) return
-      if (e.code === 'Space' && e.target.closest('button, a')) return // a focused control keeps its native Space
+      if (e.code === 'Space' && e.target.matches('button:focus-visible, a:focus-visible')) return // keyboard focus keeps native Space; mouse-left focus still toggles
       if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) pb.toggle() }
       else if (e.key === 'ArrowLeft') pb.seek(pb.step - 1)
       else if (e.key === 'ArrowRight') pb.seek(pb.step + 1)
     }
+    const noClick = (e) => { if (hashTab() !== 'kpis' && e.code === 'Space' && !e.target.matches('input, textarea, select, summary, :focus-visible')) e.preventDefault() } // else a mouse-focused button clicks on keyup
     addEventListener('keydown', onKey)
-    return () => removeEventListener('keydown', onKey)
+    addEventListener('keyup', noClick)
+    return () => { removeEventListener('keydown', onKey); removeEventListener('keyup', noClick) }
   })
 
   const blocked = !d.gate.passed

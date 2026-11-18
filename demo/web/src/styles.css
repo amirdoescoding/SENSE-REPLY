@@ -1,7 +1,7 @@
 :root {
   --ink: #151F27; --ink-2: #3F4D5A; --mute: #66727E; --line: #D6E0EA; --paper: #F4F8FC; --card: #FFFFFF;
   --agent: #3A7DDA; --agent-soft: #E8F0FB; --sun: #F2A900; --store: #02B843; --grid: #586674; --alert: #EB0037;
-  --good-bg: #E3F7EA; --good-fg: #027A31; --imp-bg: #FDE7EC; --imp-fg: #B0002A;
+  --co2-hi: #C9733A; --good-bg: #E3F7EA; --good-fg: #027A31; --imp-bg: #FDE7EC; --imp-fg: #B0002A;
   --ease-in-out: cubic-bezier(.77, 0, .175, 1);
   --ease-out: cubic-bezier(.23, 1, .32, 1);
   --shadow: 0 1px 2px #151F270F;
@@ -196,13 +196,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .cnt { display: grid; grid-template-columns: 190px 1fr 44px; gap: 12px; align-items: center; margin-top: 10px; font-size: 14px; }
 .bar-bg { height: 10px; background: var(--paper); border-radius: 5px; overflow: hidden; }
 .bar-bg > div { height: 100%; background: var(--ink-2); border-radius: 5px; }
-.bar-bg > .s5 { background: var(--mute); }
+.bar-bg > .rule { background: var(--mute); }
+.bar-bg > .s5 { background: #9DBEEC; }
 .bar-bg > .ours { background: var(--agent); }
 .cnt .mono { text-align: right; }
 .co2-now { margin: 0 0 4px; }
 .co2 { display: block; width: 100%; height: auto; margin-bottom: 6px; }
 .co2 .ref { stroke: var(--mute); stroke-dasharray: 3 4; }
-.co2 .line { fill: none; stroke: var(--grid); stroke-width: 2; }
+.co2 .line { fill: none; stroke: var(--co2-hi); stroke-width: 2; }
 .co2 text { font: 400 11px var(--monof); fill: var(--mute); }
 /* below 1600 the table needs the full width: side cards move under it */
 @media (max-width: 1599px) {

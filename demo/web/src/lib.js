@@ -22,7 +22,7 @@ export function nextDayWeekday(t) {
 
 export const sgn = (v, n = 2) => (v < 0 ? '−' : '+') + Math.abs(v).toFixed(n)
 export const eur = (v, n = 2) => (v < 0 ? '−' : '') + '€' + Math.abs(v).toFixed(n)
-export const num = (v, n = 2) => (v < 0 ? '−' : '') + Math.abs(v).toFixed(n)
+export const num = (v, n = 2) => { const s = Math.abs(v).toFixed(n); return (v < 0 && +s ? '−' : '') + s } // no "−0.00"
 export const kfmt = (n) => (n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n))
 
 // Per step {alt 0..1, isNight, p} from the data: sunrise/sunset = first/last step with pv_kw > 0 on each calendar day.

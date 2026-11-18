@@ -27,7 +27,7 @@ export default function Pipeline({ active, fail, step, epoch, playing, speed, re
   const [k, setK] = useState(1) // viewBox units per px when the card is narrower than 1400: keeps labels at their real px size
 
   useEffect(() => {
-    const ro = new ResizeObserver(([e]) => setK(Math.max(1, 1400 / e.contentRect.width)))
+    const ro = new ResizeObserver(([e]) => { if (e.contentRect.width) setK(Math.min(1.7, Math.max(1, 1400 / e.contentRect.width))) }) // width 0 while the tab is hidden
     ro.observe(svg.current)
     return () => ro.disconnect()
   }, [])
