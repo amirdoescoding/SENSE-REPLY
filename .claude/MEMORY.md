@@ -80,3 +80,12 @@
   - three.js isometric site.
 - Brand: Reply CSS palette (ink #151F27, blue #3A7DDA), fonts Instrument Sans + JetBrains Mono. The look follows MAGO (Reply's energy platform, see the photos in assets/images).
 - Mockups render via `docs/mockups/render.sh` (Playwright's cached headless Chromium; no PIL).
+- Chosen layout: mock-1 (MAGO classic) + KPI tab, after the de-slop pass (no eyebrow caps, no pills, no glow, one KPI strip). Skills impeccable + design-taste-frontend are installed in the project; impeccable adds hooks in settings.local.json.
+- **Final KPI source of truth:** `data/Sense_Reply_B2_KPI_Conformity.xlsx` + `docs/Sense Reply BDD B2 – Full Analysis Report.docx` (teammate Sofia, 2026-11-18). Headline KPIs: S_net, VCR, VORB, N1, N2, F1, O5, S2b, MAC, SCR, SSR, PSR, B4, C5, O1, with verdicts vs editable thresholds.
+- Report basis differs from our older docs:
+  - S5 on **run C inputs, start SoC 0.80**;
+  - carbon constant **0.356 kg/kWh** (hourly is only a check);
+  - token price 0.86 €/$;
+  - S5 conservative N1 +1.10 €/wk, upside +1.78 (grid charging, CO2 22.2 kg, peak 5.1 kW → shadow mode).
+  The demo follows the report.
+- Report §11 "Scenario Lab" = our demo: JSON plan schema, guardrails, download.
