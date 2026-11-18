@@ -35,6 +35,11 @@ def kpis():
     return FileResponse(OUT / "kpis.json")
 
 
+@app.get("/api/compare")
+def compare():
+    return FileResponse(OUT / "compare.json")
+
+
 @app.get("/api/live/carbon")
 def live_carbon():
     global _cache

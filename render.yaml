@@ -3,8 +3,8 @@ services:
     name: sense-reply-demo
     runtime: python
     plan: free
-    # session 4 appends `cd demo/web && npm ci && npm run build` to the build command
-    buildCommand: pip install -r demo/requirements.txt
+    # The web build needs Node in Render's Python build image (unverified until the session 5 deploy; if missing, set NODE_VERSION or commit dist).
+    buildCommand: pip install -r demo/requirements.txt && cd demo/web && npm ci && npm run build
     startCommand: uvicorn --app-dir demo api:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/kpis
     envVars:

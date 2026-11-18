@@ -115,3 +115,16 @@
 - Live carbon reuses `analysis/carbon.hourly_ci`; keys are Italian local hours. Only type names are logged (token is in the URL).
 - 5 gate blocks across the 6 runs fell back to "previous valid plan"; every day's source is gemini.
 - Open for session 4: price + comparison series missing from run rows; `kpis.json` carbon_source label wrong (see TODOS).
+
+## Demo UI sim (2026-11-18), branch `demo-ui-sim`, see demo/web, .logs/2026-11/18/demo-ui-sim.md
+- Stack: Vite + React (plain JS) + `three`, with @fontsource fonts. The dev proxy sends `/api` to :8000. `npm run build` writes `demo/web/dist`, which api.py serves.
+- URL params `?mode=&lambda=&step=&play=1`. Passing `step` pauses autoplay. Use them for demo jumps and screenshots.
+- The sky is a card backdrop driven by the data's PV:
+  - the sun and moon arc positions come from each day's first and last PV>0 step, about 03:15–17:30 in this data;
+  - dusk is about 17:15, not 18:30.
+- The UI's days are plan windows (11:00 → 10:45), so the chips are labelled "Plan".
+- Gate compares against the **default knobs** (plain S5 MPC), not the static rule. Label it that way.
+- The regret on each similar past day is always scored at λ 0.10.
+- `--mute` is now #66727E (WCAG AA). DESIGN.md is updated.
+- Headless screenshots need `--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --enable-logging=stderr --v=0`. Without the logging flag the shot fires before the data loads.
+- Subagents cannot load skills: run the design-skill passes in the main session.

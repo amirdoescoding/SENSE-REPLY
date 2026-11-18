@@ -21,6 +21,13 @@ assert get("/api/run?mode=conservative&lambda=0.3").status_code == 422
 assert get("/api/run?mode=foo&lambda=0.1").status_code == 422
 assert get("/api/run?mode=upside&lambda=-0").status_code == 200  # -0.0 must map to the 0.0 file
 assert "columns" in get("/api/kpis").json()
+cmp = get("/api/compare")
+assert cmp.status_code == 200 and len(cmp.json()["t"]) == 672
+assert set(cmp.json()["series"]) == {"Static rule", "No battery", "Pilot C", "Pilot A"}
+for name in ("memory.json", "gemini_cache.json"):
+    for u in (f"/api/{name}", f"/{name}", f"/out/{name}", f"/api/compare/../{name}"):
+        r = get(u)
+        assert r.status_code != 200 or "knobs" not in r.text[:2000] and "contents" not in r.text[:2000], u
 
 api._cache = (0.0, None)
 api.carbon.token = lambda: None

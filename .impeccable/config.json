@@ -1,0 +1,23 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "instrument sans",
+        "createdAt": "2026-11-18T21:36:45.279Z",
+        "reason": "docs/DESIGN.md §2: Instrument Sans is the agreed stand-in for Reply's proprietary Alaska (session 1 design decision)"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "demo/web/src/styles.css"
+        ],
+        "createdAt": "2026-11-18T21:41:55.073Z",
+        "reason": "docs/DESIGN.md §4 specifies the agent 'why' block with a 3px --agent left rule; layout mock-1 chosen by the user in session 1"
+      }
+    ]
+  }
+}

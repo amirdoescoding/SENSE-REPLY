@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles.css"
+        ],
+        "createdAt": "2026-11-18T21:53:18.855Z",
+        "reason": "docs/DESIGN.md §4 specifies the agent 'why' block with a 3px --agent left rule (mock-1 layout); same exception as demo/web/src/styles.css, path seen relative to demo/web"
+      }
+    ]
+  }
+}

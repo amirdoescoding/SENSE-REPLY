@@ -23,14 +23,16 @@ SENSE-REPLY/
 │   ├── FRAMEWORK.md      # OLD redesign, superseded by PROPOSAL.md
 │   ├── diagrams/         # framework.mmd (source) → .svg/.png/.excalidraw
 │   ├── DESIGN.md         # demo design system (Reply palette, components, motion, 3D direction)
-│   ├── mockups/          # demo mockups: mock.html → render.sh → mock-{1,2,3,kpi}.png
+│   ├── mockups/          # demo mockups: mock.html → render.sh → mock-{1,2,3,kpi}.png; sky.html → sky.sh → sky-{backdrop,dome}-*.png
 │   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning, 07 self-hosting + simple framework
 ├── demo/                 # hosted demo of PROPOSAL (sessions in .claude/TODOS.md)
 │   ├── sim.py            # engine: daily agent knobs → gate → rolling LP → Excel KPIs → out/*.json (--check)
 │   ├── agent.py          # Gemini REST + cache + validator + k-NN memory
-│   ├── api.py            # FastAPI: /api/run?mode=&lambda=, /api/kpis, /api/live/carbon; serves web/dist
+│   ├── api.py            # FastAPI: /api/run?mode=&lambda=, /api/kpis, /api/compare, /api/live/carbon; serves web/dist
 │   ├── test_api.py       # python demo/test_api.py → "api ok"
-│   └── out/              # precomputed runs, kpis.json, memory.json, gemini_cache.json (not served)
+│   ├── web/              # Vite + React (plain JS) + three: App (data, header, KPI strip, playback bar), AgentPanel,
+│   │                     #   Pipeline (WAAPI packets), Site (three.js site + data-driven sky), usePlayback, lib; npm run build → dist
+│   └── out/              # precomputed runs (+ per-step price), kpis.json, compare.json, memory.json, gemini_cache.json (last two not served)
 ├── render.yaml           # one free Render web service (deploy in session 5)
 └── analysis/
     ├── kpis.py           # python3 analysis/kpis.py → KPI table A/B/C, baselines, T1-T3, self-check
