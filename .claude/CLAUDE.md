@@ -107,3 +107,7 @@ overcomplication, and clarifying questions come before implementation rather tha
 3) Update @RESTART.md with what you were doing and where you stopped
 4) Update Backlog with Everything still left to do
 5) Update ARCHITECTURE.md if any changes were made to the structure
+
+## Demo (framework simulation)
+- Plan and progress: `.claude/TODOS.md`. One session = one feature branch, split into commits.
+- Mockups (PNG, canvas-design) come before any front-end code. The UI follows `docs/DESIGN.md`.
