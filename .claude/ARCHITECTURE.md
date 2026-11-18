@@ -22,6 +22,8 @@ SENSE-REPLY/
 │   ├── TIMESERIES.md     # Time-series report: daily pattern, per day, grid, coordination, anomalies
 │   ├── FRAMEWORK.md      # OLD redesign, superseded by PROPOSAL.md
 │   ├── diagrams/         # framework.mmd (source) → .svg/.png/.excalidraw
+│   ├── DESIGN.md         # demo design system (Reply palette, components, motion, 3D direction)
+│   ├── mockups/          # demo mockups: mock.html → render.sh → mock-{1,2,3,kpi}.png
 │   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning, 07 self-hosting + simple framework
 └── analysis/
     ├── kpis.py           # python3 analysis/kpis.py → KPI table A/B/C, baselines, T1-T3, self-check

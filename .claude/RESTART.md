@@ -1,9 +1,6 @@
 # Restart point
 
-2026-11-17: Branch `dataset-v4` (from main, not pushed, 8 commits). Done:
-- DatasetV4 moved under `data/`;
-- kpis.py now covers A/B/C, wear from BSS.json, and the C-vs-A trade-off (T1–T3);
-- new timeseries.py;
-- docs: KPIS.md (dashboard + trade-off matrix + teammate reconciliation), TIMESERIES.md, PROPOSAL.md (exec summary + simple framework), research/07.
-
-Next: team review of PROPOSAL.md; push + PR when the user asks; optionally replay-test the proposal (Step 1 knobs as a rule variant) on the data.
+2026-11-18: Branch `demo-design` (from main, not pushed, 4 commits). Session 1 of 5 for the framework demo (`.claude/TODOS.md`).
+- Done: TODOS.md, the CLAUDE.md demo section, `docs/DESIGN.md`, `docs/mockups/` (PHILOSOPHY.md, mock.html, 4 PNGs).
+- **Waiting on the user:** pick a mockup (1 MAGO classic / 2 pipeline-first / 3 stage, or a mix). Then update DESIGN.md §3 with the choice.
+- Next session: `demo-sim-engine` (verify the current Gemini Flash model ID + free limits first).

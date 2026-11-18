@@ -14,7 +14,7 @@ Close each session with: memory files + `graphify update .`.
 - Look: MAGO / Sense Reply light (see `docs/DESIGN.md`). Audience: a technical but relaxed jury, live demo with window switching.
 
 ## Sessions
-- [ ] **1 `demo-design`**: DESIGN.md, canvas-design philosophy, PNG mockups in `docs/mockups/`. The user picks one.
+- [x] **1 `demo-design`**: DESIGN.md, canvas-design philosophy, PNG mockups in `docs/mockups/`. The user picks one.
 - [ ] **2 `demo-sim-engine`**: `demo/sim.py`.
   - Reuses kpis/replay/carbon/timeseries.
   - Gemini daily knobs → validator → fallback → knob rule + clamp → memory.

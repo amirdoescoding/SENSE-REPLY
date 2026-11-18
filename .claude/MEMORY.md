@@ -66,3 +66,17 @@
 - Client feedback: they like the carbon data; they want self-hosting plus learning; they are sceptical of anything slow to build (they chose 2 prompt agents for speed).
 - Self-hosting: after the call cut (~180–540× fewer tokens), an EU API costs ~€2–9/site/yr vs a Jetson at ~€90/site/yr. Argue for self-hosting on residency, offline operation and model churn, not cost. Medium 3.5 is deprecated (→ Large 4). See research/07.
 - User wants work split into commits (one per logical step).
+
+## Demo (2026-11-18), see .claude/TODOS.md, docs/DESIGN.md
+- Building a hosted demo of the PROPOSAL framework. Plan: 5 sessions, one branch each (design → sim-engine → api → ui-sim → ui-kpis). The user wants **one session at a time**, never all at once.
+- Decisions:
+  - precompute + playback;
+  - memory seeded with A + C days;
+  - A's week + ENTSO-E, plus a live ENTSO-E pull;
+  - λ {0, 0.10, 0.50};
+  - compare against A, C, no battery (rule baseline not shown);
+  - Gemini Flash free tier as the Devstral stand-in (`GEMINI_API_KEY`);
+  - FastAPI + Vite/React on Render;
+  - three.js isometric site.
+- Brand: Reply CSS palette (ink #151F27, blue #3A7DDA), fonts Instrument Sans + JetBrains Mono. The look follows MAGO (Reply's energy platform, see the photos in assets/images).
+- Mockups render via `docs/mockups/render.sh` (Playwright's cached headless Chromium; no PIL).
