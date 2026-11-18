@@ -218,6 +218,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .kt td:first-child, .kt th:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); min-width: 150px; max-width: 150px; box-shadow: 1px 0 0 var(--line); }
   .kt .grp td:first-child { box-shadow: none; }
   .kid { display: block; }
+  .kt th:nth-child(2), .kt td:nth-child(2), .kt th:nth-child(3), .kt td:nth-child(3) { display: none; } /* values start on screen */
 }
 
 /* session 6 polish */
@@ -233,12 +234,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .dc-leg b { font-weight: 500; color: var(--ink); }
 .dc-leg .dc-t { color: var(--ink); font-weight: 500; }
 .daychart svg { display: block; touch-action: pan-y; }
-.daychart text { font: 400 12px var(--monof); fill: var(--mute); }
+.daychart text { font: 400 13px var(--monof); fill: var(--mute); }
 .daychart .dc-val { fill: var(--ink); }
 .dc-grid { stroke: #EEF2F6; }
 .dc-base { stroke: var(--line); }
 .dc-cur { stroke: var(--ink); stroke-width: 1; }
-@media (max-width: 1700px) { .kpi > .muted { min-height: 2.8em; } .kpis .big { font-size: 26px; } } /* labels may wrap: keep the values on one baseline */
+@media (max-width: 1700px) { .kpi > .muted { min-height: 2.8em; } .kpis .big { font-size: 28px; } .time { min-width: 0; } .chip { padding: 5px 8px; } } /* labels may wrap: keep the values on one baseline */
 @media (max-width: 1023px) { .kt-scroll { mask-image: linear-gradient(to right, #000 calc(100% - 28px), #0000); } } /* cue: more columns to the right */
 @media (max-width: 640px) {
   .chip, .seg button, .btn { min-height: 44px; }
@@ -247,5 +248,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* projector: muted labels readable from 4 m */
 @media (min-width: 1600px) {
   .kpi > .muted, .site > .muted, .legend, .meta, .panel h3, .panel .small { font-size: 15px; color: var(--ink-2); }
-  .kpi > .muted { white-space: normal; min-height: 2.8em; }
+  .kpi > .muted { white-space: normal; }
+  .dc-leg, .daychart text { font-size: 14px; }
 }

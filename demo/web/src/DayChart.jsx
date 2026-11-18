@@ -3,7 +3,7 @@ import { DAY_STEPS } from './lib.js'
 
 // Plan-day SoC (ours vs pilot C vs static rule) over the grid buy price: two panels on one time axis, never a dual axis.
 // compare.json is on run C inputs, the same inputs as every replay run. The readout follows the hover, else the playback step.
-const S_H = 92, P_H = 40, TOP = 8, L = 48
+const S_H = 64, P_H = 30, TOP = 8, L = 48
 const SERIES = [['ours', 'Ours', 'var(--agent)', ''], ['pilot', 'Pilot C', 'var(--ink)', ''], ['rule', 'Static rule', 'var(--mute)', '4 3']]
 const pct = (v) => Math.round(v * 100) + ' %'
 
@@ -61,7 +61,7 @@ export default function DayChart({ run, compare, day, step }) {
         <text x={L - 6} y={pB} textAnchor="end">{lo.toFixed(2)}</text>
         <path d={stepPath} fill="none" stroke="var(--grid)" strokeWidth="1.5" />
         {cur >= 0 && <>
-          <line x1={x(cur)} x2={x(cur)} y1={TOP} y2={pB} className="dc-cur" />
+          <path d={`M${x(cur)} ${TOP}V${sB}M${x(cur)} ${pT}V${pB}`} className="dc-cur" />{/* gap: keeps the price label readable */}
           <circle cx={x(cur)} cy={ys(d.ours[cur])} r="4" fill="var(--agent)" stroke="#fff" strokeWidth="2" />
         </>}
       </svg>

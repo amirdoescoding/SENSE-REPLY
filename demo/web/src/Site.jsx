@@ -167,7 +167,7 @@ export default function Site({ row, step, sun, reducedMotion }) {
         return [Math.min(W - w, Math.max(w, x)), y, w]
       })
       const [h, g] = [pos[1], pos[3]] // House sits left of Grid at similar height: on narrow cards push it left, then up if it still hits
-      if (h[0] + h[2] > g[0] - g[2]) { h[0] = Math.max(h[2], g[0] - g[2] - h[2]); if (h[0] + h[2] > g[0] - g[2]) h[1] = g[1] - 44 }
+      if (Math.abs(h[1] - g[1]) < 44 && h[0] + h[2] > g[0] - g[2]) { h[0] = Math.max(h[2], g[0] - g[2] - h[2]); if (h[0] + h[2] > g[0] - g[2]) h[1] = g[1] - 44 }
       pos.forEach(([x, y], i) => { const el = chipEls.current[i]; el.style.left = x + 'px'; el.style.top = y + 'px' })
     }
     const ro = new ResizeObserver(place); ro.observe(card.current); place()

@@ -8,7 +8,7 @@ import { DAY_STEPS, LAMS, MAX_STEP, MODES, num, sgn, sunSeries, timeLabel, weekd
 
 const KPIS = [
   ['N1', 'net value after AI', '€/wk', (v) => sgn(v)],
-  ['VORB', 'value over the free rule', '€/wk', (v) => sgn(v)],
+  ['VORB', 'value over free rule', '€/wk', (v) => sgn(v)],
   ['VCR', 'share of best saving', '', (v) => num(v)],
   ['S1', 'grid CO2', 'kg/wk', (v) => num(v, 1)],
   ['O1', 'LLM calls per decision', '', (v) => num(v)],
