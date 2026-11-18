@@ -14,7 +14,7 @@ export default function usePlayback(initialStep, autoplay) {
     let last = performance.now()
     let id
     const tick = (now) => {
-      acc.current = Math.min(MAX_STEP, acc.current + Math.min(0.1, (now - last) / 1000) * 4.8 * speed) // clamp: no jump after a hidden tab
+      acc.current = Math.min(MAX_STEP, acc.current + Math.max(0, Math.min(0.1, (now - last) / 1000)) * 4.8 * speed) // clamp: no jump after a hidden tab; rAF `now` can precede `last` (step -1 crashed the page)
       last = now
       const s = Math.floor(acc.current)
       setStep(s)

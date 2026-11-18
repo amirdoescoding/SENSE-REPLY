@@ -45,10 +45,10 @@ export default function AgentPanel({ run, day, mode, lam }) {
         <Knob label="Grid-charge window" used={d.knobs.grid_charge} proposed={prop.grid_charge} show={fmtWindow} />
       </div>
 
-      <p className="why">{d.explanation}</p>
+      <p className="why">{blocked && <b>Proposed plan, blocked by the gate: </b>}{d.explanation}</p>
       <details className="thoughts">
         <summary>Model reasoning</summary>
-        <pre>{d.thoughts}</pre>
+        <pre>{d.thoughts.replaceAll('**', '')}</pre>
       </details>
 
       <h3 className="muted">Checks before the plan runs</h3>

@@ -177,8 +177,10 @@ export default function App() {
       <Header tab={tab} />
       {err ? <p className="status">Could not load the replay data: {err.message}</p>
         : !data ? <p className="status muted">Loading the replay</p>
-        : tab === 'kpis' ? <p className="status">The KPI conformity table arrives in session 5.</p>
-        : <Sim data={data} />}
+        : <>
+          {tab === 'kpis' && <p className="status">The KPI conformity table arrives in session 5.</p>}
+          <div hidden={tab === 'kpis'}><Sim data={data} /></div>{/* kept mounted: the replay keeps its place across tabs */}
+        </>}
     </>
   )
 }
