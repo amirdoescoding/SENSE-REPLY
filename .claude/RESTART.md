@@ -1,8 +1,6 @@
 # Restart point
 
-2026-11-18: Branch `demo-design` (not pushed, 10 commits). Session 1 of 5 for the framework demo is done (`.claude/TODOS.md`).
-- Chosen: `docs/mockups/mock-1.png` + `mock-kpi.png`, de-slopped and aligned with the KPI Conformity Excel. DESIGN.md is updated.
-- Next session: `demo-sim-engine`. First:
-  1. verify the current Gemini Flash model ID and free limits;
-  2. decide the two open questions in TODOS (S* source for VCR; rule vs rolling optimiser executing the knobs);
-  3. reproduce the Excel A/C/rule KPI values as a self-check.
+2026-11-18: Branch `demo-sim-engine` (not pushed, 4 commits). Session 2 of 5 is done except the Gemini answers.
+- First: `.venv/bin/python -u demo/sim.py` (about 6 min; it needs `GEMINI_API_KEY` quota). Check `run.log` for "gemini days N/7". Then commit `demo/out/gemini_cache.json` + the refreshed run JSONs.
+- If 3.8 Flash keeps returning 503, change `agent.MODEL` (the models are listed via the API; all are free tier).
+- Then `.venv/bin/python demo/sim.py --check`, merge, and next session `demo-api` (session 3).

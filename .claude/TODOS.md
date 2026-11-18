@@ -22,16 +22,17 @@ Close each session with: memory files + `graphify update .`.
 
 ## Sessions
 - [x] **1 `demo-design`**: DESIGN.md, canvas-design philosophy, PNG mockups in `docs/mockups/`. The user picks one.
-- [ ] **2 `demo-sim-engine`**: `demo/sim.py`.
-  - Reuses kpis/replay/carbon/timeseries.
-  - Gemini daily knobs → validator → fallback → knob rule + clamp → memory.
-  - JSON per mode × λ (§11.2 schema + replay log).
-  - Computes every Excel KPI for ours with the workbook formulas.
-  - Self-checks:
-    - knobs off = `rule_baseline`;
-    - our KPI code reproduces the Excel A/C/rule values (S_net, VORB, SCR, SSR, PSR, B2, B4, C5 within rounding).
-  - Open question: S* (perfect-foresight LP) for VCR. Either scipy, or take S* from the workbook (S/VCR).
-  - Open question: the report's S5 runs a rolling optimiser, while the proposal uses a rule. Decide which executes the knobs.
+- [~] **2 `demo-sim-engine`**: done except the real Gemini answers (quota hit 2026-11-18).
+  - `demo/sim.py` (rolling LP optimiser, HiGHS) + `demo/agent.py` (Gemini REST, validator, cache, k-NN memory).
+  - Outputs: `demo/out/run_{mode}_{λ}.json` ×6, `kpis.json`, `memory.json`.
+  - `--check` passes:
+    - reproduces the Excel A/C/rule;
+    - S* 2.1844 vs 2.184;
+    - plain S5 upside +0.7%, conservative +5.2% (soft miss in our favour);
+    - the gate blocks bad knobs;
+    - no key in the outputs.
+  - Decided: S* from the workbook (the LP reproduces it); the rolling LP executes the knobs.
+  - **TODO:** rerun `.venv/bin/python -u demo/sim.py` once the Gemini quota resets (429 today); the cache fills, then commit `gemini_cache.json`. Acceptance 4 (≥6/7 Gemini days per run) is still open.
 - [ ] **3 `demo-api`**: FastAPI `/api/run?lambda=`, `/api/kpis`, `/api/live/carbon` (cached), serving the built frontend, plus `render.yaml`. The free instance sleeps, so warm it up before the demo.
 - [ ] **4 `demo-ui-sim`**: three.js site (PV, battery, house, pylon) with energy particles. The agent-flow pipeline with moving packets, playback, a day scrubber and the λ slider.
 - [ ] **5 `demo-ui-kpis`**: Excel-aligned conformity table with verdicts, Good counts, live ENTSO-E card, and the F5/P4 KPIs now measurable.
