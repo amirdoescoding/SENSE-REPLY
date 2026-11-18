@@ -125,6 +125,158 @@
    "threshold": null
   }
  },
+ "meta": {
+  "S_net": {
+   "name": "Saving vs no battery, SoC-adjusted, net of wear",
+   "unit": "€/wk",
+   "group": "Economics & AI value"
+  },
+  "VCR": {
+   "name": "Share of the achievable saving captured",
+   "unit": "ratio",
+   "group": "Economics & AI value"
+  },
+  "VORB": {
+   "name": "Value over the static rule",
+   "unit": "€/wk",
+   "group": "Economics & AI value"
+  },
+  "N1": {
+   "name": "Net value after AI cost and wear",
+   "unit": "€/wk",
+   "group": "Economics & AI value"
+  },
+  "N2": {
+   "name": "AI cost per € saved",
+   "unit": "€/€",
+   "group": "Economics & AI value"
+  },
+  "F1": {
+   "name": "Net value vs static rule after AI cost",
+   "unit": "€/wk",
+   "group": "Economics & AI value"
+  },
+  "O5": {
+   "name": "LLM cost per week",
+   "unit": "€/wk",
+   "group": "Economics & AI value"
+  },
+  "S2b": {
+   "name": "CO2 avoided vs static rule",
+   "unit": "kg/wk",
+   "group": "Carbon & sustainability"
+  },
+  "S3": {
+   "name": "Import carbon intensity",
+   "unit": "g/kWh",
+   "group": "Carbon & sustainability"
+  },
+  "MAC": {
+   "name": "Abatement cost of the carbon lever",
+   "unit": "€/kg",
+   "group": "Carbon & sustainability"
+  },
+  "S1": {
+   "name": "Grid CO2, SoC-adjusted",
+   "unit": "kg/wk",
+   "group": "Carbon & sustainability"
+  },
+  "SCR": {
+   "name": "Self-consumption of PV",
+   "unit": "ratio",
+   "group": "Self-use & grid"
+  },
+  "SSR": {
+   "name": "Self-sufficiency",
+   "unit": "ratio",
+   "group": "Self-use & grid"
+  },
+  "PSR": {
+   "name": "Peak shaving ratio",
+   "unit": "ratio",
+   "group": "Self-use & grid"
+  },
+  "G2": {
+   "name": "Grid violations / penalties",
+   "unit": "count",
+   "group": "Self-use & grid"
+  },
+  "G1": {
+   "name": "Peak grid import",
+   "unit": "kW",
+   "group": "Self-use & grid"
+  },
+  "B1": {
+   "name": "Apparent storage efficiency",
+   "unit": "ratio",
+   "group": "Battery"
+  },
+  "B2": {
+   "name": "Equivalent full cycles",
+   "unit": "cycles/wk",
+   "group": "Battery"
+  },
+  "B4": {
+   "name": "Time at SoC limits",
+   "unit": "share",
+   "group": "Battery"
+  },
+  "B3": {
+   "name": "Battery wear cost",
+   "unit": "€/wk",
+   "group": "Battery"
+  },
+  "B6": {
+   "name": "Time near the 80% target SoC",
+   "unit": "share",
+   "group": "Battery"
+  },
+  "C5": {
+   "name": "Expensive-import share",
+   "unit": "share",
+   "group": "Price timing"
+  },
+  "C4": {
+   "name": "Price-timing spread",
+   "unit": "€/kWh",
+   "group": "Price timing"
+  },
+  "O1": {
+   "name": "LLM calls per 15-min decision",
+   "unit": "calls",
+   "group": "Orchestration load"
+  },
+  "O3": {
+   "name": "Share of the 15-min slot in LLM calls",
+   "unit": "share",
+   "group": "Orchestration load"
+  },
+  "C1": {
+   "name": "Energy bill, SoC-adjusted",
+   "unit": "€/wk",
+   "group": "Context"
+  },
+  "S": {
+   "name": "Saving vs no battery, gross",
+   "unit": "€/wk",
+   "group": "Context"
+  },
+  "IMP": {
+   "name": "Grid import",
+   "unit": "kWh/wk",
+   "group": "Context"
+  },
+  "EXP": {
+   "name": "Grid export",
+   "unit": "kWh/wk",
+   "group": "Context"
+  },
+  "PV": {
+   "name": "PV generation",
+   "unit": "kWh/wk",
+   "group": "Context"
+  }
+ },
  "columns": {
   "A": {
    "S_net": {
