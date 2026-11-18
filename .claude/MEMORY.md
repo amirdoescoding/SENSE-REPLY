@@ -109,3 +109,9 @@
   - 503 "high demand" is frequent: retries handle it. On a 429, the rest of the run uses memory.
   - "Live API" models (unlimited requests) are WebSocket voice/streaming models, not used.
 - **With Gemini (7/7 days):** the knobs stay near the defaults (one reserve of 2 kWh). The KPIs equal the memory-fallback run. O5 = €0.0115/wk (Excel S5: 0.0113). Ours conservative λ0.1: N1 1.145, 16 Good.
+
+## Demo API (2026-11-18), branch `demo-api`, see demo/api.py
+- FastAPI over precomputed `demo/out`, no live LLM on the server (no Gemini key on Render). Agents (llm-architect) agreed: free instance sleeps, Gemini 503s, shared quota.
+- Live carbon reuses `analysis/carbon.hourly_ci`; keys are Italian local hours. Only type names are logged (token is in the URL).
+- 5 gate blocks across the 6 runs fell back to "previous valid plan"; every day's source is gemini.
+- Open for session 4: price + comparison series missing from run rows; `kpis.json` carbon_source label wrong (see TODOS).

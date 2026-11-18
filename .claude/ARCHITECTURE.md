@@ -25,6 +25,13 @@ SENSE-REPLY/
 │   ├── DESIGN.md         # demo design system (Reply palette, components, motion, 3D direction)
 │   ├── mockups/          # demo mockups: mock.html → render.sh → mock-{1,2,3,kpi}.png
 │   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning, 07 self-hosting + simple framework
+├── demo/                 # hosted demo of PROPOSAL (sessions in .claude/TODOS.md)
+│   ├── sim.py            # engine: daily agent knobs → gate → rolling LP → Excel KPIs → out/*.json (--check)
+│   ├── agent.py          # Gemini REST + cache + validator + k-NN memory
+│   ├── api.py            # FastAPI: /api/run?mode=&lambda=, /api/kpis, /api/live/carbon; serves web/dist
+│   ├── test_api.py       # python demo/test_api.py → "api ok"
+│   └── out/              # precomputed runs, kpis.json, memory.json, gemini_cache.json (not served)
+├── render.yaml           # one free Render web service (deploy in session 5)
 └── analysis/
     ├── kpis.py           # python3 analysis/kpis.py → KPI table A/B/C, baselines, T1-T3, self-check
     ├── timeseries.py     # per-day KPIs, day-type trade-off, hourly profile, anomalies
