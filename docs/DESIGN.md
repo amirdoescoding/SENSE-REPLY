@@ -55,6 +55,8 @@ Mockups in `docs/mockups/`. The source is `mock.html` (`?v=1|2|3|kpi`); render t
     - the plan for the day, with mode and λ;
     - knobs from the report's JSON schema (§11.2): `evening_reserve_kwh`, `soc_floor`, `export_hold_eur`, grid-charge window;
     - the reason the agent gives, in first person, ≤ 2 lines;
+    - a collapsible "Model reasoning" (`<details>`, closed by default) with Gemini's thought summary (user decision, 2026-11-18). Gemini's reason is shown verbatim, so it may say "We…" and run longer than 2 lines;
+    - on a gate-blocked day, the used knob values with the proposed values struck through;
     - checks (schema, clamp, replay gate vs the static rule);
     - the similar past days it was shown, with their regret;
     - a "Download plan JSON" button.

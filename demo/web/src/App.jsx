@@ -86,12 +86,13 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam }) {
           <button key={s} className={'chip' + (pb.speed === s ? ' solid' : '')} onClick={() => pb.setSpeed(s)}>{s}×</button>
         ))}
       </div>
-      <div className="group" role="group" aria-label="Day">
+      <div className="group" role="group" aria-label="Plan day">
+        <span className="muted small plan-label">Plan</span>
         {run.days.map((d, i) => {
           const bad = !d.gate.passed || d.used !== 'plan'
           return (
             <button key={d.start} className={'chip' + (i === day ? ' cur' : '')} onClick={() => pb.seek(i * DAY_STEPS)}
-              title={bad ? 'Plan blocked by the replay gate' : 'Plan ran'}>
+              title={`Plan decided ${weekday(d.start)} 11:00, runs to the next day 10:45${bad ? ', blocked by the replay gate' : ''}`}>
               <i className="dot" style={{ background: bad ? 'var(--alert)' : 'var(--store)' }} />{weekday(d.start)}
             </button>
           )

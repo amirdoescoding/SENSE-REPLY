@@ -161,7 +161,10 @@ export default function Site({ row, step, sun, reducedMotion }) {
     let W = 1, H = 1 // cached by the observer: reading layout in the rAF loop forced a reflow every frame
     const place = () => {
       ({ width: W, height: H } = card.current.getBoundingClientRect())
-      S.resize(W, H).forEach(([x, y], i) => { chipEls.current[i].style.left = x + 'px'; chipEls.current[i].style.top = y + 'px' })
+      S.resize(W, H).forEach(([x, y], i) => { // keep every chip inside the card (phone widths)
+        const el = chipEls.current[i], w = el.offsetWidth / 2 + 8
+        el.style.left = Math.min(W - w, Math.max(w, x)) + 'px'; el.style.top = y + 'px'
+      })
     }
     const ro = new ResizeObserver(place); ro.observe(card.current); place()
 
@@ -188,7 +191,7 @@ export default function Site({ row, step, sun, reducedMotion }) {
       mix(top, mix(c1, K.nTop, K.dTop, kn), K.fTop, kd); mix(hor, mix(c2, K.nHor, K.dHor, kn), K.fHor, kd)
       sky.current.style.background = `linear-gradient(${top.getStyle()} 0%,${hor.getStyle()} 75%)`
       const disc = (el, a, altN, op) => { // arc along the top of the card
-        el.style.left = (0.06 + 0.88 * a) * W + 'px'; el.style.top = H * (0.1 + 0.2 * (1 - Math.max(0, altN))) + 'px'; el.style.opacity = op
+        el.style.left = (0.06 + 0.88 * a) * W + 'px'; el.style.top = Math.max(64, H * (0.1 + 0.2 * (1 - Math.max(0, altN)))) + 'px'; el.style.opacity = op
       }
       disc(sunEl.current, cur.p, cur.alt / 65, sm(-8, -2, cur.alt))
       const moonIn = cur.mq >= 0 && cur.mq <= 1
@@ -221,7 +224,8 @@ export default function Site({ row, step, sun, reducedMotion }) {
 
       // flows (kW, signed along the path direction: + = towards the house/battery)
       const pvH = Math.min(r.pv_kw, r.load_kw), pvB = Math.max(0, Math.min(r.battery_kw, r.pv_kw - pvH))
-      flow[0] = pvH; flow[1] = pvB; flow[2] = -Math.min(0, r.battery_kw) - Math.max(0, r.battery_kw - pvB); // grid charging (upside) runs house -> battery flow[3] = r.grid_kw
+      flow[0] = pvH; flow[1] = pvB; flow[2] = -Math.min(0, r.battery_kw) - Math.max(0, r.battery_kw - pvB); // grid charging (upside) runs house -> battery
+      flow[3] = r.grid_kw
       S.paths.forEach((q, i) => {
         const f = flow[i], on = Math.abs(f) >= 0.02
         q.fade += ((on ? 1 : 0) - q.fade) * (rm ? 1 : Math.min(1, dt / 0.2))
@@ -258,8 +262,7 @@ export default function Site({ row, step, sun, reducedMotion }) {
       <canvas ref={canvas} className="site-canvas" />
       {CHIPS.map(([n], i) => (
         <div key={n} ref={(el) => (chipEls.current[i] = el)} className="lab">
-          <div className="n">{n}</div>
-          <div className="c mono"><i className="dot" style={{ background: dots[i] }} />{vals[i]}</div>
+          <div className="c mono"><i className="dot" style={{ background: dots[i] }} /><span className="nm">{n}</span>{vals[i]}</div>
           <div className="l" />
         </div>
       ))}
