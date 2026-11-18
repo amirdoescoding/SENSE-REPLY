@@ -106,6 +106,7 @@ function build(canvas) {
     ['pvbat', K.sun, [[px + 2.5, pz + 0.4], [bxp - 0.3, pz + 0.4], [bxp - 0.3, bzp + 0.7]]],
     ['bat', K.store, [[bxp - 0.9, bzp - 0.3], [0.9, bzp - 0.3], [0.9, gz + 1.7]]],
     ['grid', K.grid, [[ox, oz + 0.6], [ox, gz], [gx + 2.4, gz]]],
+    ['gridbat', K.grid, [[ox + 0.5, oz + 0.6], [ox + 0.5, bzp], [bxp + 0.85, bzp]]], // upside grid charging
   ]
   const trenchMat = new T.MeshBasicMaterial()
   const paths = defs.map(([id, c, pts]) => {
@@ -161,10 +162,13 @@ export default function Site({ row, step, sun, reducedMotion }) {
     let W = 1, H = 1 // cached by the observer: reading layout in the rAF loop forced a reflow every frame
     const place = () => {
       ({ width: W, height: H } = card.current.getBoundingClientRect())
-      S.resize(W, H).forEach(([x, y], i) => { // keep every chip inside the card (phone widths)
-        const el = chipEls.current[i], w = el.offsetWidth / 2 + 8
-        el.style.left = Math.min(W - w, Math.max(w, x)) + 'px'; el.style.top = y + 'px'
+      const pos = S.resize(W, H).map(([x, y], i) => { // keep every chip inside the card (phone widths)
+        const w = chipEls.current[i].offsetWidth / 2 + 8
+        return [Math.min(W - w, Math.max(w, x)), y, w]
       })
+      const [h, g] = [pos[1], pos[3]] // House sits left of Grid at similar height: on narrow cards push it left, then up if it still hits
+      if (Math.abs(h[1] - g[1]) < 44 && h[0] + h[2] > g[0] - g[2]) { h[0] = Math.max(h[2], g[0] - g[2] - h[2]); if (h[0] + h[2] > g[0] - g[2]) h[1] = g[1] - 44 }
+      pos.forEach(([x, y], i) => { const el = chipEls.current[i]; el.style.left = x + 'px'; el.style.top = y + 'px' })
     }
     const ro = new ResizeObserver(place); ro.observe(card.current); place()
 
@@ -172,7 +176,7 @@ export default function Site({ row, step, sun, reducedMotion }) {
     let cur = null, last = performance.now(), raf
     const top = new T.Color(), hor = new T.Color(), c1 = new T.Color(), c2 = new T.Color()
     const dir = new T.Vector3(), lastDir = new T.Vector3(), nDir = new T.Vector3(-0.5, 1, 0.8).normalize()
-    const flow = new Float32Array(4)
+    const flow = new Float32Array(5)
     const tick = (now) => {
       raf = requestAnimationFrame(tick)
       const dt = Math.min(0.1, (now - last) / 1000); last = now
@@ -224,8 +228,9 @@ export default function Site({ row, step, sun, reducedMotion }) {
 
       // flows (kW, signed along the path direction: + = towards the house/battery)
       const pvH = Math.min(r.pv_kw, r.load_kw), pvB = Math.max(0, Math.min(r.battery_kw, r.pv_kw - pvH))
-      flow[0] = pvH; flow[1] = pvB; flow[2] = -Math.min(0, r.battery_kw) - Math.max(0, r.battery_kw - pvB); // grid charging (upside) runs house -> battery
-      flow[3] = r.grid_kw
+      const gc = Math.max(0, r.battery_kw - pvB) // grid charging (upside only) gets its own pylon -> battery path
+      flow[0] = pvH; flow[1] = pvB; flow[2] = -Math.min(0, r.battery_kw)
+      flow[3] = r.grid_kw - gc; flow[4] = gc
       S.paths.forEach((q, i) => {
         const f = flow[i], on = Math.abs(f) >= 0.02
         q.fade += ((on ? 1 : 0) - q.fade) * (rm ? 1 : Math.min(1, dt / 0.2))

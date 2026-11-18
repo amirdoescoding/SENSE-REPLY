@@ -54,6 +54,9 @@ Close each session with: memory files + `graphify update .`.
 - [x] **5 `demo-ui-kpis`**: KPIs tab (`Kpis.jsx`): conformity table (16 headline rows, "Show all 30"), Ours column follows the Sim mode/λ, Good counts, live ENTSO-E card (fallback shown), F5/P4 computed from run `days`. `kpis.json` gains `meta`. Carry-overs done: pipeline labels keep real px (+ 2-line wrap), Space toggles unless a control has keyboard focus, no autoplay under reduced motion, `test_api.py` needs `web/dist`, NODE_VERSION 22. Reviewed by code-reviewer, ui-ux-tester, impeccable finish pass; fixes applied.
   - **Left:** push + PR; connect the Render Blueprint and set `ENTSO_API`; warm up before the demo. Backlog: grid→battery path for upside charging, earlier outcome packet, `compare.json` and step prices still not drawn.
 
+- [x] **6 `demo-polish`** (2026-11-19): grid→battery particle path (upside), Memory→Agent packet at 20:00, plan-day chart in the agent panel (`DayChart.jsx`: SoC ours / pilot C / static rule over the buy price, two panels, no dual axis), KPI strip "Week result" + signed gap to C, blocked-day ring chips, new Agent/Clamp icons, 15 px labels ≥1600, phone fixes. Reviewed by ui-ux-tester, impeccable critique (A+B), code-reviewer (no bugs), impeccable finish pass.
+- [ ] **7 live demo** (next): live Gemini calls from the demo, measure latency / 503s / quota. **If it performs badly, roll back to the original plan: precompute + playback (current main).**
+
 ## Honesty flags (show them in the demo)
 - The plain rule won this January week (`analysis/replay.py`), so ours may only tie it. The gate and fallback are part of the story.
 - Site = Italy is assumed. Gemini ≠ Devstral: it's a capability stand-in.

@@ -20,7 +20,7 @@ export function nextDayWeekday(t) {
   return WD[new Date(Date.UTC(p.y, p.m - 1, p.d + 1)).getUTCDay()]
 }
 
-export const sgn = (v, n = 2) => (v < 0 ? '−' : '+') + Math.abs(v).toFixed(n)
+export const sgn = (v, n = 2) => { const s = Math.abs(v).toFixed(n); return (v < 0 && +s ? '−' : '+') + s } // no "−0.00"
 export const eur = (v, n = 2) => (v < 0 ? '−' : '') + '€' + Math.abs(v).toFixed(n)
 export const num = (v, n = 2) => { const s = Math.abs(v).toFixed(n); return (v < 0 && +s ? '−' : '') + s } // no "−0.00"
 export const kfmt = (n) => (n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n))

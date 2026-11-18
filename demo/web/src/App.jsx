@@ -8,7 +8,7 @@ import { DAY_STEPS, LAMS, MAX_STEP, MODES, num, sgn, sunSeries, timeLabel, weekd
 
 const KPIS = [
   ['N1', 'net value after AI', '€/wk', (v) => sgn(v)],
-  ['VORB', 'value over the free rule', '€/wk', (v) => sgn(v)],
+  ['VORB', 'value over free rule', '€/wk', (v) => sgn(v)],
   ['VCR', 'share of best saving', '', (v) => num(v)],
   ['S1', 'grid CO2', 'kg/wk', (v) => num(v, 1)],
   ['O1', 'LLM calls per decision', '', (v) => num(v)],
@@ -53,7 +53,9 @@ function KpiStrip({ kpis, mode, lam }) {
   const ours = kpis.columns[`Ours ${mode} λ=${lam.toFixed(1)}`]
   const pilot = kpis.columns.C
   return (
-    <section className="card kpis">
+    <section className="card" aria-labelledby="kpis-h">
+      <h2 id="kpis-h" className="kpis-h">Week result, ours vs pilot C on the same inputs</h2>
+      <div className="kpis">
       {KPIS.map(([id, name, unit, f]) => {
         const [cls, text] = VERDICT[ours[id].verdict] || ['', ours[id].verdict]
         return (
@@ -64,12 +66,13 @@ function KpiStrip({ kpis, mode, lam }) {
               {unit && <span className="mono muted">{unit}</span>}
             </div>
             <div className="kpi-foot">
-              <span className="mono muted small">pilot C {f(pilot[id].value).replace(/^\+/, '')}</span>
+              <span className="mono vs" title={`Pilot C: ${f(pilot[id].value).replace(/^\+/, '')}`}>{sgn(ours[id].value - pilot[id].value, id === 'S1' ? 1 : 2)} vs C</span>
               <span className={'tag ' + cls}>{text}</span>
             </div>
           </div>
         )
       })}
+      </div>
     </section>
   )
 }
@@ -93,8 +96,9 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam }) {
           const bad = !d.gate.passed || d.used !== 'plan'
           return (
             <button key={d.start} className={'chip' + (i === day ? ' cur' : '')} onClick={() => pb.seek(i * DAY_STEPS)}
+              aria-label={`${weekday(d.start)}${bad ? ', blocked by the replay gate' : ''}`}
               title={`Plan decided ${weekday(d.start)} 11:00, runs to the next day 10:45${bad ? ', blocked by the replay gate' : ''}`}>
-              <i className="dot" style={{ background: bad ? 'var(--alert)' : 'var(--store)' }} />{weekday(d.start)}
+              <i className={'dot' + (bad ? ' blocked' : '')} />{weekday(d.start)}
             </button>
           )
         })}
@@ -120,8 +124,8 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam }) {
 function Sim({ data, mode, lam, setMode, setLam }) {
   const reduced = useReducedMotion()
   const stepParam = q.get('step')
-  // autoplay only without a step param and without reduced motion; ?play=1 forces it
-  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, Math.floor(+stepParam) || 0)), q.get('play') === '1' || (stepParam === null && !reduced))
+  // autoplay only without reduced motion, and without a step param unless ?play=1
+  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, Math.floor(+stepParam) || 0)), !reduced && (q.get('play') === '1' || stepParam === null))
   const run = data.runs[key(mode, lam)]
   const sun = useMemo(() => sunSeries(run.schedule), [run])
   const day = Math.floor(pb.step / DAY_STEPS)
@@ -150,7 +154,7 @@ function Sim({ data, mode, lam, setMode, setLam }) {
       <Pipeline active={pb.step % DAY_STEPS < 3 ? 'agent' : null} fail={blocked ? 'validator' : null}
         step={pb.step} epoch={pb.seeks + key(mode, lam)} playing={pb.playing} speed={pb.speed} reduced={reduced} />
       <PlaybackBar pb={pb} run={run} day={day} mode={mode} lam={lam} setMode={setMode} setLam={setLam} />
-      <AgentPanel run={run} day={day} mode={mode} lam={lam} />
+      <AgentPanel run={run} compare={data.compare} day={day} step={pb.step} mode={mode} lam={lam} />
     </main>
   )
 }
@@ -171,8 +175,8 @@ export default function App() {
   useEffect(() => {
     const get = (u) => fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(new Error(u + ' ' + r.status))))
     const keys = MODES.flatMap((m) => LAMS.map((l) => [m, l]))
-    Promise.all([get('/api/kpis'), ...keys.map(([m, l]) => get(`/api/run?mode=${m}&lambda=${l.toFixed(1)}`))])
-      .then(([kpis, ...runs]) => setData({ kpis, runs: Object.fromEntries(keys.map(([m, l], i) => [key(m, l), runs[i]])) }))
+    Promise.all([get('/api/kpis'), get('/api/compare'), ...keys.map(([m, l]) => get(`/api/run?mode=${m}&lambda=${l.toFixed(1)}`))])
+      .then(([kpis, compare, ...runs]) => setData({ kpis, compare, runs: Object.fromEntries(keys.map(([m, l], i) => [key(m, l), runs[i]])) }))
       .catch(setErr)
   }, [])
 

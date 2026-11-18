@@ -1,3 +1,4 @@
+import DayChart from './DayChart.jsx'
 import { dayLabel, eur, kfmt, nextDayWeekday, parts } from './lib.js'
 
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b)
@@ -16,7 +17,7 @@ function Knob({ label, unit, used, proposed, show }) {
   )
 }
 
-export default function AgentPanel({ run, day, mode, lam }) {
+export default function AgentPanel({ run, compare, day, step, mode, lam }) {
   const d = run.days[day]
   const blocked = !d.gate.passed
   const prop = blocked ? d.proposed : {}
@@ -66,6 +67,9 @@ export default function AgentPanel({ run, day, mode, lam }) {
           </span>
         </li>
       </ul>
+
+      <h3 className="muted">Battery charge over this plan day</h3>
+      <DayChart run={run} compare={compare} day={day} step={step} />
 
       <h3 className="muted">Similar past days it was shown</h3>
       <ul className="mem">

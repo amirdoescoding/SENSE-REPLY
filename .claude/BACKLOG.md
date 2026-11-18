@@ -35,4 +35,7 @@
 - [x] Demo session 5 `demo-ui-kpis`: KPI table, live ENTSO-E card, F5/P4, session-4 leftovers
 - [ ] Push `demo-ui-kpis` + PR
 - [ ] Deploy on Render: connect Blueprint, set ENTSO_API secret, check the build finds Node 22 and Python 3.14.0, warm up before the demo
-- [ ] Demo polish (optional): grid→battery particle path in upside mode, earlier Memory→Agent packet, draw compare.json / step prices
+- [x] Demo polish (session 6 `demo-polish`): grid→battery path, Memory→Agent packet at 20:00, day chart (compare.json + prices), QA/critique fixes
+- [ ] Push `demo-polish` + PR
+- [ ] Session 7: live Gemini calls in the demo; if poor, roll back to precompute + playback
+- [ ] Optional: 1600×900 playback bar wraps (λ on a 2nd row); panel scrolls at 1080 on long blocked-day explanations; baseline naming ('free rule' / 'default knobs' / 'regret vs rule') left as is by user choice
