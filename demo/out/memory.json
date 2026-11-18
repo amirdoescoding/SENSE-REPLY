@@ -1,0 +1,604 @@
+[
+ {
+  "run": "A",
+  "day": 0,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 13.98,
+   "load_yday": 15.09,
+   "price_spread": 0.0477,
+   "co2_spread": 74.9,
+   "soc0": 0.572
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.12
+  },
+  "score": 0.5003,
+  "regret_vs_rule": 0.0017
+ },
+ {
+  "run": "A",
+  "day": 0,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 13.98,
+   "load_yday": 15.09,
+   "price_spread": 0.0477,
+   "co2_spread": 74.9,
+   "soc0": 0.572
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.12
+  },
+  "score": 0.4911,
+  "regret_vs_rule": -0.0075
+ },
+ {
+  "run": "A",
+  "day": 1,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 13.56,
+   "load_yday": 15.03,
+   "price_spread": 0.09,
+   "co2_spread": 74.2,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.5109,
+  "regret_vs_rule": 0.0074
+ },
+ {
+  "run": "A",
+  "day": 1,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 13.56,
+   "load_yday": 15.03,
+   "price_spread": 0.09,
+   "co2_spread": 74.2,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.3688,
+  "regret_vs_rule": -0.1347
+ },
+ {
+  "run": "A",
+  "day": 2,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 13.98,
+   "load_yday": 15.09,
+   "price_spread": 0.0806,
+   "co2_spread": 74.9,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.4681,
+  "regret_vs_rule": -0.003
+ },
+ {
+  "run": "A",
+  "day": 2,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 13.98,
+   "load_yday": 15.09,
+   "price_spread": 0.0806,
+   "co2_spread": 74.9,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.3337,
+  "regret_vs_rule": -0.1374
+ },
+ {
+  "run": "A",
+  "day": 3,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 14.09,
+   "load_yday": 14.99,
+   "price_spread": 0.0419,
+   "co2_spread": 107.0,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.5615,
+  "regret_vs_rule": -0.0004
+ },
+ {
+  "run": "A",
+  "day": 3,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 14.09,
+   "load_yday": 14.99,
+   "price_spread": 0.0419,
+   "co2_spread": 107.0,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.5534,
+  "regret_vs_rule": -0.0086
+ },
+ {
+  "run": "A",
+  "day": 4,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 13.85,
+   "load_yday": 14.92,
+   "price_spread": 0.0332,
+   "co2_spread": 98.1,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.6182,
+  "regret_vs_rule": -0.0005
+ },
+ {
+  "run": "A",
+  "day": 4,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 13.85,
+   "load_yday": 14.92,
+   "price_spread": 0.0332,
+   "co2_spread": 98.1,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.12
+  },
+  "score": 0.6168,
+  "regret_vs_rule": -0.0019
+ },
+ {
+  "run": "A",
+  "day": 5,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 12.89,
+   "load_yday": 15.03,
+   "price_spread": 0.0327,
+   "co2_spread": 86.3,
+   "soc0": 0.752
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.6395,
+  "regret_vs_rule": 0.0079
+ },
+ {
+  "run": "A",
+  "day": 5,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 12.89,
+   "load_yday": 15.03,
+   "price_spread": 0.0327,
+   "co2_spread": 86.3,
+   "soc0": 0.752
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.6344,
+  "regret_vs_rule": 0.0028
+ },
+ {
+  "run": "A",
+  "day": 6,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 12.6,
+   "load_yday": 14.97,
+   "price_spread": 0.0412,
+   "co2_spread": 97.1,
+   "soc0": 0.757
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.7264,
+  "regret_vs_rule": -0.0042
+ },
+ {
+  "run": "A",
+  "day": 6,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 12.6,
+   "load_yday": 14.97,
+   "price_spread": 0.0412,
+   "co2_spread": 97.1,
+   "soc0": 0.757
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.12
+  },
+  "score": 0.7201,
+  "regret_vs_rule": -0.0105
+ },
+ {
+  "run": "C",
+  "day": 0,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 13.97,
+   "load_yday": 15.14,
+   "price_spread": 0.0477,
+   "co2_spread": 74.9,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.12
+  },
+  "score": 0.621,
+  "regret_vs_rule": 0.0025
+ },
+ {
+  "run": "C",
+  "day": 0,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 13.97,
+   "load_yday": 15.14,
+   "price_spread": 0.0477,
+   "co2_spread": 74.9,
+   "soc0": 0.8
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.12
+  },
+  "score": 0.6102,
+  "regret_vs_rule": -0.0083
+ },
+ {
+  "run": "C",
+  "day": 1,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 13.55,
+   "load_yday": 15.02,
+   "price_spread": 0.09,
+   "co2_spread": 74.2,
+   "soc0": 0.789
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.5107,
+  "regret_vs_rule": 0.0052
+ },
+ {
+  "run": "C",
+  "day": 1,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 13.55,
+   "load_yday": 15.02,
+   "price_spread": 0.09,
+   "co2_spread": 74.2,
+   "soc0": 0.789
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.3674,
+  "regret_vs_rule": -0.1381
+ },
+ {
+  "run": "C",
+  "day": 2,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 13.97,
+   "load_yday": 15.14,
+   "price_spread": 0.0806,
+   "co2_spread": 74.9,
+   "soc0": 0.798
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.4613,
+  "regret_vs_rule": -0.0008
+ },
+ {
+  "run": "C",
+  "day": 2,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 13.97,
+   "load_yday": 15.14,
+   "price_spread": 0.0806,
+   "co2_spread": 74.9,
+   "soc0": 0.798
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.3245,
+  "regret_vs_rule": -0.1376
+ },
+ {
+  "run": "C",
+  "day": 3,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 14.08,
+   "load_yday": 14.84,
+   "price_spread": 0.0419,
+   "co2_spread": 107.0,
+   "soc0": 0.795
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.5688,
+  "regret_vs_rule": -0.001
+ },
+ {
+  "run": "C",
+  "day": 3,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 14.08,
+   "load_yday": 14.84,
+   "price_spread": 0.0419,
+   "co2_spread": 107.0,
+   "soc0": 0.795
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.5594,
+  "regret_vs_rule": -0.0105
+ },
+ {
+  "run": "C",
+  "day": 4,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 13.84,
+   "load_yday": 14.99,
+   "price_spread": 0.0332,
+   "co2_spread": 98.1,
+   "soc0": 0.778
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.6021,
+  "regret_vs_rule": 0.0003
+ },
+ {
+  "run": "C",
+  "day": 4,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 13.84,
+   "load_yday": 14.99,
+   "price_spread": 0.0332,
+   "co2_spread": 98.1,
+   "soc0": 0.778
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.12
+  },
+  "score": 0.6002,
+  "regret_vs_rule": -0.0016
+ },
+ {
+  "run": "C",
+  "day": 5,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 12.88,
+   "load_yday": 14.94,
+   "price_spread": 0.0327,
+   "co2_spread": 86.3,
+   "soc0": 0.728
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.6244,
+  "regret_vs_rule": 0.0067
+ },
+ {
+  "run": "C",
+  "day": 5,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 12.88,
+   "load_yday": 14.94,
+   "price_spread": 0.0327,
+   "co2_spread": 86.3,
+   "soc0": 0.728
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.6185,
+  "regret_vs_rule": 0.0009
+ },
+ {
+  "run": "C",
+  "day": 6,
+  "mode": "conservative",
+  "context": {
+   "pv_yday": 12.59,
+   "load_yday": 14.96,
+   "price_spread": 0.0412,
+   "co2_spread": 97.1,
+   "soc0": 0.73
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 3.0,
+   "grid_charge": null,
+   "export_hold_eur": 0.1004
+  },
+  "score": 0.7191,
+  "regret_vs_rule": -0.005
+ },
+ {
+  "run": "C",
+  "day": 6,
+  "mode": "upside",
+  "context": {
+   "pv_yday": 12.59,
+   "load_yday": 14.96,
+   "price_spread": 0.0412,
+   "co2_spread": 97.1,
+   "soc0": 0.73
+  },
+  "knobs": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "grid_charge": {
+    "from": 0,
+    "to": 6
+   },
+   "export_hold_eur": 0.12
+  },
+  "score": 0.7133,
+  "regret_vs_rule": -0.0108
+ }
+]

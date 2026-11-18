@@ -2,3 +2,6 @@ __pycache__/
 .env
 # graphify (rebuilt locally with `graphify update .`)
 graphify-out/
+
+# demo run logs
+demo/out/*.log
