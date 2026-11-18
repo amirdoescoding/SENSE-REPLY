@@ -154,7 +154,7 @@ function Sim({ data, mode, lam, setMode, setLam }) {
       <Pipeline active={pb.step % DAY_STEPS < 3 ? 'agent' : null} fail={blocked ? 'validator' : null}
         step={pb.step} epoch={pb.seeks + key(mode, lam)} playing={pb.playing} speed={pb.speed} reduced={reduced} />
       <PlaybackBar pb={pb} run={run} day={day} mode={mode} lam={lam} setMode={setMode} setLam={setLam} />
-      <AgentPanel run={run} day={day} mode={mode} lam={lam} />
+      <AgentPanel run={run} compare={data.compare} day={day} step={pb.step} mode={mode} lam={lam} />
     </main>
   )
 }
@@ -175,8 +175,8 @@ export default function App() {
   useEffect(() => {
     const get = (u) => fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(new Error(u + ' ' + r.status))))
     const keys = MODES.flatMap((m) => LAMS.map((l) => [m, l]))
-    Promise.all([get('/api/kpis'), ...keys.map(([m, l]) => get(`/api/run?mode=${m}&lambda=${l.toFixed(1)}`))])
-      .then(([kpis, ...runs]) => setData({ kpis, runs: Object.fromEntries(keys.map(([m, l], i) => [key(m, l), runs[i]])) }))
+    Promise.all([get('/api/kpis'), get('/api/compare'), ...keys.map(([m, l]) => get(`/api/run?mode=${m}&lambda=${l.toFixed(1)}`))])
+      .then(([kpis, compare, ...runs]) => setData({ kpis, compare, runs: Object.fromEntries(keys.map(([m, l], i) => [key(m, l), runs[i]])) }))
       .catch(setErr)
   }, [])
 
