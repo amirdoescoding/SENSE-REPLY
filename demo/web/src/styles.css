@@ -9,6 +9,7 @@
   --monof: 'JetBrains Mono', ui-monospace, monospace;
 }
 * { box-sizing: border-box; }
+p { text-wrap: pretty; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 400 15px/1.4 var(--sans); }
 button { font: inherit; color: inherit; cursor: pointer; }
 .mono { font-family: var(--monof); font-variant-numeric: tabular-nums; }
@@ -50,7 +51,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* site */
 .site { position: relative; overflow: hidden; padding: 20px; font-size: 13px; }
 .site-time { position: absolute; top: 20px; right: 20px; font-size: 15px; font-weight: 500; }
-.site > .muted { position: relative; }
+.site > .muted { position: relative; color: var(--ink-2); } /* --mute is 3.6:1 on the light sky */
 .site > .muted, .site-time, .legend { z-index: 1; }
 .site-sky, .site-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .site-canvas { pointer-events: none; }
@@ -217,4 +218,34 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .kt td:first-child, .kt th:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); min-width: 150px; max-width: 150px; box-shadow: 1px 0 0 var(--line); }
   .kt .grp td:first-child { box-shadow: none; }
   .kid { display: block; }
+}
+
+/* session 6 polish */
+.kpis-h { margin: 0; padding: 12px 20px 0; font-size: 14px; font-weight: 500; color: var(--ink-2); }
+.kpi-foot .vs { font-size: 14px; color: var(--ink); }
+.chip .dot { background: var(--store); }
+.chip .dot.blocked { background: none; box-shadow: inset 0 0 0 2px var(--alert); width: 9px; height: 9px; } /* ring, not colour alone */
+/* scroll shadow: shows only while the panel has more below (the local layer covers it at the end) */
+.panel { background: linear-gradient(var(--card) 0 0) bottom / 100% 24px no-repeat local, radial-gradient(farthest-side at 50% 100%, #151F2729, #0000) bottom / 100% 14px no-repeat scroll, var(--card); }
+.daychart { margin-bottom: 4px; }
+.dc-leg { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-bottom: 6px; font-size: 13px; color: var(--ink-2); }
+.dc-leg span { display: inline-flex; align-items: center; gap: 6px; }
+.dc-leg b { font-weight: 500; color: var(--ink); }
+.dc-leg .dc-t { color: var(--ink); font-weight: 500; }
+.daychart svg { display: block; touch-action: pan-y; }
+.daychart text { font: 400 12px var(--monof); fill: var(--mute); }
+.daychart .dc-val { fill: var(--ink); }
+.dc-grid { stroke: #EEF2F6; }
+.dc-base { stroke: var(--line); }
+.dc-cur { stroke: var(--ink); stroke-width: 1; }
+@media (max-width: 1700px) { .kpi > .muted { min-height: 2.8em; } .kpis .big { font-size: 26px; } } /* labels may wrap: keep the values on one baseline */
+@media (max-width: 1023px) { .kt-scroll { mask-image: linear-gradient(to right, #000 calc(100% - 28px), #0000); } } /* cue: more columns to the right */
+@media (max-width: 640px) {
+  .chip, .seg button, .btn { min-height: 44px; }
+  .slider input { height: 32px; }
+}
+/* projector: muted labels readable from 4 m */
+@media (min-width: 1600px) {
+  .kpi > .muted, .site > .muted, .legend, .meta, .panel h3, .panel .small { font-size: 15px; color: var(--ink-2); }
+  .kpi > .muted { white-space: normal; min-height: 2.8em; }
 }

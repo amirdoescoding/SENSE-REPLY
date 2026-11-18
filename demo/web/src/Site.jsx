@@ -162,10 +162,13 @@ export default function Site({ row, step, sun, reducedMotion }) {
     let W = 1, H = 1 // cached by the observer: reading layout in the rAF loop forced a reflow every frame
     const place = () => {
       ({ width: W, height: H } = card.current.getBoundingClientRect())
-      S.resize(W, H).forEach(([x, y], i) => { // keep every chip inside the card (phone widths)
-        const el = chipEls.current[i], w = el.offsetWidth / 2 + 8
-        el.style.left = Math.min(W - w, Math.max(w, x)) + 'px'; el.style.top = y + 'px'
+      const pos = S.resize(W, H).map(([x, y], i) => { // keep every chip inside the card (phone widths)
+        const w = chipEls.current[i].offsetWidth / 2 + 8
+        return [Math.min(W - w, Math.max(w, x)), y, w]
       })
+      const [h, g] = [pos[1], pos[3]] // House sits left of Grid at similar height: on narrow cards push it left, then up if it still hits
+      if (h[0] + h[2] > g[0] - g[2]) { h[0] = Math.max(h[2], g[0] - g[2] - h[2]); if (h[0] + h[2] > g[0] - g[2]) h[1] = g[1] - 44 }
+      pos.forEach(([x, y], i) => { const el = chipEls.current[i]; el.style.left = x + 'px'; el.style.top = y + 'px' })
     }
     const ro = new ResizeObserver(place); ro.observe(card.current); place()
 

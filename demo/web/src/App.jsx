@@ -53,7 +53,9 @@ function KpiStrip({ kpis, mode, lam }) {
   const ours = kpis.columns[`Ours ${mode} λ=${lam.toFixed(1)}`]
   const pilot = kpis.columns.C
   return (
-    <section className="card kpis">
+    <section className="card" aria-labelledby="kpis-h">
+      <h2 id="kpis-h" className="kpis-h">Week result, ours vs pilot C on the same inputs</h2>
+      <div className="kpis">
       {KPIS.map(([id, name, unit, f]) => {
         const [cls, text] = VERDICT[ours[id].verdict] || ['', ours[id].verdict]
         return (
@@ -64,12 +66,13 @@ function KpiStrip({ kpis, mode, lam }) {
               {unit && <span className="mono muted">{unit}</span>}
             </div>
             <div className="kpi-foot">
-              <span className="mono muted small">pilot C {f(pilot[id].value).replace(/^\+/, '')}</span>
+              <span className="mono vs" title={`Pilot C: ${f(pilot[id].value).replace(/^\+/, '')}`}>{sgn(ours[id].value - pilot[id].value, id === 'S1' ? 1 : 2)} vs C</span>
               <span className={'tag ' + cls}>{text}</span>
             </div>
           </div>
         )
       })}
+      </div>
     </section>
   )
 }
@@ -93,8 +96,9 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam }) {
           const bad = !d.gate.passed || d.used !== 'plan'
           return (
             <button key={d.start} className={'chip' + (i === day ? ' cur' : '')} onClick={() => pb.seek(i * DAY_STEPS)}
+              aria-label={`${weekday(d.start)}${bad ? ', blocked by the replay gate' : ''}`}
               title={`Plan decided ${weekday(d.start)} 11:00, runs to the next day 10:45${bad ? ', blocked by the replay gate' : ''}`}>
-              <i className="dot" style={{ background: bad ? 'var(--alert)' : 'var(--store)' }} />{weekday(d.start)}
+              <i className={'dot' + (bad ? ' blocked' : '')} />{weekday(d.start)}
             </button>
           )
         })}
@@ -120,8 +124,8 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam }) {
 function Sim({ data, mode, lam, setMode, setLam }) {
   const reduced = useReducedMotion()
   const stepParam = q.get('step')
-  // autoplay only without a step param and without reduced motion; ?play=1 forces it
-  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, Math.floor(+stepParam) || 0)), q.get('play') === '1' || (stepParam === null && !reduced))
+  // autoplay only without reduced motion, and without a step param unless ?play=1
+  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, Math.floor(+stepParam) || 0)), !reduced && (q.get('play') === '1' || stepParam === null))
   const run = data.runs[key(mode, lam)]
   const sun = useMemo(() => sunSeries(run.schedule), [run])
   const day = Math.floor(pb.step / DAY_STEPS)

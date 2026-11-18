@@ -3,10 +3,10 @@ import { DAY_STEPS, MAX_STEP } from './lib.js'
 
 const NODES = [
   ['inputs', 'Inputs', 'M6 8h12M6 12h12M6 16h8'],
-  ['agent', 'Agent, 1×/day', 'M12 5l2 4.5 5 .6-3.7 3.4 1 5-4.3-2.5-4.3 2.5 1-5L5 10.1l5-.6z'],
+  ['agent', 'Agent, 1×/day', 'M5 6h14v10h-7l-4 3v-3H5zM8.5 9.5h7M8.5 12.5h4'],
   ['validator', 'Validator + gate', 'M6 12.5l4 4 8-9'],
   ['rule', 'Rule, every 15 min', 'M6 8h12M6 12h12M6 16h12M10 6v4M15 10v4M9 14v4'],
-  ['clamp', 'Clamp 10–90 %, 5 kW', 'M8 6v12M16 6v12M8 12h8'],
+  ['clamp', 'Clamp 10–90 %, 5 kW', 'M6 5h12M6 19h12M12 8.5v7M9.5 11l2.5-2.5 2.5 2.5M9.5 13l2.5 2.5 2.5-2.5'],
   ['site', 'Site', 'M5 12l7-6 7 6M7 11v7h10v-7'],
   ['memory', 'Memory', 'M7 5h10v14H7zM10 9h4M10 13h4'],
 ]
