@@ -24,6 +24,40 @@ THRESH = {
     "C5": (-1, 0.5), "C4": (0, None), "O1": (-1, 0.3), "O3": (-1, 0.1),
     "C1": (0, None), "S": (0, None), "IMP": (0, None), "EXP": (0, None), "PV": (0, None),
 }
+# Workbook "KPI Verdicts" columns B-D: id -> (name, unit, group), in sheet order.
+META = {
+    "S_net": ("Saving vs no battery, SoC-adjusted, net of wear", "€/wk", "Economics & AI value"),
+    "VCR": ("Share of the achievable saving captured", "ratio", "Economics & AI value"),
+    "VORB": ("Value over the static rule", "€/wk", "Economics & AI value"),
+    "N1": ("Net value after AI cost and wear", "€/wk", "Economics & AI value"),
+    "N2": ("AI cost per € saved", "€/€", "Economics & AI value"),
+    "F1": ("Net value vs static rule after AI cost", "€/wk", "Economics & AI value"),
+    "O5": ("LLM cost per week", "€/wk", "Economics & AI value"),
+    "S2b": ("CO2 avoided vs static rule", "kg/wk", "Carbon & sustainability"),
+    "S3": ("Import carbon intensity", "g/kWh", "Carbon & sustainability"),
+    "MAC": ("Abatement cost of the carbon lever", "€/kg", "Carbon & sustainability"),
+    "S1": ("Grid CO2, SoC-adjusted", "kg/wk", "Carbon & sustainability"),
+    "SCR": ("Self-consumption of PV", "ratio", "Self-use & grid"),
+    "SSR": ("Self-sufficiency", "ratio", "Self-use & grid"),
+    "PSR": ("Peak shaving ratio", "ratio", "Self-use & grid"),
+    "G2": ("Grid violations / penalties", "count", "Self-use & grid"),
+    "G1": ("Peak grid import", "kW", "Self-use & grid"),
+    "B1": ("Apparent storage efficiency", "ratio", "Battery"),
+    "B2": ("Equivalent full cycles", "cycles/wk", "Battery"),
+    "B4": ("Time at SoC limits", "share", "Battery"),
+    "B3": ("Battery wear cost", "€/wk", "Battery"),
+    "B6": ("Time near the 80% target SoC", "share", "Battery"),
+    "C5": ("Expensive-import share", "share", "Price timing"),
+    "C4": ("Price-timing spread", "€/kWh", "Price timing"),
+    "O1": ("LLM calls per 15-min decision", "calls", "Orchestration load"),
+    "O3": ("Share of the 15-min slot in LLM calls", "share", "Orchestration load"),
+    "C1": ("Energy bill, SoC-adjusted", "€/wk", "Context"),
+    "S": ("Saving vs no battery, gross", "€/wk", "Context"),
+    "IMP": ("Grid import", "kWh/wk", "Context"),
+    "EXP": ("Grid export", "kWh/wk", "Context"),
+    "PV": ("PV generation", "kWh/wk", "Context"),
+}
+assert list(META) == list(THRESH)
 # Workbook columns I, K-N (hardcoded "blue" values). None = blank cell in the workbook.
 EXCEL = {
     "A": dict(S_net=0.4071, VCR=0.2769, VORB=-0.7261, N1=-4.3341, N2=7.8375, F1=-5.4673, O5=4.7412, S2b=-10.0493,
@@ -429,6 +463,7 @@ def main():
         (agent.OUT / f"run_{mode}_{lam}.json").write_text(json.dumps(plan, indent=1, ensure_ascii=False))
     table = dict(headline=f"Ours {HEADLINE[0]} λ={HEADLINE[1]}", s_star=S_STAR, carbon_source=carbon_source, s3_basis=s3_basis,
                  thresholds={x: dict(direction=d, threshold=t) for x, (d, t) in THRESH.items()},
+                 meta={x: dict(name=n, unit=u, group=g) for x, (n, u, g) in META.items()},
                  columns={c: {x: dict(value=None if v.get(x) is None else round(v[x], 4), verdict=verdict(x, v.get(x)))
                               for x in THRESH} for c, v in cols.items()},
                  source={c: "workbook" for c in EXCEL} | {c: "computed" for c in cols if c.startswith("Ours")})

@@ -32,5 +32,7 @@
 - [x] Demo session 4 prereqs: price per step, compare.json (rule/no battery/A/C), carbon_source label
 - [x] Demo session 4 `demo-ui-sim` (Simulation tab)
 - [ ] Push `demo-ui-sim` + PR
-- [ ] Demo session 5 `demo-ui-kpis`: KPI table, live ENTSO-E card, the session-4 leftovers in TODOS
-- [ ] Demo session 5: deploy on Render (set ENTSO_API secret, confirm PYTHON_VERSION 3.14.0), warm up before the demo
+- [x] Demo session 5 `demo-ui-kpis`: KPI table, live ENTSO-E card, F5/P4, session-4 leftovers
+- [ ] Push `demo-ui-kpis` + PR
+- [ ] Deploy on Render: connect Blueprint, set ENTSO_API secret, check the build finds Node 22 and Python 3.14.0, warm up before the demo
+- [ ] Demo polish (optional): grid→battery particle path in upside mode, earlier Memory→Agent packet, draw compare.json / step prices

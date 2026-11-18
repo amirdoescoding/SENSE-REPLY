@@ -26,14 +26,14 @@ SENSE-REPLY/
 │   ├── mockups/          # demo mockups: mock.html → render.sh → mock-{1,2,3,kpi}.png; sky.html → sky.sh → sky-{backdrop,dome}-*.png
 │   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning, 07 self-hosting + simple framework
 ├── demo/                 # hosted demo of PROPOSAL (sessions in .claude/TODOS.md)
-│   ├── sim.py            # engine: daily agent knobs → gate → rolling LP → Excel KPIs → out/*.json (--check)
+│   ├── sim.py            # engine: daily agent knobs → gate → rolling LP → Excel KPIs (+ META name/unit/group) → out/*.json (--check)
 │   ├── agent.py          # Gemini REST + cache + validator + k-NN memory
 │   ├── api.py            # FastAPI: /api/run?mode=&lambda=, /api/kpis, /api/compare, /api/live/carbon; serves web/dist
 │   ├── test_api.py       # python demo/test_api.py → "api ok"
-│   ├── web/              # Vite + React (plain JS) + three: App (data, header, KPI strip, playback bar), AgentPanel,
+│   ├── web/              # Vite + React (plain JS) + three: App (data, header, KPI strip, playback bar, mode/λ state), Kpis (KPIs tab), AgentPanel,
 │   │                     #   Pipeline (WAAPI packets), Site (three.js site + data-driven sky), usePlayback, lib; npm run build → dist
 │   └── out/              # precomputed runs (+ per-step price), kpis.json, compare.json, memory.json, gemini_cache.json (last two not served)
-├── render.yaml           # one free Render web service (deploy in session 5)
+├── render.yaml           # one free Render web service (Python 3.14 + NODE_VERSION 22 for the vite build)
 └── analysis/
     ├── kpis.py           # python3 analysis/kpis.py → KPI table A/B/C, baselines, T1-T3, self-check
     ├── timeseries.py     # per-day KPIs, day-type trade-off, hourly profile, anomalies

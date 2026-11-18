@@ -128,3 +128,13 @@
 - `--mute` is now #66727E (WCAG AA). DESIGN.md is updated.
 - Headless screenshots need `--use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader --enable-logging=stderr --v=0`. Without the logging flag the shot fires before the data loads.
 - Subagents cannot load skills: run the design-skill passes in the main session.
+
+## Demo UI KPIs (2026-11-18), branch `demo-ui-kpis`, see demo/web/src/Kpis.jsx
+- `kpis.json` now has `meta` {id: name, unit, group}, from `sim.py` META (workbook "KPI Verdicts", columns B–D). Regenerating the outputs changed only `kpis.json` (Gemini cache hits).
+- Mode and λ live in App, so the KPIs tab's "Ours" column is the same run as the Sim tab.
+- F5/P4 are computed client-side from run `days`:
+  - F5 = days with `used` ≠ plan;
+  - P4 = plans with an "invalid" or "clamped" validator note, and plans with an explanation.
+- Counts = Good / (Good + Improvable). Ours shows /20 because S3 is assessed (hourly CI).
+- Space toggles playback unless a control has *keyboard* focus (`:focus-visible`). On the KPIs tab, Space scrolls the page.
+- Pipeline label font = 14px × k, where k = clamp(1400/width, 1, 1.7). Width 0 on a hidden tab is ignored.

@@ -3,12 +3,14 @@ services:
     name: sense-reply-demo
     runtime: python
     plan: free
-    # The web build needs Node in Render's Python build image (unverified until the session 5 deploy; if missing, set NODE_VERSION or commit dist).
+    # The web build needs Node (vite 8) in Render's Python build image: NODE_VERSION pins it.
     buildCommand: pip install -r demo/requirements.txt && cd demo/web && npm ci && npm run build
     startCommand: uvicorn --app-dir demo api:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/kpis
     envVars:
       - key: PYTHON_VERSION
         value: 3.14.0
+      - key: NODE_VERSION
+        value: "22"
       - key: ENTSO_API
         sync: false

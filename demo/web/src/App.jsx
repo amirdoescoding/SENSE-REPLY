@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import AgentPanel from './AgentPanel.jsx'
+import Kpis from './Kpis.jsx'
 import Pipeline from './Pipeline.jsx'
 import Site from './Site.jsx'
 import usePlayback from './usePlayback.js'
@@ -116,12 +117,11 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam }) {
   )
 }
 
-function Sim({ data }) {
-  const [mode, setMode] = useState(MODES.includes(q.get('mode')) ? q.get('mode') : 'conservative')
-  const [lam, setLam] = useState(LAMS.includes(+q.get('lambda')) && q.get('lambda') ? +q.get('lambda') : 0.1)
-  const stepParam = q.get('step')
-  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, Math.floor(+stepParam) || 0)), stepParam === null || q.get('play') === '1')
+function Sim({ data, mode, lam, setMode, setLam }) {
   const reduced = useReducedMotion()
+  const stepParam = q.get('step')
+  // autoplay only without a step param and without reduced motion; ?play=1 forces it
+  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, Math.floor(+stepParam) || 0)), q.get('play') === '1' || (stepParam === null && !reduced))
   const run = data.runs[key(mode, lam)]
   const sun = useMemo(() => sunSeries(run.schedule), [run])
   const day = Math.floor(pb.step / DAY_STEPS)
@@ -129,14 +129,16 @@ function Sim({ data }) {
 
   useEffect(() => {
     const onKey = (e) => {
+      if (hashTab() === 'kpis') return // hidden replay: let Space scroll the KPI page
       if (e.target.closest('input, textarea, select, summary')) return
+      if (e.code === 'Space' && e.target.matches('button:focus-visible, a:focus-visible')) return // keyboard focus keeps native Space; mouse-left focus still toggles
       if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) pb.toggle() }
       else if (e.key === 'ArrowLeft') pb.seek(pb.step - 1)
       else if (e.key === 'ArrowRight') pb.seek(pb.step + 1)
     }
-    const noClick = (e) => { if (e.code === 'Space' && !e.target.closest('input, textarea, select, summary')) e.preventDefault() }
+    const noClick = (e) => { if (hashTab() !== 'kpis' && e.code === 'Space' && !e.target.matches('input, textarea, select, summary, :focus-visible')) e.preventDefault() } // else a mouse-focused button clicks on keyup
     addEventListener('keydown', onKey)
-    addEventListener('keyup', noClick) // a focused button would otherwise click on Space keyup
+    addEventListener('keyup', noClick)
     return () => { removeEventListener('keydown', onKey); removeEventListener('keyup', noClick) }
   })
 
@@ -157,6 +159,8 @@ export default function App() {
   const [tab, setTab] = useState(hashTab())
   const [data, setData] = useState(null)
   const [err, setErr] = useState(null)
+  const [mode, setMode] = useState(MODES.includes(q.get('mode')) ? q.get('mode') : 'conservative')
+  const [lam, setLam] = useState(LAMS.includes(+q.get('lambda')) && q.get('lambda') ? +q.get('lambda') : 0.1)
 
   useEffect(() => {
     const f = () => setTab(hashTab())
@@ -178,8 +182,8 @@ export default function App() {
       {err ? <p className="status">Could not load the replay data: {err.message}</p>
         : !data ? <p className="status muted">Loading the replay</p>
         : <>
-          {tab === 'kpis' && <p className="status">The KPI conformity table arrives in session 5.</p>}
-          <div hidden={tab === 'kpis'}><Sim data={data} /></div>{/* kept mounted: the replay keeps its place across tabs */}
+          {tab === 'kpis' && <Kpis kpis={data.kpis} run={data.runs[key(mode, lam)]} mode={mode} lam={lam} />}
+          <div hidden={tab === 'kpis'}><Sim data={data} mode={mode} lam={lam} setMode={setMode} setLam={setLam} /></div>{/* kept mounted: the replay keeps its place across tabs */}
         </>}
     </>
   )
