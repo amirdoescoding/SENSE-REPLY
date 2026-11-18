@@ -17,6 +17,20 @@ LLM edge agents that dispatch a home battery (PV + BESS + grid + residential loa
   `docs/Sense Reply BDD 2026 - v1.1.pdf`. Research is in `docs/research/` (start at `00-synthesis.md`).
 - Every KPI must map to a real JSON field or a named external source. Flag assumptions (e.g. site = Italy).
 
+## Context via Graphify (read first)
+
+- **Before starting any task**, query the knowledge graph in `graphify-out/` first:
+  `graphify query "<question>"`, `graphify path "<A>" "<B>"`, `graphify explain "<node>"`.
+  Read only the files the graph points to. `graphify-out/GRAPH_REPORT.md` is for broad overviews.
+- After code changes, run `graphify update .` (AST-only, free). After doc/PDF changes, run
+  `/graphify . --update` (semantic re-extraction of changed docs only).
+- `graphify-out/` is gitignored; each teammate builds it locally with `/graphify .`.
+
+## **GIT**
+
+- Always create a new branch for a new feature
+- Split work in commits
+
 ## 1. Think Before Coding
 
 **Don't assume. Don't hide confusion. Surface tradeoffs.**

@@ -1,0 +1,8 @@
+.venv/
+.gstack/
+.logs/
+.claude/skills/
+.claude/agents/
+data/**/dataset-*.json
+data/DatasetV3/
+docs/diagrams/*.svg
