@@ -51,7 +51,8 @@ Close each session with: memory files + `graphify update .`.
     - Outcome packet (Memory → Agent) lands after the 11:00 decision sweep; consider firing it earlier.
     - Space is swallowed on focused buttons; autoplay ignores prefers-reduced-motion; `test_api.py` can pass vacuously if `web/dist` is missing.
     - Render: confirm Node exists in the Python build image (else NODE_VERSION or commit dist).
-- [ ] **5 `demo-ui-kpis`**: Excel-aligned conformity table with verdicts, Good counts, live ENTSO-E card, and the F5/P4 KPIs now measurable.
+- [x] **5 `demo-ui-kpis`**: KPIs tab (`Kpis.jsx`): conformity table (16 headline rows, "Show all 30"), Ours column follows the Sim mode/λ, Good counts, live ENTSO-E card (fallback shown), F5/P4 computed from run `days`. `kpis.json` gains `meta`. Carry-overs done: pipeline labels keep real px (+ 2-line wrap), Space toggles unless a control has keyboard focus, no autoplay under reduced motion, `test_api.py` needs `web/dist`, NODE_VERSION 22. Reviewed by code-reviewer, ui-ux-tester, impeccable finish pass; fixes applied.
+  - **Left:** push + PR; connect the Render Blueprint and set `ENTSO_API`; warm up before the demo. Backlog: grid→battery path for upside charging, earlier outcome packet, `compare.json` and step prices still not drawn.
 
 ## Honesty flags (show them in the demo)
 - The plain rule won this January week (`analysis/replay.py`), so ours may only tie it. The gate and fallback are part of the story.
