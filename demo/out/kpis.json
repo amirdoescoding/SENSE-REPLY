@@ -1,7 +1,8 @@
 {
  "headline": "Ours conservative λ=0.1",
  "s_star": 2.184,
- "carbon_source": "entsoe-hourly",
+ "carbon_source": "constant-0.356",
+ "s3_basis": "entsoe-hourly",
  "thresholds": {
   "S_net": {
    "direction": 1,

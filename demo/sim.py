@@ -336,7 +336,7 @@ def run_ours(rows, mode, lam, ci, mem, soc0=0.80):
         for key in ("imp", "exp", "chg", "dis", "soc"):
             f[key] += df[key]
         days.append(dict(day=day + 1, start=rows[start]["dt"], context=ctx,
-                         neighbours=[f"{n['run']} day {n['day'] + 1}" for n in nb],
+                         neighbours=[dict(label=f"{n['run']} day {n['day'] + 1}", regret=round(n["regret_vs_rule"], 4)) for n in nb],
                          proposed=ans["raw"], validator_notes=notes,
                          gate=dict(passed=ok, score_plan=s_k, score_default=s_d, basis="yesterday" if day else
                                    "next day (day-1 stand-in)"),
@@ -348,8 +348,36 @@ def run_ours(rows, mode, lam, ci, mem, soc0=0.80):
 
 def schedule(rows, f):
     return [dict(t=r["dt"], pv_kw=round(r["pv"] / DT, 3), load_kw=round(r["load"] / DT, 3),
-                 battery_kw=round((c - d) / DT, 3), grid_kw=round((i - e) / DT, 3), soc=round(s, 4))
+                 battery_kw=round((c - d) / DT, 3), grid_kw=round((i - e) / DT, 3), soc=round(s, 4),
+                 buy_eur=round(r["grid"]["buyPrice"], 4), sell_eur=round(r["grid"]["sellPrice"], 4))
             for r, c, d, i, e, s in zip(rows, f["chg"], f["dis"], f["imp"], f["exp"], f["soc"])]
+
+
+def compare(rows):
+    """Per-step soc / grid_kw / battery_kw of the reference runs on run C's 672 timestamps (compare.json)."""
+    rule = rule_flows(rows, 0.80)
+    pilots = {}
+    for n in ("C", "A"):
+        r = load_run(n)
+        assert [x["dt"] for x in r] == [x["dt"] for x in rows], n
+        pilots[n] = (observed(r), r)
+
+    def ser(f):
+        return dict(soc=[round(s, 4) for s in f["soc"]],
+                    grid_kw=[round((i - e) / DT, 3) for i, e in zip(f["imp"], f["exp"])],
+                    battery_kw=[round((c - d) / DT, 3) for c, d in zip(f["chg"], f["dis"])])
+    nb = dict(soc=[None] * len(rows), grid_kw=[round((r["load"] - r["pv"]) / DT, 3) for r in rows],
+              battery_kw=[0.0] * len(rows))
+    series = {"Static rule": ser(rule), "No battery": nb, "Pilot C": ser(pilots["C"][0]), "Pilot A": ser(pilots["A"][0])}
+    notes = {"Static rule": dict(evidence="MODELLED", inputs="run C PV and load", start_soc=0.80),
+             "No battery": dict(evidence="MODELLED", inputs="run C PV and load", start_soc=None),
+             "Pilot C": dict(evidence="OBSERVED", inputs="run C logged flows (load from the energy balance)",
+                             start_soc=round(pilots["C"][0]["soc0"], 3)),
+             "Pilot A": dict(evidence="OBSERVED", inputs="run A logged flows (load from the energy balance)",
+                             start_soc=round(pilots["A"][0]["soc0"], 3),
+                             caveat="not like-for-like: different PV (panel dirt 0.03 vs C 0.26 at start) "
+                                    "and start SoC 0.572 vs 0.80")}
+    return dict(t=[r["dt"] for r in rows], series=series, notes=notes)
 
 
 def check_run(rows, f, mode):
@@ -368,7 +396,7 @@ def main():
     import agent
     from carbon import ci_lookup
     ci, src, hours = ci_lookup()
-    carbon_source = "entsoe-hourly" if hours else "constant-0.356"
+    carbon_source, s3_basis = "constant-0.356", "entsoe-hourly" if hours else None  # S3 is the only hourly KPI
     rows = load_run("C")
     rule = rule_flows(rows, 0.80)
     mem = agent.seed_memory(ci)
@@ -397,15 +425,16 @@ def main():
                     model=agent.MODEL, knobs=[d["knobs"] for d in days], schedule=schedule(rows, f),
                     kpis={x: (round(v, 4) if isinstance(v, float) else v) for x, v in k.items()},
                     explanation=" ".join(d["explanation"] for d in days), days=days, tokens=tok,
-                    carbon_source=carbon_source, carbon_note=src, honesty_flags=FLAGS)
+                    carbon_source=carbon_source, s3_basis=s3_basis, carbon_note=src, honesty_flags=FLAGS)
         (agent.OUT / f"run_{mode}_{lam}.json").write_text(json.dumps(plan, indent=1, ensure_ascii=False))
-    table = dict(headline=f"Ours {HEADLINE[0]} λ={HEADLINE[1]}", s_star=S_STAR, carbon_source=carbon_source,
+    table = dict(headline=f"Ours {HEADLINE[0]} λ={HEADLINE[1]}", s_star=S_STAR, carbon_source=carbon_source, s3_basis=s3_basis,
                  thresholds={x: dict(direction=d, threshold=t) for x, (d, t) in THRESH.items()},
                  columns={c: {x: dict(value=None if v.get(x) is None else round(v[x], 4), verdict=verdict(x, v.get(x)))
                               for x in THRESH} for c, v in cols.items()},
                  source={c: "workbook" for c in EXCEL} | {c: "computed" for c in cols if c.startswith("Ours")})
     table["good_counts"] = {c: sum(v["verdict"] == "Good" for v in kv.values()) for c, kv in table["columns"].items()}
     (agent.OUT / "kpis.json").write_text(json.dumps(table, indent=1, ensure_ascii=False))
+    (agent.OUT / "compare.json").write_text(json.dumps(compare(rows), separators=(",", ":")))
     print("good counts:", table["good_counts"])
 
 
