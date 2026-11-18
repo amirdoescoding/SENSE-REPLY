@@ -1,8 +1,5 @@
 # Restart point
 
-2026-11-18: Branch `demo-design` (not pushed, 10 commits). Session 1 of 5 for the framework demo is done (`.claude/TODOS.md`).
-- Chosen: `docs/mockups/mock-1.png` + `mock-kpi.png`, de-slopped and aligned with the KPI Conformity Excel. DESIGN.md is updated.
-- Next session: `demo-sim-engine`. First:
-  1. verify the current Gemini Flash model ID and free limits;
-  2. decide the two open questions in TODOS (S* source for VCR; rule vs rolling optimiser executing the knobs);
-  3. reproduce the Excel A/C/rule KPI values as a self-check.
+2026-11-18: Branch `demo-sim-engine` (not pushed). Session 2 of 5 is done, with real Gemini answers cached.
+- Next: merge or open a PR, then session 3 `demo-api` (FastAPI `/api/run?lambda=&mode=`, `/api/kpis`, `/api/live/carbon`, render.yaml). The API serves `demo/out/*.json`.
+- Rerun the engine: `.venv/bin/python -u demo/sim.py` (~6 min, cached answers are free). Checks: `--check`.

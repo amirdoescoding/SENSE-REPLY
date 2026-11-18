@@ -22,16 +22,15 @@ Close each session with: memory files + `graphify update .`.
 
 ## Sessions
 - [x] **1 `demo-design`**: DESIGN.md, canvas-design philosophy, PNG mockups in `docs/mockups/`. The user picks one.
-- [ ] **2 `demo-sim-engine`**: `demo/sim.py`.
-  - Reuses kpis/replay/carbon/timeseries.
-  - Gemini daily knobs → validator → fallback → knob rule + clamp → memory.
-  - JSON per mode × λ (§11.2 schema + replay log).
-  - Computes every Excel KPI for ours with the workbook formulas.
-  - Self-checks:
-    - knobs off = `rule_baseline`;
-    - our KPI code reproduces the Excel A/C/rule values (S_net, VORB, SCR, SSR, PSR, B2, B4, C5 within rounding).
-  - Open question: S* (perfect-foresight LP) for VCR. Either scipy, or take S* from the workbook (S/VCR).
-  - Open question: the report's S5 runs a rolling optimiser, while the proposal uses a rule. Decide which executes the knobs.
+- [x] **2 `demo-sim-engine`**:
+  - `demo/sim.py` (rolling LP, HiGHS) + `demo/agent.py` (Gemini 3.5 Flash-Lite REST, validator, cache, k-NN memory).
+  - Outputs: 6 run JSONs + `kpis.json` + `memory.json` + the committed `gemini_cache.json`; 7/7 Gemini days per run.
+  - `--check` passes:
+    - reproduces the Excel A/C/rule;
+    - S* 2.1844;
+    - plain S5 upside +0.7%, conservative +5.2% (soft miss);
+    - the gate blocks bad knobs;
+    - no key in the outputs.
 - [ ] **3 `demo-api`**: FastAPI `/api/run?lambda=`, `/api/kpis`, `/api/live/carbon` (cached), serving the built frontend, plus `render.yaml`. The free instance sleeps, so warm it up before the demo.
 - [ ] **4 `demo-ui-sim`**: three.js site (PV, battery, house, pylon) with energy particles. The agent-flow pipeline with moving packets, playback, a day scrubber and the λ slider.
 - [ ] **5 `demo-ui-kpis`**: Excel-aligned conformity table with verdicts, Good counts, live ENTSO-E card, and the F5/P4 KPIs now measurable.

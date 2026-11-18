@@ -89,3 +89,23 @@
   - S5 conservative N1 +1.10 €/wk, upside +1.78 (grid charging, CO2 22.2 kg, peak 5.1 kW → shadow mode).
   The demo follows the report.
 - Report §11 "Scenario Lab" = our demo: JSON plan schema, guardrails, download.
+
+## Sim engine (2026-11-18), branch `demo-sim-engine`, see demo/sim.py, demo/agent.py
+- **Workbook alignment:** load = PV + I − X + E_dis − E_chg (balance) reproduces the Excel exactly; the raw `load` field is ~2% off.
+  - Pilot VORB uses the pilot's own rule twin (A: own inputs, SoC 0.572).
+  - S2b uses the run-C rule CO2 for every column (a workbook quirk, mirrored).
+  - S* = S/VCR = 2.184. A whole-week perfect-foresight LP with grid charging gives 2.1844.
+- **Executor:** rolling LP every 15 min, 24 h persistence forecast, known prices.
+  - Knobs (§11.2): soc_floor, evening_reserve_kwh at 17:00 (soft), export_hold_eur (terminal €/kWh), grid_charge (upside only).
+  - Default knobs = plain S5: export_hold = mean_buy, with no extra η, since C_adj already has it.
+- **Perfect-foresight LPs can't value knobs** (constraints only hurt). So the memory seed and the replay gate use the rolling MPC.
+- Results (memory fallback, no Gemini):
+  - Ours conservative λ0.1: S_net 1.156, VORB +0.114, 16 Good (= S5 conservative).
+  - Upside λ0.1: S_net 1.568, VORB +0.53, 14 Good.
+  - Knob regret vs the rule is only ±1 cent/day in this week.
+- **Gemini:**
+  - Model: `gemini-3.5-flash-lite` (500 requests/day). The 3.8 and 3.6 Flash free tiers allow only 20/day, and a full run needs 42 calls.
+  - The thought summary needs `thinkingBudget: 2048`.
+  - 503 "high demand" is frequent: retries handle it. On a 429, the rest of the run uses memory.
+  - "Live API" models (unlimited requests) are WebSocket voice/streaming models, not used.
+- **With Gemini (7/7 days):** the knobs stay near the defaults (one reserve of 2 kWh). The KPIs equal the memory-fallback run. O5 = €0.0115/wk (Excel S5: 0.0113). Ours conservative λ0.1: N1 1.145, 16 Good.
