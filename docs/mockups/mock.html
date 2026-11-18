@@ -7,16 +7,29 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{width:1920px;height:1080px;overflow:hidden;background:var(--paper);color:var(--ink);font:400 15px/1.4 "Instrument Sans",sans-serif}
 .mono{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
-.cap{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);font-weight:500}
+.cap{font-size:13px;color:var(--mute);font-weight:500}
 header{height:64px;display:flex;align-items:center;gap:32px;padding:0 32px;background:var(--card);border-bottom:1px solid var(--line)}
 header img{height:26px}
+.meta{font-size:13px;color:var(--ink2);padding-left:16px;border-left:1px solid var(--line)}
+.strip{display:grid;grid-template-columns:repeat(6,1fr)}
+.strip>div{padding:16px 20px;border-left:1px solid var(--line)}
+.strip>div:first-child{border:0}
+.vd{font:500 12px 'Instrument Sans';padding:2px 6px;border-radius:4px;margin-left:6px}
+.vd.g{background:#E3F7EA;color:#027A31}.vd.i{background:#FDE7EC;color:#B0002A}
+table{border-collapse:collapse;width:100%}
+th,td{padding:9px 8px;text-align:right;font-size:14px;border-bottom:1px solid #EEF2F6;white-space:nowrap}
+th{font-weight:500;color:var(--mute);font-size:13px}
+th:first-child,td:first-child{text-align:left}
+td.n{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+tr.grp td{font-weight:600;color:var(--ink);padding-top:16px;border-bottom:1px solid var(--line)}
+td.ours,th.ours{background:var(--agent-soft)}
 .tabs{display:flex;gap:4px;margin-left:16px}
-.tab{padding:8px 16px;border-radius:999px;color:var(--ink2);font-weight:500}
-.tab.on{background:var(--ink);color:#fff}
-.chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--ink2);background:var(--card);white-space:nowrap}
+.tab{padding:20px 2px 18px;margin-right:20px;color:var(--ink2);font-weight:500;border-bottom:2px solid transparent}
+.tab.on{color:var(--ink);border-color:var(--ink)}
+.chip{padding:5px 10px;border-radius:6px;border:1px solid var(--line);font-size:13px;color:var(--ink2);background:var(--card);white-space:nowrap}
 .chip b{font-weight:600;color:var(--ink)}
 .sp{flex:1}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 2px #151F270F,0 8px 24px #151F270A}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 1px 2px #151F270F}
 .kpi{padding:16px 20px}
 .kpi .v{font:500 32px/1.1 "JetBrains Mono",monospace;margin-top:6px}
 .kpi .u{font:400 15px "JetBrains Mono",monospace;color:var(--mute);margin-left:4px}
@@ -27,9 +40,9 @@ header img{height:26px}
 .check{display:flex;gap:10px;align-items:center;padding:5px 0}
 .ok{width:20px;height:20px;border-radius:50%;background:#E3F7EA;color:var(--store);display:grid;place-items:center;font-size:12px;font-weight:600}
 .mem{display:flex;justify-content:space-between;padding:8px 12px;border-radius:8px;background:var(--paper);margin-top:6px;font-size:14px}
-.btn{width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:16px}
+.btn{width:40px;height:40px;border-radius:8px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:16px}
 .days{display:flex;gap:6px}
-.day{padding:6px 12px;border-radius:999px;border:1px solid var(--line);font-size:13px;display:flex;gap:6px;align-items:center;background:var(--card)}
+.day{padding:5px 10px;border-radius:6px;border:1px solid var(--line);font-size:13px;display:flex;gap:6px;align-items:center;background:var(--card)}
 .day.on{border-color:var(--agent);background:var(--agent-soft);color:var(--agent);font-weight:600}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--store)}
 .lam{display:flex;align-items:center;gap:10px}
@@ -62,7 +75,7 @@ function scene(W,H,s,ox,oy,labels=true){
     return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`};
   const parts=(pts,col,n)=>{let o='';const seg=[];let L=0;for(let i=1;i<pts.length;i++){const l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(l);L+=l}
     for(let k=0;k<n;k++){let t=(k+.35)/n*L,i=0;while(t>seg[i]){t-=seg[i];i++}const f=t/seg[i];const a=pts[i],b=pts[i+1];
-      const p=P(a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f);o+=`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${col}"/><circle cx="${p[0]}" cy="${p[1]}" r="10" fill="${col}" opacity=".16"/>`}return o};
+      const p=P(a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f);o+=`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${col}"/>`}return o};
   const fPVh=[[1.8,6.1],[1.8,3.9]], fPVb=[[3.7,7.1],[8.8,7.1],[8.8,5.75]], fBh=[[7.9,5],[4.8,5],[4.8,2.6],[3.75,2.6]], fGh=[[9.5,1.3],[3.75,1.3]];
   g+=path(fGh,C.line,3)+path(fPVh,'#F7D78A',3)+path(fPVb,'#F7D78A',3)+path(fBh,'#8FDDA9',3);
   g+=parts(fPVb,C.sun,5)+parts(fPVh,C.sun,2)+parts(fBh,C.store,4);
@@ -88,8 +101,8 @@ function scene(W,H,s,ox,oy,labels=true){
     g+=poly([[x,y,.75],[x+1,y,.75],[x+1,y+1,.25],[x,y+1,.25]],'#2C3E55','#1D2A3A');
     g+=`<line x1="${P(x+.5,y,.75)[0]}" y1="${P(x+.5,y,.75)[1]}" x2="${P(x+.5,y+1,.25)[0]}" y2="${P(x+.5,y+1,.25)[1]}" stroke="#4E6684" stroke-width="1"/>`}
   // labels
-  const lab=(x,y,z,t,v,col)=>{const p=P(x,y,z);return `<g transform="translate(${p[0].toFixed(0)},${p[1].toFixed(0)})"><line x1="0" y1="0" x2="0" y2="-26" stroke="${C.mute}" stroke-dasharray="2 3"/><rect x="-62" y="-60" width="124" height="36" rx="9" fill="#fff" stroke="${C.line}"/><circle cx="-46" cy="-42" r="4.5" fill="${col}"/><text x="-35" y="-37" font-family="JetBrains Mono" font-size="15" fill="${C.ink}">${v}</text><text x="0" y="-68" text-anchor="middle" font-family="Instrument Sans" font-size="11" font-weight="600" letter-spacing="1.2" fill="${C.mute}">${t}</text></g>`};
-  if(labels)g+=lab(1.4,7.6,.8,'PV','3.42 kW',C.sun)+lab(2.3,2.1,2.9,'HOUSE','1.18 kW',C.ink2)+lab(8.8,5.15,1.6,'BATTERY','SoC 54%',C.store)+lab(10,1.3,4.3,'GRID','0.00 kW',C.grid);
+  const lab=(x,y,z,t,v,col)=>{const p=P(x,y,z);return `<g transform="translate(${p[0].toFixed(0)},${p[1].toFixed(0)})"><line x1="0" y1="0" x2="0" y2="-26" stroke="${C.mute}" stroke-dasharray="2 3"/><rect x="-62" y="-60" width="124" height="36" rx="9" fill="#fff" stroke="${C.line}"/><circle cx="-46" cy="-42" r="4.5" fill="${col}"/><text x="-35" y="-37" font-family="JetBrains Mono" font-size="15" fill="${C.ink}">${v}</text><text x="0" y="-68" text-anchor="middle" font-family="Instrument Sans" font-size="13" font-weight="500" fill="${C.ink2}">${t}</text></g>`};
+  if(labels)g+=lab(1.4,7.6,.8,'PV','3.42 kW',C.sun)+lab(2.3,2.1,2.9,'House','1.18 kW',C.ink2)+lab(8.8,5.15,1.6,'Battery','SoC 54 %',C.store)+lab(10,1.3,4.3,'Grid','0.00 kW',C.grid);
   return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`;
 }
 
@@ -119,13 +132,13 @@ function timeline(W,H,compact){
 /* ---------- agent-flow pipeline ---------- */
 const ICON={inputs:'M4 7h16M4 12h10M4 17h13',agent:'M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z',valid:'M5 12l4 4 10-10',rule:'M4 6h16M4 12h16M4 18h16M9 4v16',clamp:'M7 4v16M17 4v16M7 12h10',site:'M3 11l9-7 9 7v9H3z',memory:'M5 5h14v14H5zM9 9h6M9 13h6'};
 function node(x,y,key,label,state=''){const col=state==='on'?C.agent:state==='store'?C.store:C.line;
-  return `<g transform="translate(${x},${y})"><rect x="-28" y="-28" width="56" height="56" rx="14" fill="#fff" stroke="${col}" stroke-width="${state?2:1.2}"/>${state==='on'?`<rect x="-34" y="-34" width="68" height="68" rx="18" fill="none" stroke="${C.agent}" opacity=".18" stroke-width="6"/>`:''}<path d="${ICON[key]}" transform="translate(-12,-12)" fill="none" stroke="${state==='on'?C.agent:C.ink2}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><text y="48" text-anchor="middle" font-family="Instrument Sans" font-size="12" letter-spacing="1" fill="${state?C.ink:C.mute}" font-weight="500">${label}</text></g>`}
-function pipeH(W,H){const ks=[['inputs','INPUTS'],['agent','AGENT'],['valid','VALIDATOR'],['rule','RULE'],['clamp','CLAMP'],['site','SITE'],['memory','MEMORY']];
+  return `<g transform="translate(${x},${y})"><rect x="-28" y="-28" width="56" height="56" rx="14" fill="#fff" stroke="${col}" stroke-width="${state?2:1.2}"/>${state==='on'?`<rect x="-27" y="-27" width="54" height="54" rx="13" fill="#E8F0FB"/>`:''}<path d="${ICON[key]}" transform="translate(-12,-12)" fill="none" stroke="${state==='on'?C.agent:C.ink2}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><text y="48" text-anchor="middle" font-family="Instrument Sans" font-size="14" fill="${state?C.ink:C.ink2}" font-weight="500">${label}</text></g>`}
+function pipeH(W,H){const ks=[['inputs','Inputs'],['agent','Agent, 1×/day'],['valid','Validator + gate'],['rule','Rule, every 15 min'],['clamp','Clamp 10–90 %, 5 kW'],['site','Site'],['memory','Memory']];
   const y=H/2+18,step=(W-120)/(ks.length-1);let g='';
   for(let i=0;i<ks.length-1;i++){const a=60+i*step+30,b=60+(i+1)*step-30;g+=`<line x1="${a}" x2="${b}" y1="${y}" y2="${y}" stroke="${i<2?C.agent:C.line}" stroke-width="1.6"/><path d="M${b-6} ${y-4}L${b} ${y}L${b-6} ${y+4}" fill="none" stroke="${i<2?C.agent:C.line}" stroke-width="1.6"/>`}
   const ret=`M${60+6*step} ${y-30} C ${60+6*step} ${y-72}, ${60+step} ${y-72}, ${60+step} ${y-30}`;
-  g+=`<path d="${ret}" fill="none" stroke="${C.line}" stroke-width="1.4" stroke-dasharray="4 5"/><text x="${60+3.5*step}" y="${y-62}" text-anchor="middle" font-family="Instrument Sans" font-size="12" fill="${C.mute}"><tspan fill="${C.ink2}" font-weight="600">MEMORY → AGENT</tspan> · every evening · 3 most similar good days</text>`;
-  g+=`<circle cx="${60+2*step-58}" cy="${y}" r="6" fill="${C.agent}"/><circle cx="${60+2*step-58}" cy="${y}" r="12" fill="${C.agent}" opacity=".18"/>`;
+  g+=`<path d="${ret}" fill="none" stroke="${C.line}" stroke-width="1.4" stroke-dasharray="4 5"/><text x="${60+3.5*step}" y="${y-62}" text-anchor="middle" font-family="Instrument Sans" font-size="12" fill="${C.mute}">Every evening: 3–5 most similar good days go back to the agent</text>`;
+  g+=`<circle cx="${60+2*step-58}" cy="${y}" r="6" fill="${C.agent}"/>`;
   ks.forEach(([k,l],i)=>g+=node(60+i*step,y,k,l,i===1||i===2?'on':''));
   return `<svg width="${W}" height="${H}">${g}</svg>`}
 function pipeV(W,H){const ks=[['inputs','INPUTS · price · CO2 · SoC · λ'],['agent','AGENT · Gemini Flash · 1×/day'],['valid','VALIDATOR · JSON · ranges · replay'],['rule','RULE · knobs → kW every 15 min'],['clamp','CLAMP · SoC 10–90 % · ±5 kW'],['site','SITE · PV · battery · house · grid'],['memory','MEMORY · 1 row/day · regret']];
@@ -138,26 +151,29 @@ function pipeV(W,H){const ks=[['inputs','INPUTS · price · CO2 · SoC · λ'],[
   return `<svg width="${W}" height="${H}">${g}</svg>`}
 
 /* ---------- shared blocks ---------- */
-const head=(tab='sim')=>`<header><img style="height:38px" src="../../assets/images/sense-reply-logo.avif" alt="Sense Reply"><div class="tabs"><div class="tab ${tab==='sim'?'on':''}">Simulation</div><div class="tab ${tab==='kpi'?'on':''}">KPIs</div></div><div class="sp"></div><span class="chip">Replay · <b>5–12 Jan 2026</b> · run A's sun, load, prices</span><span class="chip"><b>Gemini Flash</b> · stand-in for Devstral 2</span><span class="chip">Site: Italy (assumed)</span></header>`;
-const kpis=(n=5)=>[['Energy bill','2.81','€','▼ €0.42 vs run A','good'],['Grid CO2','21.4','kg','▼ 3.1 kg vs run A','good'],['LLM calls','7','/wk','▼ 2,941 vs run A','good'],['LLM spend','0.01','€/wk','▼ €5.07 vs run A','good'],['Grid import','58.3','kWh','▼ 6.0 kWh vs run A','good'],['Peak draw P99','2.4','kW','▼ 0.7 kW vs run A','good']].slice(0,n).map(([l,v,u,d,c])=>`<div class="card kpi"><div class="cap">${l}</div><div><span class="v">${v}</span><span class="u">${u}</span></div><div class="d ${c}">${d}</div></div>`).join('');
-const plan=`<div class="cap">Wed 7 Jan · daily plan · 13:00</div>
- <div style="margin-top:8px">${[['Evening reserve','4.2','kWh'],['Grid-charge window','none',''],['Discharge priority','17–22','h'],['Export valued at','sellPrice','']].map(([a,b,c])=>`<div class="row"><span>${a}</span><span class="mono">${b} <span style="color:var(--mute)">${c}</span></span></div>`).join('')}</div>
- <div class="why" style="margin-top:12px">Sunny day, evening peak at 20:00 is the dirtiest hour. Keep 4.2 kWh for 17–22 h, no night grid charge.</div>
- <div class="cap" style="margin-top:18px">Validator</div>
- ${['Valid JSON schema','Values in range','Replay ≥ simple rule (+€0.03)'].map(t=>`<div class="check"><span class="ok">✓</span>${t}</div>`).join('')}
- <div class="cap" style="margin-top:16px">Memory · 3 similar good days</div>
- ${[['Thu 8 Jan · run A','regret €0.02'],['Mon 5 Jan · run C','regret €0.04'],['Sat 10 Jan · run A','regret €0.05']].map(([a,b])=>`<div class="mem"><span>${a}</span><span class="mono" style="color:var(--mute)">${b}</span></div>`).join('')}`;
-const lam=`<div class="lam"><span class="cap">λ €/kg CO2</span><div class="track"><div class="knob" style="left:38px"></div><span class="tick" style="left:0">0</span><span class="tick" style="left:47px">0.10</span><span class="tick" style="left:220px">0.50</span></div></div>`;
+const head=(tab='sim')=>`<header><img style="height:38px" src="../../assets/images/sense-reply-logo.avif" alt="Sense Reply"><div class="tabs"><div class="tab ${tab==='sim'?'on':''}">Simulation</div><div class="tab ${tab==='kpi'?'on':''}">KPIs</div></div><div class="sp"></div><span class="meta">Replay 5–12 Jan 2026 on run C's sun, load and prices, start SoC 80 %</span><span class="meta">Gemini Flash, stand-in for Devstral 2</span><span class="meta">Site: Italy (assumed) · CO2 0.356 kg/kWh</span></header>`;
+const KP=[['N1 · net value after AI','+1.10','€/wk','pilot C −7.31','g'],['VORB · value over the free rule','+0.08','€/wk','pilot C −0.67','g'],['VCR · share of best saving','0.63','','pilot C 0.29','g'],['S1 · grid CO2','13.5','kg/wk','pilot C 21.3','c'],['O1 · LLM calls per decision','0.01','','pilot C 7.6','g'],['O5 · AI cost','0.01','€/wk','pilot C 7.71','g']];
+const kpis=(n=6)=>KP.slice(0,n).map(([l,v,u,d,c])=>`<div><div class="cap">${l}</div><div style="margin-top:6px"><span class="v mono" style="font:500 30px/1.1 'JetBrains Mono'">${v}</span><span class="u mono" style="color:var(--mute);margin-left:4px">${u}</span>${c==='g'?'<span class="vd g">Good</span>':''}</div><div class="mono" style="font-size:13px;color:var(--mute);margin-top:4px">${d}</div></div>`).join('');
+const plan=`<div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="font:600 18px 'Instrument Sans'">Plan for Wed 7 Jan</h2><span class="cap mono">13:00 · 1 call · 9.8k tokens</span></div>
+ <div class="cap" style="margin-top:4px">Mode conservative (no grid charging) · λ €0.10/kg</div>
+ <div style="margin-top:10px">${[['Evening reserve','4.0','kWh'],['SoC floor','0.15',''],['Hold export above','0.10','€/kWh'],['Grid-charge window','none','']].map(([a,b,c])=>`<div class="row"><span>${a}</span><span class="mono">${b} <span style="color:var(--mute)">${c}</span></span></div>`).join('')}</div>
+ <div class="why" style="margin-top:12px">Tonight's 17–22 h load is about 10.5 kWh and 20:00 is the dirtiest hour, so I keep 4 kWh for the evening and use midday sun first.</div>
+ <div class="cap" style="margin-top:18px">Checks before the plan runs</div>
+ ${[['Schema valid',''],['Clamped to SoC 0.1–0.9, 5 kW','no change'],['Replay gate vs static rule','+€0.02']].map(([t,r])=>`<div class="check" style="justify-content:space-between"><span style="display:flex;gap:10px;align-items:center"><span class="ok">✓</span>${t}</span><span class="mono" style="font-size:13px;color:var(--mute)">${r}</span></div>`).join('')}
+ <div class="cap" style="margin-top:16px">Similar past days it was shown</div>
+ ${[['Thu 8 Jan · pilot A','regret €0.02'],['Mon 5 Jan · pilot C','regret €0.04'],['Sat 10 Jan · pilot A','regret €0.05']].map(([a,b])=>`<div class="mem"><span>${a}</span><span class="mono" style="color:var(--mute)">${b}</span></div>`).join('')}
+ <div style="margin-top:18px;display:flex;gap:8px"><span class="chip">Download plan JSON</span></div>`;
+const lam=`<div class="lam"><span class="cap" style="white-space:nowrap">λ €/kg</span><div class="track" style="width:150px"><div class="knob" style="left:21px"></div><span class="tick" style="left:0">0</span><span class="tick" style="left:30px">0.10</span><span class="tick" style="left:150px">0.50</span></div></div>`;
 const daysC=`<div class="days">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i)=>`<span class="day ${i===2?'on':''}"><span class="dot" style="${i===4?'background:var(--alert)':''}${i>2&&i!==4?'background:var(--line)':''}"></span>${d}</span>`).join('')}</div>`;
-const play=(extra='')=>`<div class="card" style="display:flex;align-items:center;gap:24px;padding:12px 20px"><div class="btn">❚❚</div><div class="mono" style="font-size:22px">Wed 7 Jan · 14:15</div><div style="display:flex;gap:4px">${['1×','4×','16×'].map((s,i)=>`<span class="chip" style="${i===1?'background:var(--ink);color:#fff;border-color:var(--ink)':''}">${s}</span>`).join('')}</div>${daysC}<div class="sp"></div>${lam}${extra}</div>`;
+const play=(extra='')=>`<div class="card" style="display:flex;align-items:center;gap:24px;padding:12px 20px"><div class="btn">❚❚</div><div class="mono" style="font-size:20px;white-space:nowrap">Wed 7 Jan 14:15</div><div style="display:flex;gap:4px">${['1×','4×','16×'].map((s,i)=>`<span class="chip" style="${i===1?'background:var(--ink);color:#fff;border-color:var(--ink)':''}">${s}</span>`).join('')}</div>${daysC}<div class="sp"></div><div style="display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px"><span style="padding:6px 10px;background:var(--ink);color:#fff;white-space:nowrap">Conservative</span><span style="padding:6px 10px;color:var(--ink2);white-space:nowrap">Upside, shadow</span></div>${lam}${extra}</div>`;
 const tag='<div class="mocktag">MOCKUP · mock data</div>';
 const A=document.getElementById('app');
 
 if(V==='1'){ // MAGO-classic: tiles, scene + right agent panel, pipeline strip, playback
   A.innerHTML=head()+`<main style="padding:20px 32px;display:grid;grid-template-columns:1fr 440px;gap:16px;height:1016px">
   <div style="display:grid;grid-template-rows:auto 1fr auto auto;gap:16px;min-height:0">
-   <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">${kpis(6)}</div>
-   <div class="card" style="position:relative;overflow:hidden">${scene(1380,540,40)}<div style="position:absolute;left:20px;top:16px" class="cap">Site · live replay</div><div style="position:absolute;left:20px;bottom:14px;display:flex;gap:16px;font-size:13px;color:var(--ink2)"><span>● <span style="color:var(--sun)">PV</span></span><span>● <span style="color:var(--store)">Battery</span></span><span>● <span style="color:var(--grid)">Grid</span></span></div></div>
+   <div class="card strip">${kpis(6)}</div>
+   <div class="card" style="position:relative;overflow:hidden">${scene(1380,540,40)}<div style="position:absolute;left:20px;top:16px" class="cap">Site, replaying 15-minute steps</div><div style="position:absolute;left:20px;bottom:14px;display:flex;gap:16px;font-size:13px;color:var(--ink2)"><span><span style="color:var(--sun)">●</span> Solar</span><span><span style="color:var(--store)">●</span> Battery</span><span><span style="color:var(--grid)">●</span> Grid</span></div></div>
    <div class="card" style="padding:4px 0 0">${pipeH(1380,180)}</div>
    ${play()}
   </div>
@@ -182,20 +198,44 @@ if(V==='3'){ // Stage: full-bleed scene, floating panels, decision ticker
    <div style="position:absolute;left:32px;right:32px;bottom:24px">${play()}</div></main>${tag}`;
 }
 if(V==='kpi'){
-  const rows=[['Energy bill (SoC-adj.)','€/wk',[2.81,3.23,3.21,3.95]],['Grid CO2 (SoC-adj.)','kg/wk',[21.4,24.5,23.0,31.8]],['Grid import','kWh/wk',[58.3,64.3,60.5,88.0]],['LLM calls','/wk',[7,2948,5118,0]],['Input tokens','M/wk',[.03,11.69,18.79,0]],['LLM spend','€/wk',[.01,5.08,8.05,0]]];
-  const S=[['Ours · 1 agent',C.agent],['Run A · cost agent',C.ink2],['Run C · cost + sust.',C.mute],['No battery','#C5CCD3']];
-  const bars=rows.map(([l,u,v])=>{const m=Math.max(...v);return `<div class="card" style="padding:22px 24px;display:flex;flex-direction:column;justify-content:space-around"><div class="cap">${l} <span style="text-transform:none;letter-spacing:0">· ${u}</span></div>${v.map((x,i)=>`<div style="display:grid;grid-template-columns:170px 1fr 90px;align-items:center;gap:12px;font-size:15px"><span style="color:var(--ink2)">${S[i][0]}</span><div style="height:16px;background:#F0F4F8;border-radius:8px"><div style="height:16px;width:${Math.max(.6,x/m*100)}%;background:${S[i][1]};border-radius:6px"></div></div><span class="mono" style="text-align:right">${x.toLocaleString('en')}</span></div>`).join('')}</div>`}).join('');
-  // trade-off scatter
-  const sc=(()=>{const W=560,H=330,p=50;const pts=[['ours λ=0',2.74,23.1,C.agent],['ours λ=0.10',2.81,21.4,C.agent],['ours λ=0.50',2.98,19.9,C.agent],['run A',3.23,24.5,C.ink2],['run C',3.21,23.0,C.mute],['no battery',3.95,31.8,'#C5CCD3']];
-   const X=v=>p+(v-2.6)/1.5*(W-p-20),Y=v=>H-p+ -(v-18)/15*(H-p-20);let g=`<line x1="${p}" x2="${W-10}" y1="${H-p}" y2="${H-p}" stroke="${C.line}"/><line x1="${p}" x2="${p}" y1="10" y2="${H-p}" stroke="${C.line}"/><text x="${W-10}" y="${H-p+30}" text-anchor="end" font-family="Instrument Sans" font-size="12" fill="${C.mute}">ENERGY BILL €/wk →</text><text x="${p+8}" y="20" font-family="Instrument Sans" font-size="12" fill="${C.mute}">↑ GRID CO2 kg/wk</text>`;
-   g+=`<path d="M${X(2.74)} ${Y(23.1)}L${X(2.81)} ${Y(21.4)}L${X(2.98)} ${Y(19.9)}" stroke="${C.agent}" stroke-width="1.5" fill="none" stroke-dasharray="4 4"/>`;
-   pts.forEach(([l,x,y,c])=>g+=`<circle cx="${X(x)}" cy="${Y(y)}" r="7" fill="${c}"/><text text-anchor="${x>3.5?'end':'start'}" x="${X(x)+(x>3.5?-12:12)}" y="${Y(y)+4}" font-family="JetBrains Mono" font-size="12" fill="${C.ink2}">${l}</text>`);return `<svg width="${W}" height="${H}">${g}</svg>`})();
-  const live=(()=>{const W=560,H=150;let d='';for(let h=0;h<24;h++){const v=330+80*Math.exp(-((h-20)**2)/8)-70*Math.max(0,Math.sin((h-8)/9*Math.PI));d+=(h?'L':'M')+(10+h*(W-20)/23)+' '+(H-20-(v-220)/220*(H-40))}
-    return `<svg width="${W}" height="${H}"><path d="${d}" fill="none" stroke="${C.hi||'#C9733A'}" stroke-width="2"/><line x1="${10+18.5*(W-20)/23}" x2="${10+18.5*(W-20)/23}" y1="10" y2="${H-20}" stroke="${C.ink}"/><text x="10" y="${H-2}" font-family="JetBrains Mono" font-size="11" fill="${C.mute}">00</text><text x="${W-26}" y="${H-2}" font-family="JetBrains Mono" font-size="11" fill="${C.mute}">24h</text></svg>`})();
-  A.innerHTML=head('kpi')+`<main style="padding:20px 32px;display:grid;grid-template-columns:1fr 600px;gap:16px;height:1016px">
-   <section><div style="display:flex;align-items:baseline;gap:16px;margin-bottom:14px"><h1 style="font:600 28px 'Instrument Sans'">Same week, 7 LLM calls instead of 2,948</h1><span class="cap">ours vs logged runs · SoC-adjusted</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:16px;height:880px">${bars}</div></section>
-   <aside style="display:grid;gap:16px;align-content:start"><div class="card" style="padding:20px"><div class="cap">Cost vs CO2 trade-off · one point per λ</div>${sc}</div>
-    <div class="card" style="padding:20px"><div style="display:flex;justify-content:space-between"><div class="cap">Live · Italy grid CO2 today · ENTSO-E</div><span class="chip" style="font-size:12px">● live</span></div><div style="display:flex;gap:24px;margin:8px 0"><div><span class="v mono" style="font-size:32px">362</span><span class="u mono" style="color:var(--mute)"> g/kWh now</span></div><div style="color:var(--ink2);font-size:14px;align-self:center">Cleanest 12:00 · dirtiest 20:00</div></div>${live}</div></aside></main>${tag}`;
+  // values: data/Sense_Reply_B2_KPI_Conformity.xlsx, sheet "KPI Verdicts". Ours = Gemini replay (session 2), dash until computed.
+  const cols=['A · cost agent','C · dual agent','Static rule','S5 conservative','S5 upside'];
+  const G=[['Economics & AI value',[
+   ['S_net','Saving vs no battery, net of wear','€/wk','≥ 1.03',['0.41','0.40','1.03','1.12','1.80'],'iiggg'],
+   ['VCR','Share of the best possible saving','ratio','≥ 0.60',['0.28','0.29','0.60','0.63','0.96'],'iiigg'],
+   ['VORB','Value over the static rule','€/wk','≥ 0',['−0.73','−0.67','0','+0.08','+0.79'],'iiggg'],
+   ['N1','Net value after AI cost','€/wk','≥ 0',['−4.33','−7.31','1.03','1.10','1.78'],'iiggg'],
+   ['N2','AI cost per € saved','€/€','≤ 0.2',['7.84','12.24','0','0.008','0.005'],'iiggg'],
+   ['O5','LLM cost','€/wk','≤ 0.5',['4.74','7.71','0','0.01','0.01'],'iiggg']]],
+  ['Carbon',[
+   ['S2b','CO2 avoided vs static rule','kg/wk','≥ 0',['−10.0','−9.4','0','−1.6','−10.3'],'iigii'],
+   ['MAC','Abatement cost of the carbon lever','€/kg','≤ 0.09',['n/a','4.29','n/a','0.03','0.03'],'-i-gg'],
+   ['S1','Grid CO2, SoC-adjusted','kg/wk','context',['21.9','21.3','11.9','13.5','22.2'],'ccccc']]],
+  ['Self-use & grid',[
+   ['SCR','Self-consumption of PV','ratio','≥ 0.70',['0.52','0.54','0.83','0.78','0.53'],'iiggi'],
+   ['SSR','Self-sufficiency','ratio','≥ 0.60',['0.39','0.44','0.70','0.67','0.40'],'iiggi'],
+   ['PSR','Peak shaving','ratio','≥ 0.25',['0.00','0.39','0.53','0.53','−0.07'],'igggi'],
+   ['G1','Peak grid import','kW','context',['4.81','2.93','2.24','2.24','5.11'],'ccccc']]],
+  ['Battery & orchestration',[
+   ['B4','Time at SoC limits','share','≤ 0.25',['0.00','0.00','0.40','0.29','0.34'],'ggiii'],
+   ['C5','Expensive-import share','share','≤ 0.5',['0.81','0.80','0.78','0.75','0.39'],'iiiig'],
+   ['O1','LLM calls per 15-min decision','calls','≤ 0.3',['4.39','7.62','0','0.01','0.01'],'iiggg']]]];
+  const vd=c=>c==='g'?'<span class="vd g" title="Good">✓</span>':c==='i'?'<span class="vd i" title="Improvable">↑</span>':'<span class="vd" style="visibility:hidden">✓</span>';
+  let t=`<table><tr><th>KPI</th><th>Unit</th><th>Threshold</th>${cols.map(c=>`<th>${c}</th>`).join('')}<th class="ours">Ours, Gemini</th></tr>`;
+  for(const[g,rows]of G){t+=`<tr class="grp"><td colspan="9">${g}</td></tr>`;
+   for(const[id,n,u,th,v,vv]of rows)t+=`<tr><td><span class="mono" style="color:var(--mute);display:inline-block;width:52px">${id}</span>${n}</td><td style="color:var(--mute)">${u}</td><td class="n" style="color:var(--mute)">${th}</td>${v.map((x,i)=>`<td class="n">${x}${vd(vv[i])}</td>`).join('')}<td class="n ours" style="color:var(--mute)">—</td></tr>`}
+  t+='</table>';
+  const sum=[['A',5,19],['C',6,20],['Static rule',15,18],['S5 conservative',16,19],['S5 upside',14,19]];
+  const live=(()=>{const W=400,H=120;let d='';for(let h=0;h<24;h++){const v=330+80*Math.exp(-((h-20)**2)/8)-70*Math.max(0,Math.sin((h-8)/9*Math.PI));d+=(h?'L':'M')+(10+h*(W-20)/23)+' '+(H-20-(v-220)/220*(H-40))}
+    return `<svg width="${W}" height="${H}"><line x1="10" x2="${W-10}" y1="${H-20-(356-220)/220*(H-40)}" y2="${H-20-(356-220)/220*(H-40)}" stroke="${C.line}" stroke-dasharray="3 4"/><path d="${d}" fill="none" stroke="#C9733A" stroke-width="2"/><text x="10" y="${H-2}" font-family="JetBrains Mono" font-size="11" fill="${C.mute}">00</text><text x="${W-30}" y="${H-2}" font-family="JetBrains Mono" font-size="11" fill="${C.mute}">24 h</text></svg>`})();
+  A.innerHTML=head('kpi')+`<main style="padding:20px 32px;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:16px;height:1016px">
+   <section class="card" style="padding:20px 20px 8px;overflow:hidden"><div style="display:flex;justify-content:space-between;align-items:baseline"><h1 style="font:600 22px 'Instrument Sans'">KPI conformity, initial vs final</h1><span class="cap"><span class="vd g">✓</span> good &nbsp;<span class="vd i">↑</span> improvable · values from the KPI Conformity workbook</span></div>
+    <div style="margin-top:8px">${t}</div></section>
+   <aside style="display:grid;gap:16px;align-content:start;min-width:0">
+    <div class="card" style="padding:20px"><h2 style="font:600 16px 'Instrument Sans';margin-bottom:12px">Good KPIs out of those assessed</h2>${sum.map(([n,g,a])=>`<div style="display:grid;grid-template-columns:130px 1fr 52px;gap:12px;align-items:center;margin-top:10px;font-size:14px"><span>${n}</span><div style="height:10px;background:#F0F4F8;border-radius:5px"><div style="height:10px;width:${g/a*100}%;background:${n.startsWith('S5')?C.agent:C.ink2};border-radius:5px"></div></div><span class="mono" style="text-align:right">${g}/${a}</span></div>`).join('')}</div>
+    <div class="card" style="padding:20px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="font:600 16px 'Instrument Sans'">Italy grid CO2 today</h2><span class="cap">ENTSO-E, updated 14:00</span></div><div style="margin:8px 0"><span class="mono" style="font-size:30px">362</span><span class="mono" style="color:var(--mute)"> g/kWh now</span><span style="color:var(--ink2);font-size:14px;margin-left:16px">Dashed line: workbook constant 356</span></div>${live}</div>
+    <div class="card" style="padding:20px"><h2 style="font:600 16px 'Instrument Sans'">Now measurable in the replay</h2><p style="font-size:14px;color:var(--ink2);margin-top:6px">The pilots logged no proposals, so these were "not assessable". The replay logs every plan.</p>${[['F5','Fallback rate','0 / 7 days'],['P4','Invalid-output rate','0 / 7 plans'],['P4','Clamp rate','0.4 % of steps'],['P4','Explanation share','7 / 7 plans']].map(([i,n,v])=>`<div class="row"><span><span class="mono" style="color:var(--mute);display:inline-block;width:36px">${i}</span>${n}</span><span class="mono">${v}</span></div>`).join('')}</div>
+   </aside></main>${tag}`;
 }
+
 </script></body></html>
