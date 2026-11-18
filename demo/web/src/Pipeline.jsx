@@ -12,7 +12,8 @@ const NODES = [
 ]
 const X = (i) => 70 + i * 203
 const Y = 96
-const EASE = 'cubic-bezier(.77,0,.175,1)'
+const EVENING = 36 // plan offset of 20:00 (plans start 11:00): the memory packet lands well before the next decision, even at 16×
+const EASE ='cubic-bezier(.77,0,.175,1)'
 const ARC = `M${X(6)} ${Y - 34} C ${X(6) - 80} 14, ${X(1) + 80} 14, ${X(1)} ${Y - 34}`
 
 // active / fail: node id or null. epoch changes on every seek or run switch: in-flight packets are dropped then.
@@ -80,7 +81,7 @@ export default function Pipeline({ active, fail, step, epoch, playing, speed, re
     if (reduced || !playing) return
     const dur = Math.min(1500, 0.6 * (DAY_STEPS / (4.8 * speed)) * 1000) // 1 day = 96 steps at 4.8 steps/s per speed unit
     if (Math.floor(step / DAY_STEPS) > Math.floor(p.step / DAY_STEPS)) decision(dur, fail === 'validator')
-    if (Math.floor((step + 1) / DAY_STEPS) > Math.floor((p.step + 1) / DAY_STEPS)) outcome(dur)
+    if (Math.floor((step - EVENING) / DAY_STEPS) > Math.floor((p.step - EVENING) / DAY_STEPS)) outcome(dur)
   }, [step, epoch])
 
   useEffect(() => {
