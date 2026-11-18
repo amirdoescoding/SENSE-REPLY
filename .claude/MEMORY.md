@@ -138,3 +138,11 @@
 - Counts = Good / (Good + Improvable). Ours shows /20 because S3 is assessed (hourly CI).
 - Space toggles playback unless a control has *keyboard* focus (`:focus-visible`). On the KPIs tab, Space scrolls the page.
 - Pipeline label font = 14px × k, where k = clamp(1400/width, 1, 1.7). Width 0 on a hidden tab is ignored.
+
+## Demo polish (2026-11-19), branch `demo-polish`, see demo/web/src/DayChart.jsx
+- Upside grid charging has its own pylon→battery path: gc = max(0, battery_kw − PV surplus to battery); grid path = grid_kw − gc. Conservative gc ≤ 0.001 kW (below the 0.02 draw cutoff).
+- Memory→Agent packet fires at plan offset 36 (20:00); at 16× it still lands 30 ms before the 11:00 decision.
+- Day chart lives in the agent panel (user choice). Two panels (SoC, buy price) on one time axis, never a dual axis. Pilot C = ink, static rule = dashed mute: the DESIGN.md pilot/rule greys fail the dataviz normal-vision check (ΔE 13 < 15).
+- KPI strip shows "+x vs C" (ours − pilot C) under a "Week result" heading. User declined renaming the baselines.
+- Craft floor: no unicode glyphs as icons (blocked day = red ring, not ✕).
+- Next session: live Gemini test; roll back to precompute + playback if it performs badly.

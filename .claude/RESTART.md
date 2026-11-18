@@ -1,9 +1,7 @@
 # Restart point
 
-2026-11-18: Branch `demo-ui-kpis` (not pushed). Session 5 of 5 is done in code; only the deploy is left.
-- Next:
-  - push and open a PR (also `demo-ui-sim` if still open);
-  - on Render: New → Blueprint from the repo (`render.yaml`), set the `ENTSO_API` secret, check the build log for Node 22 and Python 3.14.0, then open `/#kpis` and check the CO2 card says "ENTSO-E A75";
-  - the free instance sleeps: warm it up before the demo.
-- Run locally: `cd demo/web && npm run build && cd ../.. && .venv/bin/uvicorn --app-dir demo api:app`, then open http://localhost:8000 (`#kpis` for the KPIs tab).
-- Checks: `.venv/bin/python demo/sim.py --check` and `.venv/bin/python demo/test_api.py` → "api ok" (needs `web/dist`).
+2026-11-19: Branch `demo-polish` (6 commits, not pushed). Session 6 is done: UI/UX polish + QA.
+- Next (session 7): **live Gemini calls in the demo**. Test latency, 503 "high demand" and the free-tier quota (gemini-3.5-flash-lite, 500 req/day) in a live run. **If it performs badly, roll back to the original plan: precompute + playback** (what is on main now). Keep the work on its own branch so the rollback is just not merging it.
+- Also open: push `demo-polish` + PR; Render deploy (Blueprint, `ENTSO_API` secret, warm up before the demo).
+- Run locally: `cd demo/web && npm run build && cd ../.. && .venv/bin/uvicorn --app-dir demo api:app`, then open http://localhost:8000 (`#kpis` for the KPIs tab). An old uvicorn may already hold :8000; it serves the fresh `dist` from disk.
+- Checks: `.venv/bin/python demo/sim.py --check` and `.venv/bin/python demo/test_api.py` → "api ok".
