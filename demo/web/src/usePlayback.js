@@ -6,6 +6,7 @@ export default function usePlayback(initialStep, autoplay) {
   const [step, setStep] = useState(initialStep)
   const [speed, setSpeed] = useState(4)
   const [playing, setPlaying] = useState(autoplay)
+  const [seeks, setSeeks] = useState(0)
   const acc = useRef(initialStep) // fractional step
 
   useEffect(() => {
@@ -27,10 +28,11 @@ export default function usePlayback(initialStep, autoplay) {
   const seek = (n) => {
     acc.current = Math.max(0, Math.min(MAX_STEP, n))
     setStep(acc.current)
+    setSeeks((n) => n + 1)
   }
   const toggle = () => {
     if (!playing && step >= MAX_STEP) seek(0)
     setPlaying(!playing)
   }
-  return { step, speed, playing, setSpeed, toggle, seek }
+  return { step, seeks, speed, playing, setSpeed, toggle, seek }
 }

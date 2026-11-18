@@ -119,7 +119,7 @@ function Sim({ data }) {
   const [mode, setMode] = useState(MODES.includes(q.get('mode')) ? q.get('mode') : 'conservative')
   const [lam, setLam] = useState(LAMS.includes(+q.get('lambda')) && q.get('lambda') ? +q.get('lambda') : 0.1)
   const stepParam = q.get('step')
-  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, +stepParam || 0)), stepParam === null)
+  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, +stepParam || 0)), stepParam === null || q.get('play') === '1')
   const reduced = useReducedMotion()
   const run = data.runs[key(mode, lam)]
   const sun = useMemo(() => sunSeries(run.schedule), [run])
@@ -128,13 +128,15 @@ function Sim({ data }) {
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.target.closest('input, button, summary')) return
-      if (e.code === 'Space') { e.preventDefault(); pb.toggle() }
+      if (e.target.closest('input, textarea, select, summary')) return
+      if (e.code === 'Space') { e.preventDefault(); if (!e.repeat) pb.toggle() }
       else if (e.key === 'ArrowLeft') pb.seek(pb.step - 1)
       else if (e.key === 'ArrowRight') pb.seek(pb.step + 1)
     }
+    const noClick = (e) => { if (e.code === 'Space' && !e.target.closest('input, textarea, select, summary')) e.preventDefault() }
     addEventListener('keydown', onKey)
-    return () => removeEventListener('keydown', onKey)
+    addEventListener('keyup', noClick) // a focused button would otherwise click on Space keyup
+    return () => { removeEventListener('keydown', onKey); removeEventListener('keyup', noClick) }
   })
 
   const blocked = !d.gate.passed
@@ -142,7 +144,8 @@ function Sim({ data }) {
     <main className="sim">
       <KpiStrip kpis={data.kpis} mode={mode} lam={lam} />
       <Site row={run.schedule[pb.step]} step={pb.step} sun={sun[pb.step]} reducedMotion={reduced} />
-      <Pipeline active={pb.step % DAY_STEPS < 3 ? 'agent' : null} fail={blocked ? 'validator' : null} />
+      <Pipeline active={pb.step % DAY_STEPS < 3 ? 'agent' : null} fail={blocked ? 'validator' : null}
+        step={pb.step} epoch={pb.seeks + key(mode, lam)} playing={pb.playing} speed={pb.speed} reduced={reduced} />
       <PlaybackBar pb={pb} run={run} day={day} mode={mode} lam={lam} setMode={setMode} setLam={setLam} />
       <AgentPanel run={run} day={day} mode={mode} lam={lam} />
     </main>

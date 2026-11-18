@@ -2,6 +2,7 @@
   --ink: #151F27; --ink-2: #3F4D5A; --mute: #66727E; --line: #D6E0EA; --paper: #F4F8FC; --card: #FFFFFF;
   --agent: #3A7DDA; --agent-soft: #E8F0FB; --sun: #F2A900; --store: #02B843; --grid: #586674; --alert: #EB0037;
   --good-bg: #E3F7EA; --good-fg: #027A31; --imp-bg: #FDE7EC; --imp-fg: #B0002A;
+  --ease-in-out: cubic-bezier(.77, 0, .175, 1);
   --ease-out: cubic-bezier(.23, 1, .32, 1);
   --shadow: 0 1px 2px #151F270F;
   --sans: 'Instrument Sans', system-ui, sans-serif;
@@ -70,12 +71,20 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pipeline .fail-dash { stroke: var(--alert) !important; stroke-dasharray: 5 4; }
 .pipeline .arc { fill: none; stroke: var(--mute); stroke-width: 1; stroke-dasharray: 3 4; }
 .pipeline .arc-label { font: 400 13px var(--sans); fill: var(--mute); paint-order: stroke; stroke: #fff; stroke-width: 8px; }
-.pipeline .node { fill: #fff; stroke: var(--line); stroke-width: 1.5; }
+.pipeline .node { fill: #fff; stroke: var(--line); stroke-width: 1.5; transition: fill 180ms ease, stroke 180ms ease; }
 .pipeline .node.active { fill: var(--agent-soft); stroke: var(--agent); }
 .pipeline .node.fail { stroke: var(--alert); }
 .pipeline .icon { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .pipeline .node-label { font: 400 14px var(--sans); fill: var(--ink-2); }
 .pipeline .node-label.on { fill: var(--ink); font-weight: 500; }
+
+.pipeline .packet { fill: var(--agent); opacity: 0; pointer-events: none; }
+.pipeline .ov { opacity: 0; pointer-events: none; }
+.pipeline .ov.agent { fill: var(--agent-soft); }
+.pipeline .ov.validator { fill: none; stroke: var(--alert); stroke-width: 1.5; }
+.pipeline .flow { stroke: var(--agent); stroke-width: 1.5; stroke-dasharray: 4 8; opacity: .5; animation: flow linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -12; } }
+@media (prefers-reduced-motion: reduce) { .pipeline .flow { display: none; } }
 
 /* playback bar */
 .bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; padding: 12px 20px; }
