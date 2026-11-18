@@ -9,3 +9,4 @@ demo/out/*.log
 # demo web
 demo/web/node_modules/
 demo/web/dist/
+demo/web/.impeccable/hook.cache.json
