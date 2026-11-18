@@ -25,3 +25,7 @@
 - [ ] Re-verify unverified hardware/price figures in research/07 before final deck
 - [ ] Decide: delete or archive the superseded docs/FRAMEWORK.md + diagrams
 - [ ] Push `dataset-v4` + PR
+- [x] Demo session 1: DESIGN.md + mockups (`demo-design`)
+- [ ] User picks a mockup → record it in DESIGN.md §3
+- [ ] Demo sessions 2–5 (see `.claude/TODOS.md`)
+- [ ] Push `demo-design` + PR

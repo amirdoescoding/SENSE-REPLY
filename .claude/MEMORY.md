@@ -66,3 +66,26 @@
 - Client feedback: they like the carbon data; they want self-hosting plus learning; they are sceptical of anything slow to build (they chose 2 prompt agents for speed).
 - Self-hosting: after the call cut (~180–540× fewer tokens), an EU API costs ~€2–9/site/yr vs a Jetson at ~€90/site/yr. Argue for self-hosting on residency, offline operation and model churn, not cost. Medium 3.5 is deprecated (→ Large 4). See research/07.
 - User wants work split into commits (one per logical step).
+
+## Demo (2026-11-18), see .claude/TODOS.md, docs/DESIGN.md
+- Building a hosted demo of the PROPOSAL framework. Plan: 5 sessions, one branch each (design → sim-engine → api → ui-sim → ui-kpis). The user wants **one session at a time**, never all at once.
+- Decisions:
+  - precompute + playback;
+  - memory seeded with A + C days;
+  - A's week + ENTSO-E, plus a live ENTSO-E pull;
+  - λ {0, 0.10, 0.50};
+  - compare against A, C, no battery (rule baseline not shown);
+  - Gemini Flash free tier as the Devstral stand-in (`GEMINI_API_KEY`);
+  - FastAPI + Vite/React on Render;
+  - three.js isometric site.
+- Brand: Reply CSS palette (ink #151F27, blue #3A7DDA), fonts Instrument Sans + JetBrains Mono. The look follows MAGO (Reply's energy platform, see the photos in assets/images).
+- Mockups render via `docs/mockups/render.sh` (Playwright's cached headless Chromium; no PIL).
+- Chosen layout: mock-1 (MAGO classic) + KPI tab, after the de-slop pass (no eyebrow caps, no pills, no glow, one KPI strip). Skills impeccable + design-taste-frontend are installed in the project; impeccable adds hooks in settings.local.json.
+- **Final KPI source of truth:** `data/Sense_Reply_B2_KPI_Conformity.xlsx` + `docs/Sense Reply BDD B2 – Full Analysis Report.docx` (teammate Sofia, 2026-11-18). Headline KPIs: S_net, VCR, VORB, N1, N2, F1, O5, S2b, MAC, SCR, SSR, PSR, B4, C5, O1, with verdicts vs editable thresholds.
+- Report basis differs from our older docs:
+  - S5 on **run C inputs, start SoC 0.80**;
+  - carbon constant **0.356 kg/kWh** (hourly is only a check);
+  - token price 0.86 €/$;
+  - S5 conservative N1 +1.10 €/wk, upside +1.78 (grid charging, CO2 22.2 kg, peak 5.1 kW → shadow mode).
+  The demo follows the report.
+- Report §11 "Scenario Lab" = our demo: JSON plan schema, guardrails, download.

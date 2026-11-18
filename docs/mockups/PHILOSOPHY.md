@@ -1,0 +1,11 @@
+# Quiet Telemetry
+
+A movement for instruments that think. The surface stays still and pale, like morning paper, so that the only things that move are the things that matter: energy, decisions and money. Every composition is a calm field of slate and fog, crossed by a few precise, luminous currents. Viewers should feel they are looking at a living system through clean glass, not at a website.
+
+Space is architectural. Objects sit on an invisible isometric floor at a 30° angle. They are small, solid and modest, arranged with the spacing of a model railway built by someone who measured twice. Panels and tiles align to a strict 8-pixel rhythm. Negative space is not empty. It is the air the currents travel through, and it is kept generous on purpose. Every margin is the product of painstaking calibration. Nothing touches an edge it was not meant to touch.
+
+Colour is a language with very few words. Ink-slate carries structure, fog-white carries calm, and a single cobalt marks intelligence: where reasoning happens. Sun is amber, storage is a living green, a warning is a short red breath, and carbon is a heat that runs from cool to dirty. No colour is decorative. When a colour appears, it is reporting something. The palette is held with the discipline of a master printer mixing exactly four inks.
+
+Type is whispered, and numbers are spoken clearly. Labels are small, tracked caps in a quiet grotesque. Figures use a monospaced face so they sit in columns like instrument readouts and can change without the layout trembling. Text never explains what the image already shows. One headline per surface at most. Everything else is a label, a unit or a timestamp, set with meticulous care.
+
+Motion is evidence, not ornament. Particles travel along paths only when energy actually flows, at a speed tied to the power that moves them. A decision travels as a single packet through a chain of gates, and it is visibly stopped, rerouted or passed. Rhythm comes from the clock of the data itself: the 15-minute tick, the daily plan, the nightly memory. The finished work must look like it took countless hours by someone at the top of their field: quiet, exact, and impossible to improve by adding anything.
