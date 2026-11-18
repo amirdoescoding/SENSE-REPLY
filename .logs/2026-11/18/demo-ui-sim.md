@@ -1,0 +1,32 @@
+# demo-ui-sim (session 4)
+
+- Planned in plan mode with about 20 gstack-style questions over 8 rounds. The user added a data-driven sky (sun, moon, stars) and wanted it mocked up as backdrop vs dome. Backdrop was chosen.
+- Subagents per the user:
+  - ui-designer: sky mockups;
+  - python-pro: engine data;
+  - frontend-developer: layout, then packets;
+  - game-developer: three.js site;
+  - code-reviewer, ui-ux-tester, impeccable-finish-reviewer: review.
+  Subagents can't load skills, so the skill passes ran in the main session: no-slop-ui, emil-design-eng, impeccable hooks.
+- Commits:
+  - engine `8fd2124`; sky mockups `847bde2`; layout `c2ec5c2`; site + sky `15dd39d`; render.yaml `a0b23b1`; packets `a099e08`;
+  - review fixes `675074c`; finish fixes `f047447`; UX fixes `6914210`.
+- Bugs the reviews caught:
+  - blank page on load from step 0 (negative rAF delta, so step −1);
+  - a fractional `?step` crash;
+  - the gate label said "static rule" but compares against the default knobs;
+  - hidden-tab jump;
+  - per-frame layout read and shadow pass;
+  - grid particles commented out by my own edit;
+  - dusk label contrast;
+  - `--mute` 2.9:1 (now `#66727E`).
+- Checks:
+  - `sim.py --check` passes, and `test_api.py` prints "api ok";
+  - re-run made from the Gemini cache with no key: 42/42 gemini, all old fields identical;
+  - headless 1920 / 1440 / 390 screenshots: day, dusk, night, blocked day;
+  - plain load renders 3/3.
+- Skipped:
+  - gstack /qa, since the ui-ux-tester walked the 12 flows instead (headless CDP, not real Chrome);
+  - the design-taste-frontend gate, which is built for marketing sites;
+  - PRODUCT.md.
+- Self-rating 7/10. The result is good and close to mock-1. But two of my own quick edits introduced bugs (the grid flow comment, the shadow check) that only review caught. I should screenshot after every hand edit, not just after agent steps.

@@ -43,7 +43,14 @@ Close each session with: memory files + `graphify update .`.
     - `tok_out` includes thinking tokens.
     - No path routes: use tab/hash state, because StaticFiles has no SPA fallback.
     - Prefetch all 6 runs. Append `cd demo/web && npm ci && npm run build` to render.yaml's build command.
-- [ ] **4 `demo-ui-sim`**: three.js site (PV, battery, house, pylon) with energy particles. The agent-flow pipeline with moving packets, playback, a day scrubber and the λ slider.
+- [x] **4 `demo-ui-sim`**: `demo/web/` Vite/React + three.js. Sky mockups (backdrop chosen over dome), engine data (price, `compare.json` + `/api/compare`, neighbour regret, carbon label `constant-0.356` + `s3_basis`), KPI strip, agent panel (blocked day: struck-through proposals, labelled rejected explanation, collapsible reasoning), pipeline packets (WAAPI, seek-cancel), playback, data-driven sun/moon/stars. Reviewed by code-reviewer, ui-ux-tester and impeccable finish review; fixes applied.
+  - **Session 5 inputs:**
+    - Pipeline labels shrink to ~9 px below ~1600 px wide (fine at 1920): size the SVG viewBox to the container.
+    - `compare.json`, step prices and `s3_basis` are not drawn yet (KPIs tab / charts).
+    - Upside grid charging is drawn as reverse battery flow (green), not a grid→battery path.
+    - Outcome packet (Memory → Agent) lands after the 11:00 decision sweep; consider firing it earlier.
+    - Space is swallowed on focused buttons; autoplay ignores prefers-reduced-motion; `test_api.py` can pass vacuously if `web/dist` is missing.
+    - Render: confirm Node exists in the Python build image (else NODE_VERSION or commit dist).
 - [ ] **5 `demo-ui-kpis`**: Excel-aligned conformity table with verdicts, Good counts, live ENTSO-E card, and the F5/P4 KPIs now measurable.
 
 ## Honesty flags (show them in the demo)
