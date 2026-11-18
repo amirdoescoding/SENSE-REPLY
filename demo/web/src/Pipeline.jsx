@@ -94,7 +94,7 @@ export default function Pipeline({ active, fail, step, epoch, playing, speed, re
             <path d="M1 1l6 3-6 3" fill="none" stroke="context-stroke" strokeWidth="1.2" />
           </marker>
         </defs>
-        <path d={`M${X(6)} ${Y - 34} C ${X(6) - 80} 14, ${X(1) + 80} 14, ${X(1)} ${Y - 34}`} className="arc" markerEnd="url(#arr)" />
+        <path d={ARC} className="arc" markerEnd="url(#arr)" />
         <text x={(X(1) + X(6)) / 2} y="26" textAnchor="middle" className="arc-label">Every evening: 3–5 most similar good days go back to the agent</text>
         {NODES.slice(1).map(([id], i) => (
           <line key={id} x1={X(i) + 34} x2={X(i + 1) - 34} y1={Y} y2={Y} markerEnd="url(#arr)"

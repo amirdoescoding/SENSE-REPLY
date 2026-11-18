@@ -14,7 +14,7 @@ export default function usePlayback(initialStep, autoplay) {
     let last = performance.now()
     let id
     const tick = (now) => {
-      acc.current = Math.min(MAX_STEP, acc.current + ((now - last) / 1000) * 4.8 * speed)
+      acc.current = Math.min(MAX_STEP, acc.current + Math.min(0.1, (now - last) / 1000) * 4.8 * speed) // clamp: no jump after a hidden tab
       last = now
       const s = Math.floor(acc.current)
       setStep(s)
@@ -26,7 +26,7 @@ export default function usePlayback(initialStep, autoplay) {
   }, [playing, speed])
 
   const seek = (n) => {
-    acc.current = Math.max(0, Math.min(MAX_STEP, n))
+    acc.current = Math.max(0, Math.min(MAX_STEP, Math.floor(n)))
     setStep(acc.current)
     setSeeks((n) => n + 1)
   }

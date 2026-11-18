@@ -26,7 +26,7 @@ const CHIPS = [['PV', -4.4, 2.3, 4.0, 0, -2], ['House', 0, 4.3, -1.7, 0, 0], ['B
 function build(canvas) {
   const R = new T.WebGLRenderer({ canvas, antialias: true, alpha: true })
   R.setPixelRatio(Math.min(devicePixelRatio, 2))
-  R.shadowMap.enabled = true; R.shadowMap.type = T.PCFSoftShadowMap; R.shadowMap.autoUpdate = false
+  R.shadowMap.enabled = true; R.shadowMap.type = T.PCFShadowMap; R.shadowMap.autoUpdate = false
   const sc = new T.Scene()
   const M = (c) => new T.MeshLambertMaterial({ color: c, flatShading: true })
   const WH = M('#FFFFFF'), GR = M('#E8EDF2'), DK = M('#26364A'), IK = M('#3F4D5A'), PM = M('#586674')
@@ -147,7 +147,7 @@ function build(canvas) {
     cam.setViewOffset(W, H, 0, -0.06 * H, W, H); cam.updateProjectionMatrix(); cam.updateMatrixWorld()
     return CHIPS.map(([, x, y, z, dx, dy]) => { v.set(x, y, z).project(cam); return [(v.x * 0.5 + 0.5) * W + dx, (-v.y * 0.5 + 0.5) * H + dy] })
   }
-  const dispose = () => { sc.traverse((o) => { o.geometry?.dispose(); o.material?.dispose?.() }); dot.dispose(); R.dispose() }
+  const dispose = () => { sc.traverse((o) => { o.geometry?.dispose(); o.material?.dispose?.() }); dot.dispose(); R.dispose(); R.forceContextLoss() }
   return { R, sc, cam, resize, dispose, paths, bar, led, winMat, slabMat, gridLines, trenchMat, amb, dl, gz, bxp }
 }
 
@@ -158,8 +158,9 @@ export default function Site({ row, step, sun, reducedMotion }) {
 
   useEffect(() => {
     const S = build(canvas.current)
+    let W = 1, H = 1 // cached by the observer: reading layout in the rAF loop forced a reflow every frame
     const place = () => {
-      const { width: W, height: H } = card.current.getBoundingClientRect()
+      ({ width: W, height: H } = card.current.getBoundingClientRect())
       S.resize(W, H).forEach(([x, y], i) => { chipEls.current[i].style.left = x + 'px'; chipEls.current[i].style.top = y + 'px' })
     }
     const ro = new ResizeObserver(place); ro.observe(card.current); place()
@@ -167,7 +168,7 @@ export default function Site({ row, step, sun, reducedMotion }) {
     // smoothed state: alt (deg, <0 below horizon), p (day fraction), mq (moon fraction), tmp colours reused every frame
     let cur = null, last = performance.now(), raf
     const top = new T.Color(), hor = new T.Color(), c1 = new T.Color(), c2 = new T.Color()
-    const dir = new T.Vector3(), nDir = new T.Vector3(-0.5, 1, 0.8).normalize()
+    const dir = new T.Vector3(), lastDir = new T.Vector3(), nDir = new T.Vector3(-0.5, 1, 0.8).normalize()
     const flow = new Float32Array(4)
     const tick = (now) => {
       raf = requestAnimationFrame(tick)
@@ -186,7 +187,6 @@ export default function Site({ row, step, sun, reducedMotion }) {
       const kn = sm(-10, 0, cur.alt), kd = sm(0, 30, cur.alt), night = 1 - kn
       mix(top, mix(c1, K.nTop, K.dTop, kn), K.fTop, kd); mix(hor, mix(c2, K.nHor, K.dHor, kn), K.fHor, kd)
       sky.current.style.background = `linear-gradient(${top.getStyle()} 0%,${hor.getStyle()} 75%)`
-      const W = card.current.clientWidth, H = card.current.clientHeight
       const disc = (el, a, altN, op) => { // arc along the top of the card
         el.style.left = (0.06 + 0.88 * a) * W + 'px'; el.style.top = H * (0.1 + 0.2 * (1 - Math.max(0, altN))) + 'px'; el.style.opacity = op
       }
@@ -206,7 +206,7 @@ export default function Site({ row, step, sun, reducedMotion }) {
       mix(S.dl.color, mix(c2, K.warm, K.white, kd), K.moon, nl)
       S.dl.intensity = (1.9 + 0.4 * kn) * (1 - nl) + 1.0 * nl
       S.dl.position.copy(dir).multiplyScalar(30)
-      S.R.shadowMap.needsUpdate = true
+      if (dir.distanceToSquared(lastDir) > 1e-6) { S.R.shadowMap.needsUpdate = true; lastDir.copy(dir) } // shadow pass only when the light moves
       S.slabMat.color.copy(K.paper).multiplyScalar(dim)
       mix(S.gridLines.material.color, K.gridD, K.gridN, night * 0.7)
       mix(S.trenchMat.color, K.trD, K.trN, night * 0.6)
@@ -221,7 +221,7 @@ export default function Site({ row, step, sun, reducedMotion }) {
 
       // flows (kW, signed along the path direction: + = towards the house/battery)
       const pvH = Math.min(r.pv_kw, r.load_kw), pvB = Math.max(0, Math.min(r.battery_kw, r.pv_kw - pvH))
-      flow[0] = pvH; flow[1] = pvB; flow[2] = -Math.min(0, r.battery_kw); flow[3] = r.grid_kw
+      flow[0] = pvH; flow[1] = pvB; flow[2] = -Math.min(0, r.battery_kw) - Math.max(0, r.battery_kw - pvB); // grid charging (upside) runs house -> battery flow[3] = r.grid_kw
       S.paths.forEach((q, i) => {
         const f = flow[i], on = Math.abs(f) >= 0.02
         q.fade += ((on ? 1 : 0) - q.fade) * (rm ? 1 : Math.min(1, dt / 0.2))
@@ -246,11 +246,10 @@ export default function Site({ row, step, sun, reducedMotion }) {
     return () => { cancelAnimationFrame(raf); ro.disconnect(); S.dispose() }
   }, [])
 
-  const light = sun.isNight || sun.alt < 0.12
   const vals = [`${num(row.pv_kw)} kW`, `${num(row.load_kw)} kW`, `SoC ${Math.round(row.soc * 100)} %`, `${num(row.grid_kw)} kW`]
   const dots = ['var(--sun)', 'var(--ink-2)', 'var(--store)', 'var(--grid)']
   return (
-    <section ref={card} className={'card site' + (light ? ' dark' : '')}>
+    <section ref={card} className="card site">
       <div ref={sky} className="site-sky">
         <div ref={stars}>{STARS.map((s, i) => <i key={i} className="star" style={{ left: s.l + '%', top: s.t + '%', opacity: s.o }} />)}</div>
         <div ref={sunEl} className="disc" title={SUN_NOTE} style={{ background: 'var(--sun)' }} />

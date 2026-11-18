@@ -27,7 +27,7 @@ export default function AgentPanel({ run, day, mode, lam }) {
     a.href = URL.createObjectURL(new Blob([JSON.stringify(run, null, 2)], { type: 'application/json' }))
     a.download = `run_${mode}_${lam.toFixed(1)}.json`
     a.click()
-    URL.revokeObjectURL(a.href)
+    setTimeout(() => URL.revokeObjectURL(a.href))
   }
   return (
     <aside className="card panel">
@@ -60,7 +60,7 @@ export default function AgentPanel({ run, day, mode, lam }) {
         <li><i className="tick">✓</i><span>Clamped to SoC 0.1–0.9, 5 kW</span></li>
         <li className={blocked ? 'bad' : ''}>
           <i className="tick">{blocked ? '✕' : '✓'}</i>
-          <span>{blocked ? `Blocked, ${d.used} used` : 'Replay gate vs static rule'}</span>
+          <span>{blocked ? `Blocked, ${d.used} used` : 'Replay gate vs default knobs'}</span>
           <span className="mono muted" title={`Default-knob score minus plan score, € + λ·kg replayed on ${d.gate.basis} (positive: the plan is better)`}>
             {delta < 0 ? '−' : '+'}€{Math.abs(delta).toFixed(3)}
           </span>

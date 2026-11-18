@@ -119,7 +119,7 @@ function Sim({ data }) {
   const [mode, setMode] = useState(MODES.includes(q.get('mode')) ? q.get('mode') : 'conservative')
   const [lam, setLam] = useState(LAMS.includes(+q.get('lambda')) && q.get('lambda') ? +q.get('lambda') : 0.1)
   const stepParam = q.get('step')
-  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, +stepParam || 0)), stepParam === null || q.get('play') === '1')
+  const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, Math.floor(+stepParam) || 0)), stepParam === null || q.get('play') === '1')
   const reduced = useReducedMotion()
   const run = data.runs[key(mode, lam)]
   const sun = useMemo(() => sunSeries(run.schedule), [run])

@@ -158,5 +158,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .group { flex-wrap: wrap; }
   .site > .muted { display: block; max-width: 55%; }
   .site-time { font-size: 13px; }
-  .pipeline svg { min-width: 0; }
+  .pipeline { overflow-x: auto; }
+  .pipeline svg { min-width: 760px; } /* scroll the strip sideways instead of shrinking it unreadable */
+  .lab .c { white-space: nowrap; font-size: 12px; padding: 4px 6px; }
+  .lab .n { font-size: 11px; }
 }
