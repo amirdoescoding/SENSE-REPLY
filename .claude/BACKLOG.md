@@ -29,3 +29,5 @@
 - [ ] User picks a mockup → record it in DESIGN.md §3
 - [ ] Demo sessions 2–5 (see `.claude/TODOS.md`)
 - [ ] Push `demo-design` + PR
+- [ ] Demo session 4 prereqs: add price + A/C/no-battery series to run JSONs; fix kpis.json carbon_source label (constant, not hourly)
+- [ ] Demo session 5: deploy on Render (set ENTSO_API secret, confirm PYTHON_VERSION 3.14.0), warm up before the demo

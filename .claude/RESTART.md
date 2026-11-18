@@ -1,5 +1,5 @@
 # Restart point
 
-2026-11-18: Branch `demo-sim-engine` (not pushed). Session 2 of 5 is done, with real Gemini answers cached.
-- Next: merge or open a PR, then session 3 `demo-api` (FastAPI `/api/run?lambda=&mode=`, `/api/kpis`, `/api/live/carbon`, render.yaml). The API serves `demo/out/*.json`.
-- Rerun the engine: `.venv/bin/python -u demo/sim.py` (~6 min, cached answers are free). Checks: `--check`.
+2026-11-18: Branch `demo-api` (not pushed). Session 3 of 5 is done.
+- Next: merge or open a PR, then session 4 `demo-ui-sim` (Vite/React in `demo/web/`, three.js site, agent-flow pipeline, playback, λ slider). Read the "Session 4 inputs" under session 3 in `.claude/TODOS.md` first: price/comparison series and the carbon label are engine fixes.
+- Run the API: `.venv/bin/uvicorn --app-dir demo api:app`. Check: `.venv/bin/python demo/test_api.py` → "api ok".

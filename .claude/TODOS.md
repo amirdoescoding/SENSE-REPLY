@@ -31,7 +31,18 @@ Close each session with: memory files + `graphify update .`.
     - plain S5 upside +0.7%, conservative +5.2% (soft miss);
     - the gate blocks bad knobs;
     - no key in the outputs.
-- [ ] **3 `demo-api`**: FastAPI `/api/run?lambda=`, `/api/kpis`, `/api/live/carbon` (cached), serving the built frontend, plus `render.yaml`. The free instance sleeps, so warm it up before the demo.
+- [x] **3 `demo-api`**: `demo/api.py` (FastAPI) + `demo/test_api.py` + `render.yaml`. The free instance sleeps, so warm it up before the demo.
+  - `/api/run?mode=&lambda=` returns 422 off the 3×2 grid.
+  - Responses are gzipped (120 KB → 16 KB).
+  - `/api/live/carbon`: last 24 h of ENTSO-E A75 Italy hours (Europe/Rome), cached 1 h. The fallback is 356 g/kWh with no points, cached 5 min.
+  - Serves only allowlisted files, never `gemini_cache.json` or `memory.json`. Deploy waits for session 5.
+  - **Session 4 inputs from the agent reviews:**
+    - Run rows have no price per step and no A/C/no-battery series. Add price (and the comparison series) to `sim.py`, or the UI can't draw the comparisons.
+    - `kpis.json` `carbon_source` says `entsoe-hourly`, but the KPIs use the constant 0.356. Fix the label.
+    - Gate-blocked days: `explanation` and `thoughts` describe the *rejected* plan. Show `used` + `gate.passed` next to them.
+    - `tok_out` includes thinking tokens.
+    - No path routes: use tab/hash state, because StaticFiles has no SPA fallback.
+    - Prefetch all 6 runs. Append `cd demo/web && npm ci && npm run build` to render.yaml's build command.
 - [ ] **4 `demo-ui-sim`**: three.js site (PV, battery, house, pylon) with energy particles. The agent-flow pipeline with moving packets, playback, a day scrubber and the λ slider.
 - [ ] **5 `demo-ui-kpis`**: Excel-aligned conformity table with verdicts, Good counts, live ENTSO-E card, and the F5/P4 KPIs now measurable.
 
