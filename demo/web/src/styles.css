@@ -174,16 +174,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .kt h1 { margin: 0; font-size: 22px; font-weight: 600; }
 .kt-scroll { overflow-x: auto; margin-top: 8px; }
 .kt table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.kt th { padding: 10px 8px; text-align: left; font-weight: 500; font-size: 13px; color: var(--ink-2); border-bottom: 1px solid var(--line); vertical-align: bottom; }
+.kt th { padding: 10px 8px; text-align: left; font-weight: 500; font-size: 14px; color: var(--ink-2); border-bottom: 1px solid var(--line); vertical-align: bottom; }
 .kt td { padding: 7px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
 .kt td:first-child { white-space: normal; min-width: 260px; }
 .kt .n { text-align: right; font-family: var(--monof); font-variant-numeric: tabular-nums; }
 .kt th.n { font-family: var(--sans); }
-.kt .grp td { padding: 16px 8px 6px; font-weight: 600; font-size: 13px; color: var(--ink); border-bottom: 0; }
+.kt .grp td { padding: 16px 8px 6px; font-weight: 600; font-size: 14px; color: var(--ink); border-bottom: 0; }
 .kt .ours { background: var(--agent-soft); }
 .kt th.ours { color: var(--ink); }
 .kid { display: inline-block; width: 52px; color: var(--mute); font-size: 13px; }
-.vd { display: inline-grid; place-items: center; width: 18px; height: 18px; margin-left: 6px; border-radius: 50%; font: 600 11px var(--sans); vertical-align: 1px; }
+.vd { display: inline-grid; place-items: center; width: 18px; height: 18px; margin-left: 6px; border-radius: 50%; font: 600 12px var(--sans); vertical-align: 1px; }
 .vd.g { background: var(--good-bg); color: var(--good-fg); }
 .vd.i { background: var(--imp-bg); color: var(--imp-fg); }
 .vd.none { visibility: hidden; }
@@ -193,7 +193,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .side-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 12px; }
 .side p { margin: 0; }
 .side .row { font-size: 14px; }
-.cnt { display: grid; grid-template-columns: 190px 1fr 44px; gap: 12px; align-items: center; margin-top: 10px; font-size: 14px; }
+.side p + .row { margin-top: 8px; }
+.cnt { display: grid; grid-template-columns: minmax(0, 9.5em) minmax(60px, 1fr) 44px; gap: 12px; align-items: center; margin-top: 10px; font-size: 14px; }
 .bar-bg { height: 10px; background: var(--paper); border-radius: 5px; overflow: hidden; }
 .bar-bg > div { height: 100%; background: var(--ink-2); border-radius: 5px; }
 .bar-bg > .rule { background: var(--mute); }
@@ -204,10 +205,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .co2 { display: block; width: 100%; height: auto; margin-bottom: 6px; }
 .co2 .ref { stroke: var(--mute); stroke-dasharray: 3 4; }
 .co2 .line { fill: none; stroke: var(--co2-hi); stroke-width: 2; }
-.co2 text { font: 400 11px var(--monof); fill: var(--mute); }
+.co2 text { font: 400 12px var(--monof); fill: var(--mute); }
 /* below 1600 the table needs the full width: side cards move under it */
 @media (max-width: 1599px) {
   .kpitab { grid-template-columns: minmax(0, 1fr); }
-  .kpitab > aside { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); align-items: start; }
+  .kpitab > aside { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: start; }
 }
 @media (max-width: 1279px) { .kpitab { padding: 16px; } }
+/* phones: the KPI name column stays put while the values scroll */
+@media (max-width: 640px) {
+  .kt td:first-child, .kt th:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); min-width: 150px; max-width: 150px; box-shadow: 1px 0 0 var(--line); }
+  .kt .grp td:first-child { box-shadow: none; }
+  .kid { display: block; }
+}

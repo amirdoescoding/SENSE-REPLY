@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { num } from './lib.js'
+import { num, weekday } from './lib.js'
 
 const COLS = [['A', 'A · cost agent'], ['C', 'C · dual agent'], ['Static rule', 'Static rule'], ['S5 conservative', 'S5 conservative'], ['S5 upside', 'S5 upside']]
 // Headline rows (mock-kpi); the rest of the workbook's KPIs sit behind "Show all".
@@ -17,7 +17,7 @@ function Cell({ c, unit, ours }) {
   return (
     <td className={'n' + (ours ? ' ours' : '')}>
       {fmt(c.value, unit)}
-      <span className={'vd ' + (cls || 'none')} title={word} aria-label={word} aria-hidden={!word}>{icon || '✓'}</span>
+      <span className={'vd ' + (cls || 'none')} role={word ? 'img' : undefined} title={word} aria-label={word} aria-hidden={!word}>{icon || '✓'}</span>
     </td>
   )
 }
@@ -104,7 +104,7 @@ function Carbon() {
     <div className="card side">
       <div className="side-head">
         <h2>Italy grid CO2, last 24 h</h2>
-        <span className="muted small">{live ? `ENTSO-E A75, to ${last.hour.slice(11)}:00 Rome` : 'ENTSO-E unavailable'}</span>
+        <span className="muted small">{live ? `ENTSO-E A75, to ${weekday(last.hour)} ${last.hour.slice(11)}:00 Rome` : 'ENTSO-E unavailable'}</span>
       </div>
       <div className="co2-now">
         <span className="mono big">{live ? Math.round(last.g_per_kwh) : 356}</span>
@@ -114,8 +114,8 @@ function Carbon() {
         <svg viewBox={`0 0 ${W} ${H}`} className="co2" role="img" aria-label={`Hourly grid carbon intensity, ${Math.round(Math.min(...pts.map((p) => p.g_per_kwh)))} to ${Math.round(Math.max(...pts.map((p) => p.g_per_kwh)))} g/kWh`}>
           <line x1="10" x2={W - 10} y1={y(356)} y2={y(356)} className="ref" />
           <path d={pts.map((p, i) => `${i ? 'L' : 'M'}${x(i)} ${y(p.g_per_kwh)}`).join('')} className="line" />
-          <text x="10" y={H - 2}>{pts[0].hour.slice(11)}:00</text>
-          <text x={W - 10} y={H - 2} textAnchor="end">{last.hour.slice(11)}:00</text>
+          <text x="10" y={H - 2}>{weekday(pts[0].hour)} {pts[0].hour.slice(11)}:00</text>
+          <text x={W - 10} y={H - 2} textAnchor="end">{weekday(last.hour)} {last.hour.slice(11)}:00</text>
         </svg>
       ) : <p className="muted small">No live data (no token or ENTSO-E down). The KPIs use the workbook constant either way.</p>}
       <p className="muted small">{live ? 'Dashed line: workbook constant 356 g/kWh, which the KPIs use.' : ''}</p>
