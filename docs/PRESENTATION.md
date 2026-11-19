@@ -14,7 +14,7 @@ Speakers: Sydney (slides 0–4), Amir (5–6, platform + demo), Francesco (7–8
 0. One carbon-aware agent, on a model Reply owns.
 1. One self-hosted agent that plans once a day turns pilot C's €7.31 weekly loss into a €0.98 gain and cuts the AI bill by 98%.
 2. We judge every agent against a free rule, because "saved vs no battery" alone makes the pilots look profitable.
-3. Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves.
+3. Both pilots lose to a free rule with an AI bill 8 to 12 times their saving; one daily agent's bill is an eighth of what it saves.
 4. A second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price, while a carbon weight inside one agent costs about nothing.
 5. We change two things on Reply's platform: a self-hosted Ministral 3 8B replaces the retired LLM, and the LLM leaves the 15-minute loop.
 6. Demo: Ministral 3 8B wrote every plan of this week, and the replay gate decided which ones the battery ran.
@@ -68,6 +68,10 @@ The thresholds come from `data/Sense_Reply_B2_KPI_Conformity.xlsx`. No results a
 | A | €0.60 | €4.74 | 7.8× |
 | C | €0.63 | €7.71 | 12.2× |
 
+| New framework | €1.42 | €0.18 | 0.12× |
+
+The new framework's pair, in blue, sits under the pilots: it previews the answer from slide 1.
+
 **Three causes, from the prompts:**
 - a fixed 80% target;
 - export valued at zero;
@@ -115,7 +119,10 @@ Source: report §3.1, `docs/diagrams/reply-platform.html`.
 
 ### 7. Business case (0:55)
 **Chart.** Log-log: AI cost per site per week against fleet size, 100–10,000 sites. Points come from `model_cost.OPTIONS`.
-- **Lines:** on-prem 8B, the same model on an EU API, and the on-site 3B box (flat €1.86–8.12/wk).
+- **Lines:**
+  - pilots A and C, flat at €4.74 and €7.71, because they pay per token and scale never lowers the bill;
+  - on-prem 8B and the same model on an EU API, both falling with fleet size;
+  - the on-site 3B box, flat from €1.86/wk.
 - **Thresholds:**
   - S_net €1.16: above it, AI eats the whole saving;
   - VORB €0.12: below it, the agent beats the free rule after AI.

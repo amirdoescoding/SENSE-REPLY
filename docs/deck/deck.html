@@ -145,22 +145,22 @@ const S={
    <div class="key" style="position:absolute;left:440px;bottom:0"><span><s style="background:var(--agent)"></s>blue edge: compared with the free rule</span></div>`;
 },
 '3'(){
-  frame('Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves',
+  frame('Both pilots lose to a free rule with an AI bill 8 to 12 times their saving; one daily agent's bill is an eighth of what it saves',
     'Source: report §1, §4 step 9 · AI cost at the assumed Devstral 2 list price ($0.40 / $2.00 per M tokens, 0.86 €/$)','3 / 8');
   const W=1080,H=520,x0=250,sc=(W-x0-150)/8, g=el(M,'svg',{width:W,height:H,style:'position:absolute;left:0;top:10px'});
   const ink=css('--ink'),ag=css('--agent');
-  const R=[{n:'Pilot A',d:'cost agent',sv:0.60,ai:4.74,r:'7.8×'},{n:'Pilot C',d:'cost + sustainability',sv:0.63,ai:7.71,r:'12.2×'}];
+  const R=[{n:'Pilot A',d:'cost agent',sv:0.60,ai:4.74,r:'7.8×'},{n:'Pilot C',d:'cost + sustainability',sv:0.63,ai:7.71,r:'12.2×'},{n:'New framework',d:'one daily agent',sv:1.42,ai:0.18,r:'0.12×',ours:1}];
   for(let t=0;t<=8;t+=2){el(g,'line',{x1:x0+t*sc,x2:x0+t*sc,y1:0,y2:H-60,stroke:css('--faint')});el(g,'text',{x:x0+t*sc,y:H-28,'text-anchor':'middle',class:'num'},'€'+t)}
   el(g,'text',{x:W-150,y:H-2,'text-anchor':'end',class:'sub'},'€ per week');
-  R.forEach((r,i)=>{const y=40+i*220;
-    el(g,'text',{x:0,y:y+30,class:'lbl',style:'font-weight:600;font-size:24px'},r.n);el(g,'text',{x:0,y:y+58,class:'sub'},r.d);
+  R.forEach((r,i)=>{const y=20+i*158;
+    el(g,'text',{x:0,y:y+30,class:'lbl',style:`font-weight:600;font-size:24px${r.ours?';fill:'+css('--agent-text'):''}`},r.n);el(g,'text',{x:0,y:y+58,class:'sub'},r.d);
     el(g,'rect',{x:x0,y,width:r.sv*sc,height:44,rx:4,fill:ag});
     el(g,'text',{x:x0+r.sv*sc+12,y:y+30,class:'lbl'},'Saving vs no battery  €'+r.sv.toFixed(2));
     el(g,'rect',{x:x0,y:y+56,width:r.ai*sc,height:44,rx:4,fill:ink});
     el(g,'text',{x:x0+r.ai*sc+12,y:y+86,class:'lbl'},'AI bill  €'+r.ai.toFixed(2));
-    el(g,'text',{x:x0+r.ai*sc+12,y:y+112,class:'sub',style:`fill:${css('--alert-text')}`},r.r+' the saving');
+    el(g,'text',{x:x0+r.ai*sc+12,y:y+112,class:'sub',style:`fill:${css(r.ours?'--good':'--alert-text')}`},r.r+' the saving');
   });
-  M.insertAdjacentHTML('beforeend',`<div class="k" style="position:absolute;left:0;bottom:0;font-size:20px;color:var(--ink2)">Net after AI cost: pilot A <b style="font-weight:600">−€4.33</b>, pilot C <b style="font-weight:600">−€7.31</b>, free rule <b style="font-weight:600">+€1.03</b> with no AI at all</div>
+  M.insertAdjacentHTML('beforeend',`<div class="k" style="position:absolute;left:0;bottom:0;font-size:20px;color:var(--ink2)">Net after AI cost: pilot A <b style="font-weight:600">−€4.33</b>, pilot C <b style="font-weight:600">−€7.31</b>, new framework <b style="font-weight:600;color:var(--agent-text)">+€0.98</b>, free rule <b style="font-weight:600">+€1.03</b> with no AI at all</div>
    <div style="position:absolute;right:0;top:0;width:560px"><div class="colhead">Why they lose, read from the prompts</div>
    <ol class="n"><li><b>A fixed 80% target</b><span>fills the battery by late morning, so midday sun goes to the grid</span></li>
    <li><b>Export valued at zero</b><span>sold at €0.09, bought back at €0.11–0.12 in the evening</span></li>
@@ -262,8 +262,12 @@ const S={
   [100,300,1000,3000,10000].forEach(n=>{el(g,'line',{x1:x(n),x2:x(n),y1:m.t,y2:H-m.b,stroke:css('--faint')});el(g,'text',{x:x(n),y:H-m.b+32,'text-anchor':'middle',class:'num'},n.toLocaleString('en'))});
   el(g,'text',{x:W-m.r,y:H-6,'text-anchor':'end',class:'sub'},'Sites on one platform (log scale)');
   el(g,'text',{x:m.l-14,y:16,class:'sub'},'AI cost, € per site per week (log scale)');
-  el(g,'rect',{x:m.l,y:y(8.12),width:W-m.l-m.r,height:y(1.86)-y(8.12),fill:css('--faint')});
-  el(g,'text',{x:W-m.r-12,y:y(8.12)+28,'text-anchor':'end',class:'lbl'},'3B box on each site: €1.86–8.12');
+  // pilots pay per token, so their AI cost per site is flat in fleet size (report §6)
+  [[7.71,'Pilot C'],[4.74,'Pilot A']].forEach(([v,t])=>{el(g,'line',{x1:m.l,x2:W-m.r,y1:y(v),y2:y(v),stroke:al,'stroke-width':3.5});
+    el(g,'text',{x:W-m.r+14,y:y(v)+7,class:'lbl',style:`fill:${css('--alert-text')};font-weight:600`},t+' €'+v)});
+  el(g,'text',{x:m.l+12,y:y(7.71)-12,class:'sub',style:`fill:${css('--alert-text')}`},'Pilots pay per token: the bill never falls with scale');
+  el(g,'line',{x1:m.l,x2:W-m.r,y1:y(1.86),y2:y(1.86),stroke:ag,'stroke-width':2.5,'stroke-dasharray':'10 6'});
+  el(g,'text',{x:W-m.r+14,y:y(1.86)+7,class:'lbl',style:`fill:${css('--agent-text')}`},'3B box €1.86+');
   [[1.1586,'Above €1.16: AI eats the whole saving'],[0.1191,'Below €0.12: beats the rule after AI']].forEach(([v,t])=>{
     el(g,'line',{x1:m.l,x2:W-m.r,y1:y(v),y2:y(v),stroke:ink,'stroke-width':1.5,'stroke-dasharray':'7 6'});
     el(g,'text',{x:W-m.r-12,y:y(v)-10,'text-anchor':'end',class:'sub',style:`fill:${css('--ink2')}`},t)});

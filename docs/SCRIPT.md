@@ -40,10 +40,10 @@ Next to the same house without a battery, both pilots look profitable. So we bui
 **Say aloud:** two lines of code save €1.03 a week.
 **Handover:** Here is how the two pilots do against that rule.
 
-### 3. Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves
+### 3. Both pilots lose to a free rule with an AI bill 8 to 12 times their saving; one daily agent's bill is an eighth of what it saves
 Sydney · 0:45 · 91 words (budget 98)
 
-Both lose to the free rule before any AI cost, A by 73 cents and C by 67. Then comes the token bill: €4.74 a week for A, €7.71 for C. That is 8 to 12 times what the battery saves. The prompts show why. A fixed 80% target fills the battery by late morning. Export counts as zero, so midday solar sells at 9 cents and comes back at 11 to 12. The sustainability agent never sees a price or CO2.
+Both lose to the free rule before any AI cost. Then comes the token bill: €4.74 a week for A, €7.71 for C, 8 to 12 times what the battery saves. Our agent, in blue, saves €1.42 and spends 18 cents. The prompts show why. A fixed 80% target fills the battery by late morning. Export counts as zero, so midday solar sells at 9 cents and comes back at 11 to 12. The sustainability agent never sees a price or CO2.
 
 **Say aloud:** the AI bill is 8 to 12 times the saving.
 **Handover:** That blind agent is where the carbon money goes.
@@ -91,9 +91,9 @@ Our column sits next to pilots A and C: 15 KPIs out of 20 pass, against 5 and 6.
 **Handover:** Francesco will tell you what the week adds up to.
 
 ### 7. Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving
-Francesco · 0:55 · 114 words (budget 119)
+Francesco · 0:55 · 117 words (budget 119)
 
-Before AI cost, our agent beats the free rule by 12 cents a week per site. The question is whether the AI costs less than that. On the right is the math. Two GPU servers, their power, and a tenth of an engineer cost about €9,160 a year. Divide by 52 weeks and by the number of sites. At 1,000 sites that is 18 cents, more than our 12-cent lead. From about 1,500 sites it drops below. On an EU API, with the same weights, it happens at 580. The grey band is a box on every site: €97 to €422 a year. Sell it to clients who need offline replanning.
+The red lines are the pilots: they pay per token, so their bill never falls. Ours does. Before AI cost, we beat the free rule by 12 cents a week per site. On the right is the math. Two GPU servers, their power, and a tenth of an engineer cost about €9,160 a year. Divide by 52 weeks and by the number of sites. At 1,000 sites that is 18 cents, more than our 12-cent lead. From about 1,500 sites it drops below. On an EU API, with the same weights, it happens at 580. The grey band is a box on every site: €97 to €422 a year. Sell it for offline replanning.
 
 **Say aloud:** €9,160 a year, divided by sites, below 12 cents from 1,500.
 **Handover:** Now the limits.
@@ -112,8 +112,8 @@ All of this rests on one modelled winter week, with no real weather and no agent
 |---|---|---|---|
 | Sydney | 0–4 | 360 | 368 (2:50) |
 | Amir | 5–6 | 219 | 293 (2:15) |
-| Francesco | 7–8 | 164 | 184 (1:25) |
-| Total | | 743 | 845 (6:30) |
+| Francesco | 7–8 | 167 | 184 (1:25) |
+| Total | | 746 | 845 (6:30) |
 
 ## Q&A prep
 
