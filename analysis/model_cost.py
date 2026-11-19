@@ -10,7 +10,9 @@ from kpis import LLM, P_IN, P_OUT, USD_EUR
 WEEKS = 52
 LIFE = 5  # years of hardware life (E)
 KWH = 0.32  # €/kWh Italian household price H1 2026 (V, Euronews/Eurostat); also used for the server room (E)
-TOK_IN, TOK_OUT = 7_973, 965  # tokens per site-week, measured: Qwen3.5-4B Q4 bench, 7 calls, thinking off (V)
+# tokens per site-week (1 call/day x 7), measured: Ministral 3 3B Q4 bench, mean of 2 modes (V). Its tokenizer counts
+# ~50% more than Qwen's on the same prompt (Qwen3.5-4B: 7,973 / 965)
+TOK_IN, TOK_OUT = 11_935, 1_337
 # Report S5 (workbook): S_net, gross saving S, VORB (€/wk); O5 there = Devstral price at its token count
 S5 = {"conservative": (1.1156, 1.3768, 0.0772), "upside": (1.7957, 2.0927, 0.7930)}
 FLEETS = (100, 1_000, 10_000)

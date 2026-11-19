@@ -14,7 +14,7 @@ V = verified at the linked source. E = our estimate. The demo keeps Gemini as a 
 | **Model family** | **Mistral Ministral 3**, open weights, Apache-2.0, EU (France), Jan 2026 ([HF](https://huggingface.co/mistralai/Ministral-3-8B-Instruct-2512)) V |
 | **Default: central** | **Ministral 3 8B Instruct**, Q4 or FP8, on Reply's on-prem platform |
 | **Edge upsell** | **Ministral 3 3B** (2.15 GB Q4) on an AI-capable gateway, for clients who need offline operation or require that no data leave the site |
-| **Benched alternative** | **Qwen3.5-4B** (Apache-2.0, CN). It passed our bench 14/14 (§4). Use it if a client has no origin constraint. |
+| **Benched** | **Ministral 3 3B**: 14/14 valid plans, 0 clamps, same week result as Gemini (§4). **Qwen3.5-4B** (Apache-2.0, CN) also passed 14/14, with more accurate explanations; use it if a client has no origin constraint. |
 | **Fallback, unchanged** | yesterday's valid plan → the static rule. The edge needs no model to keep running. |
 
 **Why this model.**
@@ -24,7 +24,7 @@ V = verified at the linked source. E = our estimate. The demo keeps Gemini as a 
 4. **Fit to the task.** The task is three numbers plus two sentences, once a day. Our bench shows a 4B model already gets it right (§4), so an 8B on the server has headroom and a 3B fits a gateway.
 5. **Cost.** On shared on-prem compute the AI bill is €0.02–0.18 per site per week at 1k–10k sites. The pilot's bill was €7.71 (§7).
 
-**Not yet proven:** Ministral itself has not run our prompts. The Mac (8 GB) crashed loading the 8B. Next step: bench Ministral 3 3B (2.15 GB), which uses the same chat template.
+**Not yet proven:** the 8B has not run our prompts. The Mac (8 GB) crashed loading it. The 3B shares its template and tokenizer and passed, so the 8B is expected to do at least as well. Run it once on the central node before go-live.
 
 ## 2. Where it runs, mapped to the brief's "Agentic Operations for E&U" diagram
 - **Today:** the LLM is the dashed *External AI Service Provider* box hanging off the Centralized Platform.
@@ -78,17 +78,18 @@ Sources:
 **Setup.**
 - `demo/local_bench.py` swaps only `agent.ask` for a llama.cpp call. The prompts, validator, replay gate and rolling MPC are the same as the demo.
 - Run: run C week, λ 0.10, fixed A+C memory, 7 plan windows per mode.
-- Model: Qwen3.5-4B Q4_K_M on a MacBook M1 8 GB, which is in the memory class of a Jetson Orin Nano. Context 4,096, thinking off, JSON-object grammar.
+- Models: Ministral 3 3B and Qwen3.5-4B, both Q4_K_M, one at a time on a MacBook M1 8 GB, which is in the memory class of a Jetson Orin Nano. Context 4,096, thinking off, JSON-object grammar.
 - Results: `demo/out/local_bench.json`. The demo does not serve that file.
 
-| | Qwen3.5-4B local | Gemini 3.5 Flash-Lite | No LLM (copy nearest good day) |
-|---|---|---|---|
-| Valid JSON | 14/14 | 14/14 | n/a |
-| Clamped or invalid knobs | 0 | 0 | 0 |
-| Gate pass, conservative / upside | 5/7 / 7/7 (2 days ran the previous valid plan) | 7/7 / 7/7 | 7/7 / 7/7 |
-| S_net €/wk, conservative / upside | 1.156 / 1.568 | 1.156 / 1.568 | 1.156 / 1.568 |
-| Tokens/week, in / out (mean of 2 modes) | 7,973 / 965 | 7,947 / 5,112 (with thinking) | 0 |
-| Time per call | 15–17 s (prefill ~165 tok/s, decode ~16 tok/s) | 1–7 s (cloud) | ~0 |
+| | Ministral 3 3B local | Qwen3.5-4B local | Gemini 3.5 Flash-Lite | No LLM (copy nearest good day) |
+|---|---|---|---|---|
+| Valid JSON | 14/14 | 14/14 | 14/14 | n/a |
+| Clamped or invalid knobs | 0 | 0 | 0 | 0 |
+| Gate pass, conservative / upside | 3/7 / 7/7 (4 days ran the previous valid plan) | 5/7 / 7/7 (2 days ran the previous valid plan) | 7/7 / 7/7 | 7/7 / 7/7 |
+| S_net €/wk, conservative / upside | 1.156 / 1.568 | 1.156 / 1.568 | 1.156 / 1.568 | 1.156 / 1.568 |
+| Tokens/week, in / out (mean of 2 modes) | 11,935 / 1,337 (its tokenizer counts ~50% more) | 7,973 / 965 | 7,947 / 5,112 (with thinking) | 0 |
+| Time per call | 12–14 s (prefill ~215 tok/s, decode ~21 tok/s) | 15–17 s (prefill ~165, decode ~16 tok/s) | 1–7 s (cloud) | ~0 |
+| Explanation quality | readable, but one factual slip (called evening prices "low") | accurate | accurate | template text |
 
 **What this proves:**
 - a 4B local model, on laptop-class hardware, writes valid and unclamped plans;
@@ -131,13 +132,13 @@ Sources:
 
 > **What the KPIs now assume:**
 > - **Model:** Ministral 3 8B on Reply's on-prem node (HA pair).
-> - **Calls:** 1 call a day = 7 a week. The pilot made ~730 a day.
-> - **Tokens:** ~1,140 in and ~140 out per call, so ~8k in and ~1k out per site-week.
+> - **Calls:** **1 call a day per site** (KPIs are per week, so 7 a week). The pilot made ~730 a day.
+> - **Tokens (Ministral tokenizer):** ~1,700 in and ~190 out per call, so ~12k in and ~1.3k out per site-week.
 > - **AI cost:** €0.18 per site per week at 1,000 sites. **N1 = +€0.94/wk** (conservative), against −€7.31 for pilot C.
 
 `python3 analysis/model_cost.py`.
 - **Self-check:** it reproduces pilot C's O5 of €7.7086/wk.
-- **Tokens:** measured from the bench, 7,973 in / 965 out per site-week. The pilot used 18.8 M / 0.72 M.
+- **Tokens:** measured on the Ministral 3 3B bench, 11,935 in / 1,337 out per site-week (1 call a day × 7). The pilot used 18.8 M / 0.72 M.
 - **Hardware:** amortised over 5 years.
 - **Power:** €0.32/kWh, Italian household price H1 2026 ([Euronews](https://www.euronews.com/2026/11/12/eu-household-electricity-and-gas-prices-fell-in-the-first-half-of-2026-who-pays-the-most)) V.
 - **Ops (E):**
@@ -148,7 +149,7 @@ Sources:
 
 | Option | 100 sites | 1,000 | 10,000 | Fleet where AI ≤ 10% of gain |
 |---|---|---|---|---|
-| Devstral 2 API (retired; the pilot's price) | 0.68 | 0.072 | 0.011 | 659 |
+| Devstral 2 API (retired; the pilot's price) | 0.68 | 0.074 | 0.013 | 659 |
 | EU API, Ministral 3 8B ($0.15/$0.15) | 0.67 | 0.069 | 0.008 | 659 |
 | **Central on-prem, right-sized GPU node (€4k, 100 W, HA pair)** | 1.76 | **0.18** | **0.018** | 1,714 |
 | Central on-prem, L40S server (upper bound) | 3.05 | 0.31 | 0.039 | 2,764 |
@@ -172,7 +173,7 @@ Sources:
 - **Self-hosting is not the cheapest option.** The same open weights on an EU API cost less at every fleet size: €0.069 vs €0.176 at 1,000 sites, and €0.008 vs €0.018 at 10,000. The ~€0.11 per site per week gap at 1,000 sites is **the price of governance**: Reply owns the model, no vendor can retire it, and data stays on its own platform.
 - **Central on-prem from ~1,000 sites still keeps N1 at +€0.94–1.10/wk,** against −€7.31 for the pilot. That is a 98–99.8% cut in AI cost.
 - **Ops sensitivity.** Ops is ~76% of the on-prem figure at 1,000 sites. If the platform compute and an MLOps team already exist, the marginal cost drops to ~€0.04/wk.
-- **Like-for-like comparison.** The report's "+€1.10 at €0.01 AI cost" priced Devstral with no ops. Priced with ops, the Devstral API would itself be €0.072/wk at 1,000 sites.
+- **Like-for-like comparison.** The report's "+€1.10 at €0.01 AI cost" priced Devstral with no ops. Priced with ops, the Devstral API would itself be €0.074/wk at 1,000 sites.
 - **A small pilot (≤ a few hundred sites) should start on an EU API with the same open-weight model,** then move in-house at ~1,000 sites. The prompt and weights are identical, so the move is a config change.
 - **Edge is a paid upsell.** The box costs €97/yr (Nano Super) to €422/yr (industrial NX) per site, against a ~€58/yr gain. Price the offline/residency option at or above that floor. The break-even box price is ~€206 over 5 years, below any Jetson today.
 - **What changes in the deck's headline:** the "+€1.10/wk at €0.01 AI cost" assumed Devstral list prices with no ops. With a named self-hosted model and ops included, it becomes **+€0.94/wk at 1,000 sites, +€1.10 at 10,000**. The deck stays unchanged until the user says so.
@@ -188,7 +189,7 @@ Sources:
 
 | Risk | Likelihood | Impact | Mitigation | Owner role |
 |---|---|---|---|---|
-| Ministral 3 has not run our prompts. The only bench is Qwen3.5-4B, on one winter week. | High | Medium | Bench Ministral 3 3B first, with the same chat template and the same 7 windows. | ML engineer |
+| The 8B has not run our prompts; the 3B made one factual slip in an explanation. The bench covers one winter week. | Medium | Medium | Run the 8B once on the central node before go-live. Add an explanation check (numbers quoted must match the prompt). | ML engineer |
 | The LLM does not beat the no-LLM memory baseline on other weeks. In January all three columns tie. | Medium | High | Replay summer and price or CO2 spike weeks before claiming decision value. If it never wins, ship the rule and keep the LLM for explanations. | Analyst |
 | Ops cost is underestimated. The 0.1 FTE (€7k/yr) is our estimate. | Medium | High below ~1,000 sites | Confirm the FTE with Sense Reply. Rerun `analysis/model_cost.py` with their figure. | Project manager |
 | Model update or rollout fails on the Edge Apps Store. | Low | High | Signed weights, A/B slots with rollback, replay gate before promotion. The old slot stays live until the new one passes. | Platform lead |
@@ -197,8 +198,7 @@ Sources:
 | GDPR: home load is personal data. | Low | High | Prompts send daily aggregates only. Audit prompts and logs for raw 15-min data. EU hosting with a DPA. Legal review before launch. | Data protection lead |
 
 **Next steps, in order**
-1. **Bench Ministral 3 3B on the 8 GB Mac.** Load one model at a time; never the 8B there.
-   - Done when the results file shows 14/14 valid JSON and 0 clamped knobs, with gate-pass counts next to Qwen's.
+1. **Done 2026-11-19:** Ministral 3 3B benched (14/14 valid, 0 clamps). Next: the 8B on the central node, plus an explanation fact-check.
 2. **Replay a summer week and a price or CO2 spike week against the memory baseline.**
    - Done when each week reports the model's knob regret against the no-LLM baseline as a win, a tie or a loss.
 3. **Confirm the ops FTE with Sense Reply.**
