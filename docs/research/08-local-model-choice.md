@@ -87,7 +87,7 @@ Sources:
 | Clamped or invalid knobs | 0 | 0 | 0 |
 | Gate pass, conservative / upside | 5/7 / 7/7 (2 days ran the previous valid plan) | 7/7 / 7/7 | 7/7 / 7/7 |
 | S_net €/wk, conservative / upside | 1.156 / 1.568 | 1.156 / 1.568 | 1.156 / 1.568 |
-| Tokens/week, in / out | 7,945 / 965 | 7,947 / 5,112 (with thinking) | 0 |
+| Tokens/week, in / out (mean of 2 modes) | 7,973 / 965 | 7,947 / 5,112 (with thinking) | 0 |
 | Time per call | 15–17 s (prefill ~165 tok/s, decode ~16 tok/s) | 1–7 s (cloud) | ~0 |
 
 **What this proves:**
@@ -128,6 +128,13 @@ Sources:
 - **Takeaway:** "a self-hosted, open-weight LLM planner under a deterministic clamp" is open ground. Being central and self-hosted is a governance differentiator, not a novelty risk.
 
 ## 7. Cost per site and the KPIs
+
+> **What the KPIs now assume:**
+> - **Model:** Ministral 3 8B on Reply's on-prem node (HA pair).
+> - **Calls:** 1 call a day = 7 a week. The pilot made ~730 a day.
+> - **Tokens:** ~1,140 in and ~140 out per call, so ~8k in and ~1k out per site-week.
+> - **AI cost:** €0.18 per site per week at 1,000 sites. **N1 = +€0.94/wk** (conservative), against −€7.31 for pilot C.
+
 `python3 analysis/model_cost.py`.
 - **Self-check:** it reproduces pilot C's O5 of €7.7086/wk.
 - **Tokens:** measured from the bench, 7,973 in / 965 out per site-week. The pilot used 18.8 M / 0.72 M.
@@ -162,7 +169,10 @@ Sources:
 
 **Reading.**
 - **The model is nearly free; people and boxes are not.** Ops dominates at small fleets. Under ~700 sites (API) or ~1,700 sites (on-prem), AI eats more than 10% of the gain.
-- **Central on-prem from ~1,000 sites.** It keeps N1 at +€0.94–1.10/wk, against −€7.31 for the pilot. That is still a 98–99.8% cut in AI cost, with Reply owning the model.
+- **Self-hosting is not the cheapest option.** The same open weights on an EU API cost less at every fleet size: €0.069 vs €0.176 at 1,000 sites, and €0.008 vs €0.018 at 10,000. The ~€0.11 per site per week gap at 1,000 sites is **the price of governance**: Reply owns the model, no vendor can retire it, and data stays on its own platform.
+- **Central on-prem from ~1,000 sites still keeps N1 at +€0.94–1.10/wk,** against −€7.31 for the pilot. That is a 98–99.8% cut in AI cost.
+- **Ops sensitivity.** Ops is ~76% of the on-prem figure at 1,000 sites. If the platform compute and an MLOps team already exist, the marginal cost drops to ~€0.04/wk.
+- **Like-for-like comparison.** The report's "+€1.10 at €0.01 AI cost" priced Devstral with no ops. Priced with ops, the Devstral API would itself be €0.072/wk at 1,000 sites.
 - **A small pilot (≤ a few hundred sites) should start on an EU API with the same open-weight model,** then move in-house at ~1,000 sites. The prompt and weights are identical, so the move is a config change.
 - **Edge is a paid upsell.** The box costs €97/yr (Nano Super) to €422/yr (industrial NX) per site, against a ~€58/yr gain. Price the offline/residency option at or above that floor. The break-even box price is ~€206 over 5 years, below any Jetson today.
 - **What changes in the deck's headline:** the "+€1.10/wk at €0.01 AI cost" assumed Devstral list prices with no ops. With a named self-hosted model and ops included, it becomes **+€0.94/wk at 1,000 sites, +€1.10 at 10,000**. The deck stays unchanged until the user says so.
