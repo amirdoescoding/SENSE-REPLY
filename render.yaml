@@ -14,9 +14,5 @@ services:
         value: "22"
       - key: ENTSO_API
         sync: false
-      - key: GEMINI_API_KEY  # live agent week; without it the live button falls back to memory
-        sync: false
       - key: DEMO_PASSCODE  # Basic auth on the whole site (any user name)
         sync: false
-      - key: LIVE_CAP  # live runs per day (7 Gemini calls each, free tier 500/day)
-        value: "10"
