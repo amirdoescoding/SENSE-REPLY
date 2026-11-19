@@ -202,3 +202,15 @@
 - Hovering, tapping or keyboard-focusing the red Validator node on a blocked day opens a tooltip with the reason. UI only: `lib.gateReason` uses the existing `d.gate` scores. No sim regeneration (ENTSO-E down), so per-knob attribution is skipped.
 - Status line under the node is just "blocked" (user choice; the old long line overlapped "every 15 min" at 1600 px).
 - Phone: `.pipeline` overflow-x clips upward, so the tooltip opens in flow below the svg. Hover = mouse only, focus = `:focus-visible` only, or a tap opens and closes at once.
+
+## Deck on Ministral (2026-11-19), branch `deck-ministral`, see docs/PRESENTATION.md, docs/deck/deck.html
+- **Structure:** 10 slides plus A1–A6.
+  - The KPI slide is a one-layer card grid, with the yardstick shown as the card's left edge. The user found the old 2-layer version unclear.
+  - Slide 7 reuses the grid with A/C/New dots: 5/19, 6/20, 15/20.
+  - Slide 5 is the platform diagram, inline. The pipeline is in A1.
+  - Slide 8 (new) is the fleet-size chart.
+- **Business numbers** (`model_cost.OPTIONS`):
+  - on-prem 8B: N1 > 0 from ~155 sites, F1 > 0 from ~1,500;
+  - EU API: F1 > 0 from ~580;
+  - 3B box: €1.86–8.12/wk = €97–422/site/yr, sold as a premium. Default sites already run offline on rule + clamp + yesterday's plan.
+- **Framing:** ahead of the free rule before AI cost (+€0.12), level after it (F1 −0.06); scale closes the gap.

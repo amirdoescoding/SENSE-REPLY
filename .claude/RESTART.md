@@ -1,5 +1,11 @@
 # Restart point
 
+2026-11-19 (latest): `deck-ministral` done (deck, PRESENTATION.md, SCRIPT.md, renders), not pushed. Next:
+- push and open a PR;
+- optional design pass (impeccable / design-review) on `docs/deck/slide-*.png`;
+- rehearse against the word counts;
+- open FINAL.docx in Word once.
+
 2026-11-19 (later): `demo-gate-reason` done (2 commits + docs), not pushed. Validator tooltip explains gate blocks. Next: push + PR, then the deck as below.
 
 2026-11-19: `demo-ministral-replay` session closed. Branch not pushed yet (no PR). Commits:
