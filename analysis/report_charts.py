@@ -1,4 +1,4 @@
-"""Two report charts, three scenarios only (Pilot A, Pilot C, Ours). The free rule is a grey reference.
+"""Two report charts, three scenarios only (Pilot A, Pilot C, New framework). The free rule is a grey reference.
 
 Run: /opt/anaconda3/bin/python analysis/report_charts.py -> docs/report/fig-soc.png, fig-tradeoff.png
 Ours = demo/out/run_conservative_0.1.json (run C inputs). Scatter values = data/ours_ministral.json + workbook.
@@ -31,7 +31,7 @@ def soc_chart():
     ours = json.loads((ROOT / "demo/out/run_conservative_0.1.json").read_text())["schedule"]
     series = [("Pilot A (cost agent)", by_hour((r["dt"], r["bess"]["soc"]) for r in a), MUTE, "-"),
               ("Pilot C (cost + sustainability)", by_hour((r["dt"], r["bess"]["soc"]) for r in c), INK, "-"),
-              ("Ours (one agent, Ministral 3)", by_hour((r["t"], r["soc"]) for r in ours), BLUE, "-")]
+              ("New framework (self-hosted single agent)", by_hour((r["t"], r["soc"]) for r in ours), BLUE, "-")]
     assert all(len(s[1]) == 24 for s in series)
     fig, ax = plt.subplots(figsize=(9, 4.2), dpi=200)
     ax.axvspan(18, 21, color="#EEF0F2", zorder=0)
@@ -44,7 +44,7 @@ def soc_chart():
     ax.set_xticks(range(0, 24, 3), [f"{h:02d}:00" for h in range(0, 24, 3)])
     ax.set_ylim(0, 100)
     ax.set_ylabel("battery charge, % (7-day average)")
-    ax.set_title("The pilots stall at 80% by noon; ours fills to 90% for the evening", loc="left",
+    ax.set_title("The pilots stall at 80% by noon; the new framework fills to 90% for the evening", loc="left",
                  fontsize=13, fontweight="bold")
     ax.legend(frameon=False, loc="upper left", bbox_to_anchor=(0, -0.12), ncol=3, fontsize=10)
     fig.tight_layout()
@@ -54,7 +54,7 @@ def soc_chart():
 def tradeoff_chart():
     k = json.loads((ROOT / "data/ours_ministral.json").read_text())
     ours = (k["kpis"]["S1"]["value"], k["kpis"]["S_net"]["value"])
-    pts = [("Pilot A", 21.9475, 0.4071, MUTE), ("Pilot C", 21.2553, 0.4026, INK), ("Ours", *ours, BLUE)]
+    pts = [("Pilot A", 21.9475, 0.4071, MUTE), ("Pilot C", 21.2553, 0.4026, INK), ("New framework", *ours, BLUE)]
     fig, ax = plt.subplots(figsize=(9, 4.2), dpi=200)
     ax.scatter([11.8983], [1.034], s=120, facecolors="none", edgecolors=MUTE, lw=1.5, zorder=3)
     ax.annotate("free static rule (yardstick)", (11.8983, 1.034), (12.3, 0.80), color="#47525C", fontsize=10,
@@ -67,7 +67,7 @@ def tradeoff_chart():
     ax.set_ylim(0, 1.5)
     ax.set_xlabel("grid CO2, kg per week (lower is better)")
     ax.set_ylabel("saving net of wear, € per week")
-    ax.set_title("Ours saves almost 3x the pilots and emits 43% less CO2 than pilot C", loc="left",
+    ax.set_title("The new framework saves almost 3x the pilots and emits 43% less CO2 than pilot C", loc="left",
                  fontsize=13, fontweight="bold")
     fig.tight_layout()
     fig.savefig(OUT / "fig-tradeoff.png")

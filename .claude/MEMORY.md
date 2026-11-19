@@ -180,7 +180,7 @@
 - ENTSO-E returned HTTP 599 all of 2026-11-19, so `sim.py --check` stops after check 1. That needs a static fallback (backlog).
 
 ## Report + KPIs on Ministral, 3 scenarios (2026-11-19), branch `report-ministral`
-- **User decision: only three scenarios everywhere:** Pilot A (cost), Pilot C (cost + sust.), **Ours**.
+- **User decision: only three scenarios everywhere:** Pilot A (cost), Pilot C (cost + sust.), **New framework** (= "self-hosted single agent"; user renamed it from "Ours" 2026-11-19, use this label in demo and deck too).
   - Removed: conservative/upside/shadow/S5 wording, Pilot B (one footnote), and the static-rule column. The rule stays only as the yardstick in VORB/F1/S2b and the threshold notes.
 - **Ours basis:** our sim's conservative run, λ 0.10 (`demo/out`, S_net 1.1561), with AI cost from Ministral 3 8B self-hosted centrally at 1,000 sites: O5 €0.1762 (`analysis/model_cost.py`). Gives N1 +0.98, N2 0.12, **F1 −0.06** (loses to the free rule after AI cost; positive at 10k sites or on an EU API), grid CO2 12.16 kg, peak 3.38 kW. 15 Good / 5 Improvable (F1, S2b, S3, B4, C5); A 5, C 6. Values in `data/ours_ministral.json`.
 - **Ministral 3 3B on the gateway = paid option** (offline / data stays on site), not in the headline (€1.86/site/wk → N1 −0.71).

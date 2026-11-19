@@ -14,11 +14,11 @@ We compare three scenarios, all on the same house, sun and prices:
 
 - **Pilot A**: orchestrator plus a cost agent (observed).
 - **Pilot C**: orchestrator plus a cost agent and a sustainability agent (observed).
-- **Ours**: one carbon-aware agent with a daily plan, run by a rule (modelled on run C's sun, load and prices).
+- **New framework (self-hosted single agent)**: one carbon-aware agent with a daily plan, run by a rule (modelled on run C's sun, load and prices).
 
 A free **static rule** (charge on solar surplus, discharge when the house needs power) is the yardstick, not a scenario. A controller that cannot beat it has no reason to exist.
 
-| KPI (per site, per week) | Pilot A | Pilot C | Ours |
+| KPI (per site, per week) | Pilot A | Pilot C | New framework |
 |---|---|---|---|
 | Saving vs no battery, net of wear | €0.41 | €0.40 | €1.16 |
 | Value over the free rule, before AI cost | −€0.73 | −€0.67 | +€0.11 |
@@ -38,7 +38,7 @@ A free **static rule** (charge on solar surplus, discharge when the house needs 
 
 **One honest caveat.** Before AI cost, our agent beats the free rule by €0.11 a week. At 1,000 sites the self-hosted model costs €0.18, so after AI cost we are €0.06 a week behind the rule (KPI F1). We clear the rule from about 10,000 sites, or on an EU API. In this January week the model's value is a reliable daily plan, an explanation and a cost-vs-CO2 dial, not better decisions than the rule. It has to prove decision value on other seasons (§9).
 
-**How far to trust this.** The pilots are measured. "Ours" is modelled on the same inputs with a "tomorrow looks like today" forecast. The evidence is one winter week at one site, with a constant carbon factor (0.356 kg/kWh) and a site assumed to be in Italy. Treat it as pilot evidence, not proof.
+**How far to trust this.** The pilots are measured. The new framework is modelled on the same inputs with a "tomorrow looks like today" forecast. The evidence is one winter week at one site, with a constant carbon factor (0.356 kg/kWh) and a site assumed to be in Italy. Treat it as pilot evidence, not proof.
 
 ## 2. Business case and deliverables
 
@@ -132,11 +132,11 @@ The 8B has not yet run our prompts; the 3B has, and the two share a template and
 - **N1 = S_net − AI cost.**
 - **AI cost:**
   - pilots: their token counts at the Devstral list price (0.86 €/$);
-  - ours: Ministral 3 8B on a right-sized node on Reply's platform at 1,000 sites, including hardware, power and 0.1 FTE of operations (§8).
+  - new framework: Ministral 3 8B on a right-sized node on Reply's platform at 1,000 sites, including hardware, power and 0.1 FTE of operations (§8).
 
 **5. Hour by hour.** The pilots charge from 05:00 and then sit at the 80% target from about 11:00 to 17:00. Our agent keeps charging towards 90%, so more solar is left for the evening. The pilots export 43–45 kWh in the week; we export 17 kWh.
 
-![Average battery charge by hour, 5–12 Jan 2026. Ours is modelled on run C's inputs.](report/fig-soc.png){width="6.5in"}
+![Average battery charge by hour, 5–12 Jan 2026. The new framework is modelled on run C's inputs.](report/fig-soc.png){width="6.5in"}
 
 **6. Day by day.** Pilot C is below the rule on all six full days, and pilot A beats it once (9 Jan). The week is very regular: 12.5–14.1 kWh of PV and about 15 kWh of load per full day. A summer week is needed before reading anything into day types.
 
@@ -159,7 +159,7 @@ They lose even though they see 24 hours of simulated data ahead, which is more t
 
 ## 5. KPIs
 
-Every KPI has a formula tied to a data field or a named source, a direction and a threshold. The companion Excel marks each one Good or Improvable for A, C and Ours. Its thresholds are editable.
+Every KPI has a formula tied to a data field or a named source, a direction and a threshold. The companion Excel marks each one Good or Improvable for A, C and the new framework. Its thresholds are editable.
 
 **Kinds of threshold.**
 
@@ -181,7 +181,7 @@ Win rate, agent agreement and regret cannot be computed on the pilots, because t
 
 ## 6. Three scenarios compared
 
-| KPI | Pilot A | Pilot C | Ours | Better |
+| KPI | Pilot A | Pilot C | New framework | Better |
 |---|---|---|---|---|
 | S_net: saving vs no battery, net of wear (€/wk) | 0.41 | 0.40 | 1.16 | higher |
 | VCR: share of the achievable saving | 0.28 | 0.29 | 0.65 | higher |
@@ -202,15 +202,15 @@ Win rate, agent agreement and regret cannot be computed on the pilots, because t
 | C5: expensive-import share | 0.81 | 0.80 | 0.78 | lower |
 | O1: LLM calls per 15-min decision | 4.39 | 7.62 | 0.01 | lower |
 
-For reference, the free rule saves €1.03 a week net and emits 11.9 kg. Ours is modelled on run C's inputs with a starting charge of 80% and λ = €0.10/kg.
+For reference, the free rule saves €1.03 a week net and emits 11.9 kg. The new framework is modelled on run C's inputs with a starting charge of 80% and λ = €0.10/kg.
 
 ![Saving against grid CO2 for the three scenarios. The hollow point is the free rule, the yardstick.](report/fig-tradeoff.png){width="6.5in"}
 
 **What the comparison shows.**
 
 - **The pilots are dominated.** They lose to the free rule on every value KPI, and their AI bill is 8 to 12 times the saving.
-- **Ours turns the economics positive.** Saving is almost 3× pilot C's, and the AI bill is 98% lower. Net value goes from −€7.31 to +€0.98 a week.
-- **Ours is much cleaner.** Grid import falls 44% and grid CO2 43% against pilot C. Ours sits next to the rule: 0.3 kg a week dirtier, €0.12 richer before AI cost.
+- **The new framework turns the economics positive.** Saving is almost 3× pilot C's, and the AI bill is 98% lower. Net value goes from −€7.31 to +€0.98 a week.
+- **The new framework is much cleaner.** Grid import falls 44% and grid CO2 43% against pilot C. It sits next to the rule: 0.3 kg a week dirtier, €0.12 richer before AI cost.
 - **Where it is weaker.** The peak import is 3.38 kW, above pilot C's 2.93 but below A's 4.81. The battery sits at its limits 29% of the time, because the 80% cap is gone. Cycles are 5.4 a week, still below a 7-cycle limit.
 - **Most of the gain is design, not intelligence.** Dropping the 80% target and valuing export does most of the work. We say so before anyone else does.
 
@@ -220,7 +220,7 @@ For reference, the free rule saves €1.03 a week net and emits 11.9 kg. Ours is
 
 Ratings are strong, medium or weak, on the week analysed.
 
-| | Pilot A | Pilot C | Ours |
+| | Pilot A | Pilot C | New framework |
 |---|---|---|---|
 | Net saving | Weak: €0.41 | Weak: €0.40 | Strong: €1.16 |
 | Value over the free rule | Weak: −€0.73 | Weak: −€0.67 | Medium: +€0.11 before AI, −€0.06 after |
@@ -268,14 +268,14 @@ The token volume is measured on the Ministral 3 3B bench: about 12k in and 1.3k 
 
 ### 8.2 Unit economics
 
-| | Pilot A | Pilot C | Ours |
+| | Pilot A | Pilot C | New framework |
 |---|---|---|---|
 | Net value per week after AI cost | −€4.33 | −€7.31 | +€0.98 |
 | Indicative per year (× 52, winter week) | about −€225 | about −€380 | about +€51 |
 | LLM calls per site per day | ~420 | ~730 | 1 |
 
 - **The pilot design does not scale.** Its cost grows with every site and exceeds the saving 8–12×, so each new customer adds a loss.
-- **Ours changes the cost structure.** Inference becomes a shared fixed cost that shrinks per site as the fleet grows.
+- **The new framework changes the cost structure.** Inference becomes a shared fixed cost that shrinks per site as the fleet grows.
 - **The value per site is small in euros.** On a 10 kWh home battery the saving is tens of euros a year. The business case rests on fleet orchestration, grid services and CO2 reporting, which this dataset cannot test.
 
 ## 9. Recommendation and roadmap
@@ -296,7 +296,7 @@ If the model never beats the memory-only baseline, ship the rule with the daily 
 
 **Limits we state openly.**
 
-- One winter week, one site, 672 steps. "Ours" is modelled, not observed, with a persistence forecast. It is probably optimistic.
+- One winter week, one site, 672 steps. The new framework is modelled, not observed, with a persistence forecast. It is probably optimistic.
 - The simulated PV peaks at 10:00 with about 14 hours of sun in January. That is not real Italian weather.
 - Carbon is an average intensity, not marginal, and imports are not in the ENTSO-E production mix.
 - The AI cost of the self-hosted model is an estimate: €4k node, 0.1 FTE of operations, 1,000 sites. Confirm with Sense Reply.
