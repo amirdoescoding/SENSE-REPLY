@@ -395,16 +395,16 @@ You own the money and the limits: fleet economics, hosting cost, the upsell, the
 **If you get lost:** "The pilots' bill is flat. Ours divides by the fleet and drops below 12 cents from 1,500 sites."
 
 ### Slide 8. One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client
-0:30 · 50 words (budget 65)
+0:30 · 61 words (budget 65)
 
 **What it shows.**
-- Limits: one modelled winter week with PV that is not real weather; no CO2 field and no agent proposal logs; the hosting cost is an estimate.
+- Limits: one modelled winter week with PV that is not real weather; no CO2 field and no agent proposal logs; runs that start with different panel dirt; the hosting cost is an estimate.
 - Rollout in five phases, each with a gate.
 
 **Job in the story.** Say the limits before the jury does, and end on a plan.
 
 **Spoken text.**
-> All of this rests on one modelled winter week, with no real weather and no agent logs. Our hosting cost is an estimate. So we roll out in steps: fix the baseline, replay summer, then pilot sites on an API, then in-house at scale. Thank you, we welcome your questions.
+> All of this rests on one modelled winter week, with no real weather and no agent logs. Run B started with dustier panels, so we left it out. Our hosting cost is an estimate. So we roll out in steps: fix the baseline, replay summer, then pilot sites on an API, then in-house at scale. Thank you, we welcome your questions.
 
 **Say aloud:** a summer replay comes first.
 
@@ -420,6 +420,7 @@ You own the money and the limits: fleet economics, hosting cost, the upsell, the
 
 - The simulated PV peaks at 10:00 with ~14 hours of sun in January. Real Italian January weather looks nothing like that.
 - The modelled week uses a persistence forecast, so it is probably optimistic.
+- Panel dirt (`pv_dirt`): A starts at 3%, B at 26%. Both grow about 2.4 points a day and nobody cleans them. B makes 69.1 kWh of solar against A's 93.1, 25.8% less. The sun is the same in every run: PV = clean PV × (1 − dirt), so the gap is only dust. C copies A's dirt (93.06 vs 93.13 kWh), which is why A vs C is the fair test.
 
 **Likely questions.**
 - *"One winter week only?"*
@@ -443,8 +444,8 @@ You own the money and the limits: fleet economics, hosting cost, the upsell, the
 |---|---|---|---|
 | Sydney | 0–4 | 364 | 369 (2:50) |
 | Amir | 5–6 | 239 | 293 (2:15) |
-| Francesco | 7–8 | 164 | 184 (1:25) |
-| Total | | 767 | 846 (6:30) |
+| Francesco | 7–8 | 175 | 184 (1:25) |
+| Total | | 778 | 846 (6:30) |
 
 ## Questions for any of us
 

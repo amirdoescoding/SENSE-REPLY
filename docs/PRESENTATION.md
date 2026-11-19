@@ -160,6 +160,7 @@ Source: report §8.
 **Limits:**
 - one modelled winter week, with PV that is not real weather;
 - no CO2 field and no logs of agent proposals;
+- the runs start with different panel dirt: A 3%, B 26%, so B makes 26% less solar (69.1 vs 93.1 kWh) and is left out; C has A's dirt;
 - the self-hosting cost is an estimate (€4k node, 0.1 FTE).
 
 **Rollout,** report §9 phases 0–4:
