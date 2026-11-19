@@ -11,6 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "analysis"))
 from kpis import C_DEG, DT, FILES, LLM, P_IN, P_OUT, ROOT, USD_EUR, bill, load, rule_baseline  # noqa: E402
 from timeseries import soc0_of  # noqa: E402
+from model_cost import OPTIONS  # noqa: E402
 
 CAP, ETA = 10.0, 0.95
 CO2_K = 0.356  # kg/kWh, workbook constant
@@ -59,7 +60,7 @@ META = {
     "PV": ("PV generation", "kWh/wk", "Context"),
 }
 assert list(META) == list(THRESH)
-# Workbook columns I, K-N (hardcoded "blue" values). None = blank cell in the workbook.
+# Workbook pilot columns + the static rule (hardcoded "blue" values). None = blank cell in the workbook.
 EXCEL = {
     "A": dict(S_net=0.4071, VCR=0.2769, VORB=-0.7261, N1=-4.3341, N2=7.8375, F1=-5.4673, O5=4.7412, S2b=-10.0493,
               S3=372.5, MAC=None, S1=21.9475, SCR=0.5158, SSR=0.3931, PSR=0.0002, G2=0, G1=4.8053, B1=0.902,
@@ -73,15 +74,7 @@ EXCEL = {
                         S1=11.8983, SCR=0.8291, SSR=0.7028, PSR=0.5325, G2=0, G1=2.2434, B1=0.9025, B2=5.4793,
                         B4=0.4048, B3=0.2657, B6=0.0461, C5=0.7756, C4=0.0105, O1=0, O3=0, C1=2.3128, S=1.2997,
                         IMP=31.2315, EXP=15.9067, PV=93.06),
-    "S5 conservative": dict(S_net=1.1156, VCR=0.6303, VORB=0.0772, N1=1.1043, N2=0.0082, F1=0.0659, O5=0.0113,
-                            S2b=-1.6223, S3=None, MAC=0.0317, S1=13.5205, SCR=0.7774, SSR=0.673, PSR=0.5325, G2=0,
-                            G1=2.2434, B1=0.9025, B2=5.3057, B4=0.2946, B3=0.2612, B6=0.0506, C5=0.7467,
-                            C4=0.0144, O1=0.0104, O3=0, C1=2.2357, S=1.3768, IMP=34.3586, EXP=20.7148, PV=93.06),
-    "S5 upside": dict(S_net=1.7957, VCR=0.958, VORB=0.793, N1=1.7844, N2=0.0054, F1=0.7817, O5=0.0113,
-                      S2b=-10.3422, S3=None, MAC=0.0317, S1=22.2405, SCR=0.5278, SSR=0.3967, PSR=-0.0651, G2=0,
-                      G1=5.1114, B1=0.9025, B2=6.3122, B4=0.3378, B3=0.297, B6=0.0759, C5=0.3914, C4=0.0339,
-                      O1=0.0104, O3=0, C1=1.5198, S=2.0927, IMP=63.3894, EXP=43.9449, PV=93.06),
-}
+}  # the static rule is only the yardstick (VORB, F1, S2b, check 1b): not a column of the demo
 
 
 def load_run(name):
@@ -111,6 +104,9 @@ def rule_flows(rows, soc0):
         chg.append(max(s - a, 0) * CAP / ETA)
         dis.append(max(a - s, 0) * CAP * ETA)
     return dict(imp=imp, exp=exp, chg=chg, dis=dis, soc=socs, soc0=soc0, viol=0)
+
+
+O5_NEW = OPTIONS["Central on-prem, right-sized GPU node (€4k, 100 W)"](1000)  # €/site/wk, the report's basis
 
 
 def ai_cost(req, tin, tout, ms, n):
@@ -297,15 +293,6 @@ def run_mpc(rows, soc0, knobs_for_day, mode, lam, ci, prior, horizon=96, t0=0, t
     return f
 
 
-def run_perfect(rows, soc0, knobs, lam, ci):
-    """One LP over the whole of `rows` with perfect foresight (S* check, memory seed, replay gate)."""
-    buy, sell, cis, hours = _inputs(rows, ci)
-    pv, ld = [r["pv"] for r in rows], [r["load"] for r in rows]
-    c, d, s = plan_lp(pv, ld, buy, sell, cis, hours, soc0, knobs, lam)
-    g = [l - p + a - b for l, p, a, b in zip(ld, pv, c, d)]
-    return dict(imp=[max(x, 0) for x in g], exp=[max(-x, 0) for x in g], chg=c, dis=d, soc=s, soc0=soc0, viol=0)
-
-
 def day_prior(rows, start):
     """Persistence 'yesterday' for the 96-step day at `start`. Day 1 has none: use the next day (flagged)."""
     src = rows[start - 96:start] if start >= 96 else rows[start + 96:start + 192]
@@ -328,11 +315,11 @@ def day_score(rows, f, lam):
 
 # ---------------------------------------------------------------- daily loop
 LAMBDAS = (0.0, 0.10, 0.50)
-MODES = ("conservative", "upside")
+MODES = ("conservative",)
 HEADLINE = ("conservative", 0.10)
 FLAGS = ["24 h persistence forecast for PV and load; prices assumed known day-ahead",
          "memory seeded from runs A and C of the same week (leaks); day 1 uses the next day as 'yesterday'",
-         "Gemini is a capability stand-in for Devstral 2, not a proposal",
+         "Ministral 3 8B at Q3_K_S on a laptop (costed: the same model served centrally); the gate can override it",
          "site = Italy assumed; carbon KPIs at the workbook constant 0.356 kg/kWh",
          "one January week only"]
 
@@ -348,26 +335,17 @@ def gate(rows, start, knobs, mode, lam, ci, mean_buy):
     return bool(s_k <= s_d + 1e-6), round(float(s_k), 4), round(float(s_d), 4)
 
 
-def run_ours(rows, mode, lam, ci, mem, soc0=0.80, live=False, emit=None):
-    """The daily loop. live: real Gemini calls (no cache). emit(event, data) streams it: 'stage' (pipeline node
-    now working) and 'day' (the finished day + its 96 schedule rows + timings)."""
+def run_ours(rows, mode, lam, ci, mem, soc0=0.80):
+    """The daily loop: the model proposes knobs, the validator clamps them, the gate replays yesterday."""
     import agent
-    emit = emit or (lambda *_: None)
-    agent.QUOTA_HIT = False  # per run: a long-lived server must not stay on memory after one 429
     mean_buy = sum(r["grid"]["buyPrice"] for r in rows) / len(rows)
     f = dict(imp=[], exp=[], chg=[], dis=[], soc=[], soc0=soc0, viol=0)
     days, soc, last_ok = [], soc0, None
     for day in range(len(rows) // 96):
         start = day * 96
-        emit("stage", dict(day=day, stage="agent", msg="asking Gemini" if live else "reading the plan"))
-        ans, ctx, nb = agent.propose(rows, start, soc, ci, mode, lam, mem, live,
-                                     lambda m: emit("stage", dict(day=day, stage="agent", msg=m)))
-        emit("stage", dict(day=day, stage="validator", msg="replaying yesterday"))
-        t0 = time.monotonic()
+        ans, ctx, nb = agent.propose(rows, start, soc, ci, mode, lam, mem)
         knobs, notes = agent.validate(ans["raw"], mode, mean_buy)
         ok, s_k, s_d = gate(rows, start, knobs, mode, lam, ci, mean_buy)
-        t1 = time.monotonic()
-        emit("stage", dict(day=day, stage="rule", msg="running 96 steps"))
         if ok:
             used, last_ok = "plan", knobs
         elif last_ok:
@@ -387,25 +365,17 @@ def run_ours(rows, mode, lam, ci, mem, soc0=0.80, live=False, emit=None):
                                    "next day (day-1 stand-in)"),
                          used=used, knobs=knobs, source=ans["source"], explanation=ans["explanation"],
                          thoughts=ans["thoughts"], tok_in=ans["tok_in"], tok_out=ans["tok_out"]))
-        ms = dict(gemini=ans.get("ms"), gate=round((t1 - t0) * 1000), run=round((time.monotonic() - t1) * 1000))
-        if live:
-            print(f"live {mode} λ={lam} day {day + 1}: {ans['source']} {ms}", flush=True)
-        emit("day", dict(day=days[-1], schedule=schedule(rows[start:start + 96], df), ms=ms))
-        if live and knobs is not None:  # the finished day joins the memory for the rest of this run (live only: the
-            day_rows = rows[start:start + 96]  # precomputed replay keeps the fixed A + C seed until it is regenerated)
-            # scored like the seed (day-alone MPC, λ 0.10): a slice of the continuous run is biased at the day cut
-            regret = (day_score(day_rows, run_day(rows, start, soc, knobs, mode, 0.10, ci), 0.10)[0]
-                      - day_score(day_rows, rule_flows(day_rows, soc), 0.10)[0])
-            mem = mem + [dict(run="this run", day=day, mode=mode, context=ctx, knobs=knobs, regret_vs_rule=float(regret))]
         soc = df["soc"][-1]
     return f, days
 
 
 def ours_kpis(rows, f, days, rule, ci=None):
     """Workbook KPIs of an 'ours' run + its token totals (ci: hourly lookup for S3, else None)."""
-    calls = sum(d["source"] == "gemini" for d in days)
+    calls = sum(d["source"] == "model" for d in days)
     tin, tout = sum(d["tok_in"] for d in days), sum(d["tok_out"] for d in days)
-    ai = ai_cost(calls, tin, tout, 0, len(rows))  # O3 = 0: the LLM is off the 15-min control path
+    # O5 = Ministral 3 8B self-hosted centrally at 1,000 sites (model_cost.py), not a token list price;
+    # O3 = 0: the LLM is off the 15-min control path
+    ai = dict(O5=O5_NEW, O1=calls / len(rows), O3=0)
     return kpis_excel(rows, f, rule, ai, ci=ci), dict(calls=calls, tok_in=tin, tok_out=tout)
 
 
@@ -463,7 +433,7 @@ def main():
     rows = load_run("C")
     rule = rule_flows(rows, 0.80)
     mem = agent.seed_memory(ci)
-    cols = {name: dict(v) for name, v in EXCEL.items()}
+    cols = {name: dict(EXCEL[name]) for name in ("A", "C")}
     runs = {}
     for mode in MODES:
         for lam in LAMBDAS:
@@ -473,7 +443,7 @@ def main():
             calls = tok["calls"]
             runs[(mode, lam)] = (f, days, k, tok)
             print(f"{mode} λ={lam}: S_net {k['S_net']:.3f} VORB {k['VORB']:+.3f} N1 {k['N1']:.3f} "
-                  f"S1 {k['S1']:.1f} kg, gemini days {calls}/7, gate blocks {sum(not d['gate']['passed'] for d in days)}")
+                  f"S1 {k['S1']:.1f} kg, model days {calls}/7, gate blocks {sum(not d['gate']['passed'] for d in days)}")
     for (mode, lam), (f, days, k, tok) in runs.items():
         k["MAC"] = None
         if lam:  # € per kg avoided by the carbon weight, incl. AI cost (workbook: λ 0 -> 0.10)
@@ -481,19 +451,19 @@ def main():
             d_kg = k0["S1"] - k["S1"]
             d_eur = (k["C1"] + k["B3"] + k["O5"]) - (k0["C1"] + k0["B3"] + k0["O5"])
             k["MAC"] = d_eur / d_kg if d_kg > 0 else None
-        cols[f"Ours {mode} λ={lam}"] = k
+        cols[f"New framework λ={lam}"] = k
         plan = dict(window=dict(start=rows[0]["dt"], step_min=15), mode=mode, lambda_eur_per_kg=lam,
                     model=agent.MODEL, knobs=[d["knobs"] for d in days], schedule=schedule(rows, f),
                     kpis={x: (round(v, 4) if isinstance(v, float) else v) for x, v in k.items()},
                     explanation=" ".join(d["explanation"] for d in days), days=days, tokens=tok,
                     carbon_source=carbon_source, s3_basis=s3_basis, carbon_note=src, honesty_flags=FLAGS)
-        (agent.OUT / f"run_{mode}_{lam}.json").write_text(json.dumps(plan, indent=1, ensure_ascii=False))
-    table = dict(headline=f"Ours {HEADLINE[0]} λ={HEADLINE[1]}", s_star=S_STAR, carbon_source=carbon_source, s3_basis=s3_basis,
+        (agent.OUT / f"run_{lam}.json").write_text(json.dumps(plan, indent=1, ensure_ascii=False))
+    table = dict(headline=f"New framework λ={HEADLINE[1]}", s_star=S_STAR, carbon_source=carbon_source, s3_basis=s3_basis,
                  thresholds={x: dict(direction=d, threshold=t) for x, (d, t) in THRESH.items()},
                  meta={x: dict(name=n, unit=u, group=g) for x, (n, u, g) in META.items()},
                  columns={c: {x: dict(value=None if v.get(x) is None else round(v[x], 4), verdict=verdict(x, v.get(x)))
                               for x in THRESH} for c, v in cols.items()},
-                 source={c: "workbook" for c in EXCEL} | {c: "computed" for c in cols if c.startswith("Ours")})
+                 source={c: "workbook" if c in EXCEL else "computed" for c in cols})
     table["good_counts"] = {c: sum(v["verdict"] == "Good" for v in kv.values()) for c, kv in table["columns"].items()}
     (agent.OUT / "kpis.json").write_text(json.dumps(table, indent=1, ensure_ascii=False))
     (agent.OUT / "compare.json").write_text(json.dumps(compare(rows), separators=(",", ":")))
@@ -525,46 +495,16 @@ def check_excel():
     print(f"check 1a/1b ok: A, C, Static rule reproduce the workbook")
 
 
-def check_lp(ci):
-    """Acceptance 1c (S* soft check) and 2 (plain S5, no agent, vs the workbook S5 columns)."""
-    c = load_run("C")
-    mean_buy = sum(r["grid"]["buyPrice"] for r in c) / len(c)
-    rule = rule_flows(c, 0.80)
-    zero = dict(O5=0, O1=0, O3=0)
-    up = run_perfect(c, 0.80, default_knobs("upside", mean_buy), 0, ci)
-    s_star = _base(c, up)[1]
-    print(f"check 1c: perfect-foresight week LP (upside) S = {s_star:.4f} vs workbook S* {S_STAR} "
-          f"({100 * (s_star / S_STAR - 1):+.1f}%)" + ("" if abs(s_star / S_STAR - 1) < 0.03 else "  [SOFT MISS]"))
-    prior = [(r["pv"], r["load"]) for r in c[96:192]]  # day 1 stand-in until memory exists
-    out = {}
-    for mode, col in (("conservative", "S5 conservative"), ("upside", "S5 upside")):
-        f = run_mpc(c, 0.80, lambda _d, m=mode: default_knobs(m, mean_buy), mode, 0, ci, prior)
-        k = kpis_excel(c, f, rule, zero)
-        out[mode] = k
-        w = EXCEL[col]
-        print(f"check 2 {mode}: S_net {k['S_net']:.4f} (Excel {w['S_net']}, {100 * (k['S_net'] / w['S_net'] - 1):+.1f}%)"
-              f"  VORB {k['VORB']:.4f} (Excel {w['VORB']})  IMP {k['IMP']:.1f} ({w['IMP']})  S1 {k['S1']:.1f} ({w['S1']})"
-              f"  G1 {k['G1']:.2f} ({w['G1']})")
-    return out
-
-
 if __name__ == "__main__":
     if "--check" in sys.argv:
         from carbon import ci_lookup
         check_excel()
         ci = ci_lookup()[0]
-        check_lp(ci)
         c = load_run("C")
         mb = sum(r["grid"]["buyPrice"] for r in c) / len(c)
         bad = dict(soc_floor=0.5, evening_reserve_kwh=8.0, export_hold_eur=0.0, grid_charge=None)
         ok, s_k, s_d = gate(c, 96 * 3, bad, "conservative", 0.10, ci, mb)
         assert not ok, (s_k, s_d)
         print(f"check 5 ok: gate blocks floor 0.5 / reserve 8 kWh ({s_k:.3f} vs default {s_d:.3f} €)")
-        import agent
-        key = agent._key()
-        if key:
-            hits = [p.name for p in agent.OUT.glob("*") if p.is_file() and key[:12] in p.read_text(errors="ignore")]
-            assert not hits, f"API key prefix found in {hits}"
-            print("check 7 ok: no API key in demo/out")
     else:
         main()

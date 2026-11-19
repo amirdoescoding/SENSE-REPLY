@@ -1,7 +1,8 @@
-"""Daily agent: memory of good days (k-NN, no training) + one Gemini call per day that sets the knobs.
+"""Daily agent: memory of good days (k-NN, no training) + one Ministral 3 8B call per day that sets the knobs.
 
-Gemini is a capability stand-in for Devstral 2, not a proposal. REST via urllib, key from .env GEMINI_API_KEY.
-Answers are cached in demo/out/gemini_cache.json (committed) so the hosted demo replays them without a key.
+The model runs locally in llama.cpp (`llama-server -m ~/models/Ministral-3-8B-Instruct-2512-Q3_K_S.gguf -c 4096
+--port 8080`, URL from LLAMA_URL). Answers are cached in demo/out/model_cache.json (committed), so the hosted
+demo replays them with no model on the server.
 """
 import hashlib
 import json
@@ -15,26 +16,15 @@ from pathlib import Path
 from sim import ROOT, day_score, default_knobs, load_run, rule_flows, run_day
 from timeseries import soc0_of  # on sys.path via sim
 
-# 3.8/3.6 Flash free tier = 20 requests/day; a full run needs 42 calls. Flash-Lite allows 500/day (2026-11-18).
-MODEL = "gemini-3.5-flash-lite"
+MODEL = "ministral-3-8b-instruct-2512-q3_k_s"
+LLAMA_URL = os.environ.get("LLAMA_URL", "http://127.0.0.1:8080")
 OUT = Path(__file__).resolve().parent / "out"
-CACHE = OUT / "gemini_cache.json"
+CACHE = OUT / "model_cache.json"
 MEMORY = OUT / "memory.json"
 RANGES = {"soc_floor": (0.10, 0.50), "evening_reserve_kwh": (0.0, 8.0), "export_hold_eur": (0.0, 0.20)}
 # Small grid for the hindsight seed (each set costs one 96-step rolling MPC per day)
 GRID = {"soc_floor": (0.10, 0.20), "evening_reserve_kwh": (0.0, 3.0, 6.0), "export_hold_eur": (None, 0.12)}
 GRID_GC = (None, {"from": 0, "to": 6})
-QUOTA_HIT = False
-
-
-def _key():
-    if os.environ.get("GEMINI_API_KEY"):
-        return os.environ["GEMINI_API_KEY"]
-    env = ROOT / ".env"
-    for line in env.read_text().splitlines() if env.exists() else []:
-        if line.startswith("GEMINI_API_KEY="):
-            return line.split("=", 1)[1].strip().strip('"')
-    return None
 
 
 def context(rows, start, soc0, ci):
@@ -140,69 +130,50 @@ Answer JSON only: {{"soc_floor": x, "evening_reserve_kwh": x, "export_hold_eur":
 {{"from": h, "to": h}}, "explanation": "2-3 plain sentences for the home owner: what you chose and why"}}"""
 
 
-def ask(text, live=False, on_wait=None):
-    """One Gemini call (cached by prompt hash). Returns dict(raw, explanation, thoughts, tok_in, tok_out, source)
-    or None when no key / API error (caller falls back to memory).
-    live=True: no cache read or write (the prompts are deterministic, so the cache would replay every answer);
-    on_wait(msg) hears about 503 back-offs."""
-    global QUOTA_HIT
-    cache = {} if live else json.loads(CACHE.read_text()) if CACHE.exists() else {}
+def ask(text):
+    """One call to the local Ministral 3 8B (llama.cpp llama-server, OpenAI-compatible), cached by prompt hash.
+    Returns dict(raw, explanation, thoughts, tok_in, tok_out, ms, source) or None when the server is not reachable
+    (the caller falls back to memory). The cache is committed, so the hosted demo replays it without a model."""
+    cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
     h = hashlib.sha256((MODEL + text).encode()).hexdigest()[:16]
     if h in cache:
         return cache[h]
-    key = _key()
-    if not key or QUOTA_HIT:
-        return None
-    body = {"contents": [{"parts": [{"text": text}]}],
-            "generationConfig": {"responseMimeType": "application/json", "thinkingConfig": {"includeThoughts": True, "thinkingBudget": 2048}}}
-    req = urllib.request.Request(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
-        data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
+    body = {"messages": [{"role": "user", "content": text}], "temperature": 0.2,
+            "response_format": {"type": "json_object"}}  # any JSON; field checks are the validator's job
+    req = urllib.request.Request(f"{LLAMA_URL}/v1/chat/completions", data=json.dumps(body).encode(),
+                                 headers={"Content-Type": "application/json"})
     t0 = time.monotonic()
-    for wait in (10, 30, 60, None):  # 503 "high demand" / 429 are common on the free tier: back off, then give up
-        try:
-            with urllib.request.urlopen(req, timeout=180) as r:
-                d = json.load(r)
-            break
-        except (urllib.error.URLError, TimeoutError) as e:  # key never in the message: it is a header
-            code = getattr(e, "code", None)
-            print(f"gemini error: {code} {getattr(e, 'reason', e)}", flush=True)
-            if code == 429:  # daily quota gone: no point retrying today; the rest of the run uses memory
-                QUOTA_HIT = True
-                return None
-            if wait is None or code not in (500, 503):
-                return None
-            if on_wait:
-                on_wait(f"{code} · retry in {wait} s")
-            time.sleep(wait)
-    parts = d["candidates"][0]["content"]["parts"]
-    answer = "".join(p.get("text", "") for p in parts if not p.get("thought"))
     try:
-        raw = json.loads(answer)
+        with urllib.request.urlopen(req, timeout=900) as r:
+            d = json.load(r)
+    except (urllib.error.URLError, TimeoutError) as e:
+        print(f"model error: {getattr(e, 'reason', e)}", flush=True)
+        return None
+    try:
+        raw = json.loads(d["choices"][0]["message"]["content"])
     except json.JSONDecodeError:
         raw = {}
-    u = d.get("usageMetadata", {})
-    out = dict(raw=raw, explanation=str(raw.get("explanation", "")),
-               thoughts="".join(p.get("text", "") for p in parts if p.get("thought")),
-               tok_in=u.get("promptTokenCount", 0), tok_out=u.get("candidatesTokenCount", 0)
-               + u.get("thoughtsTokenCount", 0), source="gemini", model=MODEL)
-    if live:
-        return out | dict(ms=round((time.monotonic() - t0) * 1000))
+    raw = raw if isinstance(raw, dict) else {}
+    u, t = d.get("usage", {}), d.get("timings", {})
+    out = dict(raw=raw, explanation=str(raw.get("explanation", "")), thoughts="",
+               tok_in=u.get("prompt_tokens", 0), tok_out=u.get("completion_tokens", 0),
+               ms=round((time.monotonic() - t0) * 1000), json_ok=bool(raw), source="model", model=MODEL,
+               prefill_tps=t.get("prompt_per_second"), decode_tps=t.get("predicted_per_second"))
     cache[h] = out
     OUT.mkdir(exist_ok=True)
     CACHE.write_text(json.dumps(cache, indent=1))
     return out
 
 
-def propose(rows, start, soc0, ci, mode, lam, mem, live=False, on_wait=None):
-    """Gemini's knobs for the day at `start`, else 'copy the most similar good day' (memory fallback)."""
+def propose(rows, start, soc0, ci, mode, lam, mem):
+    """The model's knobs for the day at `start`, else 'copy the most similar good day' (memory fallback)."""
     ctx = context(rows, start, soc0, ci)
     nb = nearest(mem, ctx, mode, exclude=("C", start // 96))
     day = rows[start:start + 96]
     prev = rows[start - 96:start] if start >= 96 else rows[start + 96:start + 192]
     prices = [round(day[i]["grid"]["buyPrice"], 4) for i in range(0, len(day), 4)]
     co2 = [round(ci(prev[i]["dt"])) for i in range(0, len(prev), 4)]
-    ans = ask(prompt(ctx, prices, co2, mode, lam, nb), live, on_wait)
+    ans = ask(prompt(ctx, prices, co2, mode, lam, nb))
     if ans is None:
         good = min(nb, key=lambda m: m["regret_vs_rule"])
         return dict(raw=dict(good["knobs"]), explanation=f"No model answer: copied the knobs of the most similar "
