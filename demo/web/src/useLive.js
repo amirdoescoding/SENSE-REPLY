@@ -9,7 +9,7 @@ export default function useLive() {
     if (ev === 'stage') return { ...l, stage: { ...d, t: Date.now() } }
     if (ev === 'day') return { ...l, days: [...l.days, d.day], rows: [...l.rows, ...d.schedule] }
     if (ev === 'done') return { ...l, status: 'done', kpis: d.kpis, tokens: d.tokens }
-    if (ev === 'error') return { ...l, status: 'error', error: `the live run failed (${d.msg})` }
+    if (ev === 'error') return { ...l, status: 'error', error: `server error (${d.msg})` }
     return l
   })
   const start = async (mode, lam, key) => {
@@ -33,7 +33,7 @@ export default function useLive() {
       }
       setLive((l) => (l.status === 'running' ? { ...l, status: 'error', error: 'the stream closed early' } : l))
     } catch (e) {
-      if (e.name !== 'AbortError') setLive((l) => ({ ...l, status: 'error', error: e.message }))
+      if (e.name !== 'AbortError') setLive((l) => ({ ...l, status: 'error', error: e.name === 'TypeError' ? 'connection lost' : e.message }))
     }
   }
   const stop = () => { ctl.current?.abort(); setLive(null) }

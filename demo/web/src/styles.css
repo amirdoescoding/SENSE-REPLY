@@ -105,7 +105,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* playback bar */
 .bar .live { display: flex; align-items: center; gap: 12px; }
-.chip.pending { opacity: .45; cursor: default; }
+.chip:disabled, .seg button:disabled { opacity: .45; cursor: not-allowed; }
+.lam input:disabled { cursor: not-allowed; }
+.live-err { color: var(--alert); }
+.pending-status { color: var(--agent-text); font-size: 14px; }
 .kpis-h .muted { font-weight: 400; }
 .bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; padding: 12px 20px; }
 .play { width: 40px; height: 40px; border: 0; border-radius: 8px; background: var(--ink); display: grid; place-items: center; }
@@ -127,8 +130,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .play, .chip, .seg button, .btn { transition: transform 160ms var(--ease-out); }
 .play:active, .chip:active, .seg button:active, .btn:active { transform: scale(0.97); }
 @media (hover: hover) and (pointer: fine) {
-  .chip:not(.solid):not(.cur):hover, .btn:hover { border-color: var(--ink-2); }
-  .seg button:not(.on):hover { background: var(--paper); }
+  .chip:not(.solid):not(.cur):not(:disabled):hover, .btn:hover { border-color: var(--ink-2); }
+  .seg button:not(.on):not(:disabled):hover { background: var(--paper); }
 }
 :focus-visible { outline: 2px solid var(--agent); outline-offset: 2px; }
 

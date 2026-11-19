@@ -98,7 +98,7 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam, live, onLive })
         {run.days.map((d, i) => {
           const bad = !d.pending && (!d.gate.passed || d.used !== 'plan')
           return (
-            <button key={d.start} className={'chip' + (i === day ? ' cur' : '') + (d.pending ? ' pending' : '')} onClick={() => pb.seek(i * DAY_STEPS)} disabled={d.pending}
+            <button key={d.start} className={'chip' + (i === day ? ' cur' : '')} onClick={() => pb.seek(i * DAY_STEPS)} disabled={d.pending}
               aria-label={`${weekday(d.start)}${bad ? ', blocked by the replay gate' : ''}`}
               title={`Plan decided ${weekday(d.start)} 11:00, runs to the next day 10:45${bad ? ', blocked by the replay gate' : ''}`}>
               <i className={'dot' + (bad ? ' blocked' : '')} />{weekday(d.start)}
@@ -108,7 +108,7 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam, live, onLive })
       </div>
       <div className="seg" role="group" aria-label="Mode">
         {MODES.map((m) => (
-          <button key={m} className={mode === m ? 'on' : ''} onClick={() => setMode(m)} disabled={busy}>
+          <button key={m} className={mode === m ? 'on' : ''} onClick={() => setMode(m)} disabled={!!live}>
             {m === 'conservative' ? 'Conservative' : 'Upside, shadow'}
           </button>
         ))}
@@ -116,16 +116,18 @@ function PlaybackBar({ pb, run, day, mode, lam, setMode, setLam, live, onLive })
       <label className="lam">
         <span className="muted">λ €/kg</span>
         <span className="slider">
-          <input type="range" min="0" max="2" step="1" value={LAMS.indexOf(lam)} onChange={(e) => setLam(LAMS[e.target.value])} disabled={busy} />
+          <input type="range" min="0" max="2" step="1" value={LAMS.indexOf(lam)} onChange={(e) => setLam(LAMS[e.target.value])} disabled={!!live} />
           <span className="ticks mono muted"><span>0</span><span>0.10</span><span>0.50</span></span>
         </span>
       </label>
       <div className="live">
         <button className="btn" onClick={onLive}>{!live ? 'Run the agent live' : busy ? 'Stop' : 'Back to replay'}</button>
-        <span className="small muted" role="status">
-          {!live ? 'Gemini plans each day now' : busy ? `Live · plan ${live.days.length + 1} of 7`
-            : live.status === 'done' ? `Live week done · ${live.tokens.calls}/7 plans from Gemini` : live.error}
-        </span>
+        {live?.status === 'error'
+          ? <span className="small live-err" role="alert">Live run stopped {live.days.length ? `after plan ${live.days.length}` : 'before the first plan'}: {live.error}</span>
+          : <span className="small muted" role="status">
+            {!live ? 'Gemini plans each day now' : busy ? `Live · plan ${live.days.length + 1} of 7 · ${live.stage.msg}` /* no seconds: announced once per server event */
+              : `Live week done · ${live.tokens.calls}/7 plans from Gemini`}
+          </span>}
       </div>
     </section>
   )
@@ -180,7 +182,7 @@ function Sim({ data, run, live, liveCtl, mode, lam, setMode, setLam }) {
       <Pipeline active={waiting ? st.stage : reduced && pb.step % DAY_STEPS < 3 ? 'agent' : null} status={status} fail={blocked ? 'validator' : null}
         step={pb.step} epoch={pb.seeks + key(mode, lam)} playing={pb.playing} speed={pb.speed} reduced={reduced} />
       <PlaybackBar pb={pb} run={run} day={day} mode={mode} lam={lam} setMode={setMode} setLam={setLam} live={live} onLive={onLive} />
-      <AgentPanel run={run} compare={data.compare} day={day} step={pb.step} mode={mode} lam={lam} />
+      <AgentPanel run={run} compare={data.compare} day={day} step={pb.step} mode={mode} lam={lam} status={running && (status || st.msg)} />
     </main>
   )
 }
@@ -202,7 +204,6 @@ export default function App() {
     schedule: base.schedule.map((r, i) => live.rows[i] || r),
   }, [base, live, k])
   const mine = live?.key === k ? live : null
-  const pick = (set) => (v) => { if (live?.status !== 'running') { liveCtl.stop(); set(v) } }
 
   useEffect(() => {
     const f = () => setTab(hashTab())
@@ -226,7 +227,7 @@ export default function App() {
         : <>
           {tab === 'kpis' && <Kpis kpis={mine?.kpis ? { ...data.kpis, columns: { ...data.kpis.columns, [`Ours ${mode} λ=${lam.toFixed(1)}`]: mine.kpis } } : data.kpis}
             run={mine?.status === 'done' ? run : base} mode={mode} lam={lam} />}
-          <div hidden={tab === 'kpis'}><Sim data={data} run={run} live={mine} liveCtl={liveCtl} mode={mode} lam={lam} setMode={pick(setMode)} setLam={pick(setLam)} /></div>{/* kept mounted: the replay keeps its place across tabs */}
+          <div hidden={tab === 'kpis'}><Sim data={data} run={run} live={mine} liveCtl={liveCtl} mode={mode} lam={lam} setMode={setMode} setLam={setLam} /></div>{/* kept mounted: the replay keeps its place across tabs */}
         </>}
     </>
   )
