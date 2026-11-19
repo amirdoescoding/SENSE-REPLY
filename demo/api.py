@@ -16,6 +16,7 @@ from functools import cache
 from pathlib import Path
 from typing import Literal
 
+import anyio
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, Response, StreamingResponse
@@ -31,7 +32,7 @@ app.add_middleware(GZipMiddleware)  # 6 x ~120 KB runs on a slow free instance
 _cache = (0.0, None)  # (monotonic time, payload); real data 1 h, fallback 5 min
 PASS = os.environ.get("DEMO_PASSCODE", "").encode()
 # ponytail: in-memory guard, resets when the free instance sleeps or restarts; Gemini's own 429 is the backstop
-_live = dict(busy=0.0, day=None, runs=0)
+_live = dict(owner=0.0, seen=0.0, day=None, runs=0)  # owner = start time of the running week, seen = its last event
 _guard = threading.Lock()
 
 
@@ -95,19 +96,28 @@ def live_carbon():
 
 @cache
 def _inputs():
-    """Run C rows, the carbon lookup and the memory, once per process (ENTSO-E is pulled once, not per run)."""
+    """Run C rows, the memory (committed memory.json) and the rule flows, once per process."""
     import agent
     import sim
-    try:
-        ci = carbon.ci_lookup()[0]
-    except Exception as e:  # ENTSO-E down: the workbook's static factor, as without a token
-        print("live carbon fallback:", type(e).__name__)
-        ci = lambda dt: carbon.STATIC  # noqa: E731
     rows = sim.load_run("C")
-    return rows, ci, agent.seed_memory(ci), sim.rule_flows(rows, 0.80)
+    return rows, agent.seed_memory(lambda dt: carbon.STATIC), sim.rule_flows(rows, 0.80)
 
 
-def _work(mode, lam, q, stop):
+_ci = []
+
+
+def _carbon():
+    """The week's hourly carbon, pulled once. ENTSO-E down: static factor for this run only, retried next run."""
+    if not _ci:
+        try:
+            _ci.append(carbon.ci_lookup()[0])
+        except Exception as e:
+            print("live carbon fallback:", type(e).__name__)
+            return lambda dt: carbon.STATIC
+    return _ci[0]
+
+
+def _work(mode, lam, q, stop, since):
     import agent
     import sim
     from sim import verdict
@@ -115,9 +125,13 @@ def _work(mode, lam, q, stop):
     def emit(ev, data):
         if stop.is_set():  # the viewer left: don't spend more of the quota
             raise InterruptedError
+        with _guard:
+            if _live["owner"] == since:
+                _live["seen"] = time.monotonic()  # heartbeat: only a week with no event for 10 min goes stale
         q.put((ev, data))
     try:
-        rows, ci, mem, rule = _inputs()
+        rows, mem, rule = _inputs()
+        ci = _carbon()
         q.put(("start", dict(mode=mode, lam=lam, model=agent.MODEL, key=bool(agent._key()))))
         f, days = sim.run_ours(rows, mode, lam, ci, mem, live=True, emit=emit)
         k, tok = sim.ours_kpis(rows, f, days, rule)
@@ -130,30 +144,35 @@ def _work(mode, lam, q, stop):
         print("live error:", type(e).__name__, e, flush=True)
         q.put(("error", dict(msg=type(e).__name__)))
     finally:
-        _live["busy"] = 0.0
+        with _guard:
+            if _live["owner"] == since:  # a stale takeover started a newer run: leave its slot alone
+                _live["owner"] = 0.0
 
 
 @app.get("/api/live")
-def live(mode: Literal["conservative", "upside"], lam: float = Query(alias="lambda")):
+def live(request: Request, mode: Literal["conservative", "upside"], lam: float = Query(alias="lambda")):
     """One live agent week, streamed as server-sent events: start, stage*, day x7, done (or error)."""
+    if request.headers.get("sec-fetch-site", "same-origin") not in ("same-origin", "none"):
+        raise HTTPException(403, "live runs start from the demo page only")  # a foreign page can't spend the cap
     if lam not in (0.0, 0.1, 0.5):
         raise HTTPException(422, "lambda must be 0.0, 0.1 or 0.5")
     with _guard:
         if _live["day"] != date.today():
             _live.update(day=date.today(), runs=0)
-        if _live["busy"] and time.monotonic() - _live["busy"] < 600:  # stale after 10 min: a stuck run frees the slot
+        if _live["owner"] and time.monotonic() - _live["seen"] < 600:  # no event for 10 min: a stuck run frees the slot
             raise HTTPException(409, "a live run is in progress, try again in a few minutes")
         if _live["runs"] >= int(os.environ.get("LIVE_CAP", 10)):
             raise HTTPException(429, "today's live runs are used up, the replay is still available")
-        _live["busy"], _live["runs"] = time.monotonic(), _live["runs"] + 1
+        since = _live["owner"] = _live["seen"] = time.monotonic()
+        _live["runs"] += 1
     q, stop = queue.Queue(), threading.Event()
-    threading.Thread(target=_work, args=(mode, abs(lam), q, stop), daemon=True).start()
+    threading.Thread(target=_work, args=(mode, abs(lam), q, stop, since), daemon=True).start()
 
-    def stream():  # sync generator: Starlette runs it in the threadpool, so the event loop stays free
+    async def stream():  # async, so a viewer leaving cancels it and `finally` stops the worker (a sync one is never closed)
         try:
             while True:
-                try:
-                    ev, data = q.get(timeout=10)
+                try:  # the blocking get runs in a thread: the event loop (and the health check) stays free
+                    ev, data = await anyio.to_thread.run_sync(q.get, True, 10, abandon_on_cancel=True)
                 except queue.Empty:
                     yield ": ping\n\n"  # keeps proxies from closing a quiet stream (Gemini back-off can be 60 s)
                     continue

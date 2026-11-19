@@ -53,7 +53,7 @@ function Header({ tab, live }) {
 function KpiStrip({ kpis, mode, lam, live }) {
   const ours = live?.kpis || kpis.columns[`Ours ${mode} λ=${lam.toFixed(1)}`]
   const pilot = kpis.columns.C
-  const note = !live ? '' : live.kpis ? ' · live run' : ' · precomputed, the live week is still running'
+  const note = !live ? '' : live.kpis ? ' · live run' : live.status === 'running' ? ' · precomputed, the live week is still running' : ' · precomputed'
   return (
     <section className="card" aria-labelledby="kpis-h">
       <h2 id="kpis-h" className="kpis-h">Week result, ours vs pilot C on the same inputs{note && <span className="muted">{note}</span>}</h2>
@@ -135,7 +135,7 @@ function Sim({ data, run, live, liveCtl, mode, lam, setMode, setLam }) {
   const reduced = useReducedMotion()
   const stepParam = q.get('step')
   const running = live?.status === 'running'
-  const frontier = live && live.status !== 'done' ? Math.max(0, live.days.length * DAY_STEPS - 1) : MAX_STEP // playback waits for the live run
+  const frontier = running ? Math.max(0, live.days.length * DAY_STEPS - 1) : MAX_STEP // playback waits for the live run
   // autoplay only without reduced motion, and without a step param unless ?play=1
   const pb = usePlayback(Math.min(MAX_STEP, Math.max(0, Math.floor(+stepParam) || 0)), !reduced && (q.get('play') === '1' || stepParam === null), frontier)
   const waiting = running && pb.step >= frontier
@@ -224,7 +224,8 @@ export default function App() {
       {err ? <p className="status">Could not load the replay data: {err.message}</p>
         : !data ? <p className="status muted">Loading the replay</p>
         : <>
-          {tab === 'kpis' && <Kpis kpis={data.kpis} run={mine?.status === 'done' ? run : base} mode={mode} lam={lam} />}
+          {tab === 'kpis' && <Kpis kpis={mine?.kpis ? { ...data.kpis, columns: { ...data.kpis.columns, [`Ours ${mode} λ=${lam.toFixed(1)}`]: mine.kpis } } : data.kpis}
+            run={mine?.status === 'done' ? run : base} mode={mode} lam={lam} />}
           <div hidden={tab === 'kpis'}><Sim data={data} run={run} live={mine} liveCtl={liveCtl} mode={mode} lam={lam} setMode={pick(setMode)} setLam={pick(setLam)} /></div>{/* kept mounted: the replay keeps its place across tabs */}
         </>}
     </>

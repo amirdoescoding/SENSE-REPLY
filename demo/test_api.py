@@ -49,10 +49,11 @@ done = __import__("json").loads(r.text.rsplit("data: ", 1)[1])
 assert done["kpis"]["N1"]["value"] is not None and done["tokens"]["calls"] == 0, done
 bodies.append(r.text)
 time.sleep(0.2)
-assert api._live["busy"] == 0.0
-api._live["busy"] = time.monotonic()
+assert api._live["owner"] == 0.0
+api._live["owner"] = api._live["seen"] = time.monotonic()
 assert c.get("/api/live?mode=upside&lambda=0").status_code == 409
-api._live.update(busy=0.0, runs=99)
+assert c.get("/api/live?mode=upside&lambda=0", headers={"Sec-Fetch-Site": "cross-site"}).status_code == 403
+api._live.update(owner=0.0, runs=99)
 assert c.get("/api/live?mode=upside&lambda=0").status_code == 429
 assert c.get("/api/live?mode=upside&lambda=0.3").status_code == 422
 api._live["runs"] = 0
