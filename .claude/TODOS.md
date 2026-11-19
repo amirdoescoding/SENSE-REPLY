@@ -73,3 +73,6 @@ Close each session with: memory files + `graphify update .`.
 ## Honesty flags (show them in the demo)
 - The plain rule won this January week (`analysis/replay.py`), so ours may only tie it. The gate and fallback are part of the story.
 - Site = Italy is assumed. Gemini ≠ Devstral: it's a capability stand-in.
+- [x] **9 `report-ministral`** (2026-11-19): diagram (Reply's E&U platform + our changes, `docs/diagrams/reply-platform.*`), KPI workbook and report cut to 3 scenarios (A, C, Ours). Ours = sim conservative λ0.10 + Ministral 3 8B central at 1,000 sites: N1 +0.98, F1 −0.06, 15/20 Good.
+- [ ] **10 demo cleanup:** remove the conservative/upside modes and the S5 columns from the demo (one "Ours" run, λ dial kept?), relabel Gemini → Ministral, decide whether Ministral 3 3B can run on the demo host (Render free = 512 MB RAM, so likely no; options: recorded 3B bench plans, a paid instance, or an API-hosted Ministral).
+- [ ] **11 deck:** update `docs/PRESENTATION.md`, `docs/SCRIPT.md` and `docs/deck/deck.pdf` to the 3-scenario, Ministral basis (N1 +0.98, AI €0.18, CO2 12.2 kg, F1 −0.06 caveat, new diagram on the framework slide).
