@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { num, weekday } from './lib.js'
 
-const COLS = [['A', 'A · cost agent'], ['C', 'C · dual agent'], ['Static rule', 'Static rule'], ['S5 conservative', 'S5 conservative'], ['S5 upside', 'S5 upside']]
+const COLS = [['A', 'Pilot A · cost'], ['C', 'Pilot C · cost + sust.']]
 // Headline rows (mock-kpi); the rest of the workbook's KPIs sit behind "Show all".
-const HEAD = ['S_net', 'VCR', 'VORB', 'N1', 'N2', 'O5', 'S2b', 'MAC', 'S1', 'SCR', 'SSR', 'PSR', 'G1', 'B4', 'C5', 'O1']
+const HEAD = ['S_net', 'VCR', 'VORB', 'N1', 'N2', 'F1', 'O5', 'S2b', 'MAC', 'S1', 'SCR', 'SSR', 'PSR', 'G1', 'B4', 'C5', 'O1']
 const VD = { Good: ['g', '✓', 'Good'], Improvable: ['i', '↑', 'Improvable'] }
 
 function fmt(v, unit) {
@@ -22,7 +22,7 @@ function Cell({ c, unit, ours }) {
   )
 }
 
-function Table({ kpis, ours, label }) {
+function Table({ kpis, ours, label, run }) {
   const [all, setAll] = useState(false)
   const ids = Object.keys(kpis.meta).filter((id) => all || HEAD.includes(id))
   const groups = [...new Set(ids.map((id) => kpis.meta[id].group))]
@@ -30,8 +30,8 @@ function Table({ kpis, ours, label }) {
   return (
     <section className="card kt">
       <div className="kt-head">
-        <h1>KPI conformity, pilots vs final</h1>
-        <span className="muted small"><span className="vd g">✓</span> good <span className="vd i">↑</span> improvable · pilot and S5 columns from the KPI Conformity workbook, Ours from this replay</span>
+        <h1>KPI conformity, pilots vs new framework</h1>
+        <span className="muted small"><span className="vd g">✓</span> good <span className="vd i">↑</span> improvable · pilots from the KPI Conformity workbook, new framework from this replay</span>
       </div>
       <div className="kt-scroll">
         <table>
@@ -58,6 +58,11 @@ function Table({ kpis, ours, label }) {
           </tbody>
         </table>
       </div>
+      <p className="muted small kt-note">
+        One January week, run C's inputs. New framework: Ministral 3 8B at Q3 on a laptop, the gate keeps or overrides
+        each plan ({run.days.filter((d) => d.used === 'plan').length}/7 plans used); AI cost O5 = the same model served centrally
+        for 1,000 sites, so F1 stays below 0 (it loses to the free rule after AI cost). Site in Italy assumed, CO2 0.356 kg/kWh.
+      </p>
       <button className="btn kt-more" onClick={() => setAll(!all)} aria-expanded={all}>
         {all ? 'Show headline KPIs only' : `Show all ${Object.keys(kpis.meta).length} KPIs`}
       </button>
@@ -77,7 +82,7 @@ function Counts({ kpis, ours, label }) {
         return (
           <div className="cnt" key={k}>
             <span>{label}</span>
-            <div className="bar-bg"><div className={k === ours ? 'ours' : k.startsWith('S5') ? 's5' : k === 'Static rule' ? 'rule' : ''} style={{ width: `${n ? (good / n) * 100 : 0}%` }} /></div>
+            <div className="bar-bg"><div className={k === ours ? 'ours' : ''} style={{ width: `${n ? (good / n) * 100 : 0}%` }} /></div>
             <span className="mono">{good}/{n}</span>
           </div>
         )
@@ -142,12 +147,12 @@ function Measurable({ run }) {
   )
 }
 
-export default function Kpis({ kpis, run, mode, lam }) {
-  const ours = `Ours ${mode} λ=${lam.toFixed(1)}`
-  const label = `Ours, ${mode === 'conservative' ? 'conservative' : 'upside'} λ ${lam.toFixed(2)}`
+export default function Kpis({ kpis, run, lam }) {
+  const ours = `New framework λ=${lam.toFixed(1)}`
+  const label = `New framework, λ ${lam.toFixed(2)}`
   return (
     <main className="kpitab">
-      <Table kpis={kpis} ours={ours} label={label} />
+      <Table kpis={kpis} ours={ours} label={label} run={run} />
       <aside>
         <Counts kpis={kpis} ours={ours} label={label} />
         <Carbon />
