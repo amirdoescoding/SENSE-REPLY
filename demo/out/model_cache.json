@@ -1,0 +1,401 @@
+{
+ "a34c37dda85a693a": {
+  "raw": {
+   "soc_floor": 0.2,
+   "evening_reserve_kwh": 2,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a moderate **SoC floor (20%)** to balance battery health and flexibility, a **2 kWh evening reserve** to cover peak evening demand (17:00) without over-reserving, and a **\u20ac0.12/kWh export hold**\u2014higher than past days to better capture midday solar profits despite low price spreads. Grid charging is disabled ('conservative mode') to avoid relying on expensive grid electricity."
+  },
+  "explanation": "You chose a moderate **SoC floor (20%)** to balance battery health and flexibility, a **2 kWh evening reserve** to cover peak evening demand (17:00) without over-reserving, and a **\u20ac0.12/kWh export hold**\u2014higher than past days to better capture midday solar profits despite low price spreads. Grid charging is disabled ('conservative mode') to avoid relying on expensive grid electricity.",
+  "thoughts": "",
+  "tok_in": 1690,
+  "tok_out": 153,
+  "ms": 30585,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 87.42040753790782,
+  "decode_tps": 8.783656573821489
+ },
+ "6f9315938c9d3c15": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "export_hold_eur": 0.1004,
+   "grid_charge": null,
+   "explanation": "You chose conservative settings with a low state-of-charge floor (0.1) to avoid deep discharges, no evening reserve (since prices are low and CO2 spread is high), and a midday solar export hold of \u20ac0.1004 to match the optimal historical values. This aligns with the past days' best-performing knobs while avoiding grid charging entirely (mode=conservative)."
+  },
+  "explanation": "You chose conservative settings with a low state-of-charge floor (0.1) to avoid deep discharges, no evening reserve (since prices are low and CO2 spread is high), and a midday solar export hold of \u20ac0.1004 to match the optimal historical values. This aligns with the past days' best-performing knobs while avoiding grid charging entirely (mode=conservative).",
+  "thoughts": "",
+  "tok_in": 1685,
+  "tok_out": 148,
+  "ms": 25972,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 89.33218366696961,
+  "decode_tps": 9.125034575811283
+ },
+ "36945f42ba64bf79": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You\u2019re keeping a strict floor of 10% SoC to avoid deep discharges, skipping evening reserves since prices are stable and CO\u2082 spreads are high. The \u20ac0.12/kWh export hold is slightly above the best historical setting (\u20ac0.10) to hedge against the small price spread (\u20ac0.0806) and avoid selling cheap solar. No grid charging is allowed in 'conservative' mode, so the battery stays self-sufficient."
+  },
+  "explanation": "You\u2019re keeping a strict floor of 10% SoC to avoid deep discharges, skipping evening reserves since prices are stable and CO\u2082 spreads are high. The \u20ac0.12/kWh export hold is slightly above the best historical setting (\u20ac0.10) to hedge against the small price spread (\u20ac0.0806) and avoid selling cheap solar. No grid charging is allowed in 'conservative' mode, so the battery stays self-sufficient.",
+  "thoughts": "",
+  "tok_in": 1689,
+  "tok_out": 158,
+  "ms": 27031,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 90.09058486849943,
+  "decode_tps": 9.01110161980004
+ },
+ "499a3b11b63f004a": {
+  "raw": {
+   "soc_floor": 0.2,
+   "evening_reserve_kwh": 3,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a moderate **SoC floor (20%)** to balance battery lifespan and flexibility, a **3 kWh evening reserve** to cover expensive evening loads (like cooking or heating), and a **high export hold (\u20ac0.12/kWh)** to prioritize storing solar over selling it cheaply. This mirrors the best-performing past days while avoiding grid charging entirely ('conservative' mode)."
+  },
+  "explanation": "You chose a moderate **SoC floor (20%)** to balance battery lifespan and flexibility, a **3 kWh evening reserve** to cover expensive evening loads (like cooking or heating), and a **high export hold (\u20ac0.12/kWh)** to prioritize storing solar over selling it cheaply. This mirrors the best-performing past days while avoiding grid charging entirely ('conservative' mode).",
+  "thoughts": "",
+  "tok_in": 1694,
+  "tok_out": 145,
+  "ms": 28038,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 82.80494887285623,
+  "decode_tps": 8.345748600319434
+ },
+ "2d024bcdeac3f9eb": {
+  "raw": {
+   "soc_floor": 0.2,
+   "evening_reserve_kwh": 3,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a moderate **soc_floor (0.2)** to balance energy availability and battery lifespan, a **3 kWh evening reserve** to cover high-cost evening loads (like cooking or heating), and a **\u20ac0.12/kWh export hold**\u2014higher than similar days\u2014to prioritize storing solar over selling it when prices are low. Grid charging is disabled ('conservative mode') to avoid over-reliance on the grid, especially with today's low CO\u2082 spread (\u20ac0.00/tonne)."
+  },
+  "explanation": "You chose a moderate **soc_floor (0.2)** to balance energy availability and battery lifespan, a **3 kWh evening reserve** to cover high-cost evening loads (like cooking or heating), and a **\u20ac0.12/kWh export hold**\u2014higher than similar days\u2014to prioritize storing solar over selling it when prices are low. Grid charging is disabled ('conservative mode') to avoid over-reliance on the grid, especially with today's low CO\u2082 spread (\u20ac0.00/tonne).",
+  "thoughts": "",
+  "tok_in": 1694,
+  "tok_out": 172,
+  "ms": 31585,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 81.18901169710227,
+  "decode_tps": 8.296601867133267
+ },
+ "f8d38bd1525dc478": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a conservative approach with a low state-of-charge floor (10%) to ensure battery availability for high-price or high-CO\u2082 periods. The evening reserve is set to zero since the price spread is low (\u20ac0.0327) and CO\u2082 spread (86.3 g/kWh) isn\u2019t extreme, so no extra buffer is needed. The export hold (\u20ac0.12/kWh) is slightly higher than similar days to account for the midday price volatility, ensuring solar surplus is stored rather than sold cheaply. Grid charging is forbidden to avoid over-reliance on the grid during uncertain price/CO\u2082 conditions."
+  },
+  "explanation": "You chose a conservative approach with a low state-of-charge floor (10%) to ensure battery availability for high-price or high-CO\u2082 periods. The evening reserve is set to zero since the price spread is low (\u20ac0.0327) and CO\u2082 spread (86.3 g/kWh) isn\u2019t extreme, so no extra buffer is needed. The export hold (\u20ac0.12/kWh) is slightly higher than similar days to account for the midday price volatility, ensuring solar surplus is stored rather than sold cheaply. Grid charging is forbidden to avoid over-reliance on the grid during uncertain price/CO\u2082 conditions.",
+  "thoughts": "",
+  "tok_in": 1696,
+  "tok_out": 197,
+  "ms": 34469,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 83.86849533395215,
+  "decode_tps": 8.224342265570474
+ },
+ "08e91b52998feb84": {
+  "raw": {
+   "soc_floor": 0.25,
+   "evening_reserve_kwh": 4,
+   "export_hold_eur": 0.15,
+   "grid_charge": null,
+   "explanation": "You chose a moderate floor SoC (0.25) to balance battery health and flexibility, a 4 kWh evening reserve to cover high-cost evening loads, and a 0.15 \u20ac/kWh export hold to prioritize storing solar when prices are favorable. This setup mirrors past successful settings for similar PV/load conditions while accounting for the current price and CO2 spreads."
+  },
+  "explanation": "You chose a moderate floor SoC (0.25) to balance battery health and flexibility, a 4 kWh evening reserve to cover high-cost evening loads, and a 0.15 \u20ac/kWh export hold to prioritize storing solar when prices are favorable. This setup mirrors past successful settings for similar PV/load conditions while accounting for the current price and CO2 spreads.",
+  "thoughts": "",
+  "tok_in": 1697,
+  "tok_out": 140,
+  "ms": 27965,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 81.33097124693138,
+  "decode_tps": 8.170416790006652
+ },
+ "2504bc753b5ef6bf": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0,
+   "export_hold_eur": 0.1,
+   "grid_charge": null,
+   "explanation": "You chose a conservative approach with a low state-of-charge floor (0.1) to avoid deep discharges and ensure battery longevity. The evening reserve is set to 0 kWh since the price spread and CO2 emissions are relatively stable, and the evening demand isn't explicitly highlighted as critical. The export hold is set to \u20ac0.10/kWh to match the historical optimal value, ensuring solar energy is stored when grid prices are low. Grid charging is disabled ('conservative mode') to avoid unnecessary reliance on the grid, especially with the current low price spread."
+  },
+  "explanation": "You chose a conservative approach with a low state-of-charge floor (0.1) to avoid deep discharges and ensure battery longevity. The evening reserve is set to 0 kWh since the price spread and CO2 emissions are relatively stable, and the evening demand isn't explicitly highlighted as critical. The export hold is set to \u20ac0.10/kWh to match the historical optimal value, ensuring solar energy is stored when grid prices are low. Grid charging is disabled ('conservative mode') to avoid unnecessary reliance on the grid, especially with the current low price spread.",
+  "thoughts": "",
+  "tok_in": 1690,
+  "tok_out": 175,
+  "ms": 32719,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 79.99641929264479,
+  "decode_tps": 8.12345902300839
+ },
+ "e60a7359797dae8b": {
+  "raw": {
+   "soc_floor": 0.2,
+   "evening_reserve_kwh": 3,
+   "export_hold_eur": 0.15,
+   "grid_charge": null,
+   "explanation": "Given the similar past day with identical PV/load spreads (13.55/15.02) and CO2 spread (74.2), we mirror the proven conservative approach: a mid-range soc_floor (0.20) avoids over-aggressive discharging while allowing flexibility. The evening reserve (3 kWh) ensures reliability for peak evening prices (~\u20ac0.11/kWh), and the export_hold (\u20ac0.15/kWh) matches the current midday price spread (\u20ac0.09/kWh) to avoid selling cheap solar. Grid charging is forbidden ('conservative' mode) to avoid over-reliance on grid electricity."
+  },
+  "explanation": "Given the similar past day with identical PV/load spreads (13.55/15.02) and CO2 spread (74.2), we mirror the proven conservative approach: a mid-range soc_floor (0.20) avoids over-aggressive discharging while allowing flexibility. The evening reserve (3 kWh) ensures reliability for peak evening prices (~\u20ac0.11/kWh), and the export_hold (\u20ac0.15/kWh) matches the current midday price spread (\u20ac0.09/kWh) to avoid selling cheap solar. Grid charging is forbidden ('conservative' mode) to avoid over-reliance on grid electricity.",
+  "thoughts": "",
+  "tok_in": 1686,
+  "tok_out": 202,
+  "ms": 35839,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 80.37335120959139,
+  "decode_tps": 8.075155025902164
+ },
+ "8467985228e7dc1a": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "export_hold_eur": 0.1,
+   "grid_charge": null,
+   "explanation": "You chose a conservative approach with a strict floor of 10% SoC to avoid deep discharges, no evening reserve (since prices are relatively stable), and a moderate export hold of \u20ac0.10/kWh to balance cost and CO\u2082 savings. The similar past days suggest this setup works well with minimal regret, avoiding grid charging entirely to ensure reliability."
+  },
+  "explanation": "You chose a conservative approach with a strict floor of 10% SoC to avoid deep discharges, no evening reserve (since prices are relatively stable), and a moderate export hold of \u20ac0.10/kWh to balance cost and CO\u2082 savings. The similar past days suggest this setup works well with minimal regret, avoiding grid charging entirely to ensure reliability.",
+  "thoughts": "",
+  "tok_in": 1689,
+  "tok_out": 135,
+  "ms": 27468,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 80.83890502613285,
+  "decode_tps": 7.96509197392752
+ },
+ "848e825795fc8d65": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 3,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "Based on the similar past days and the current context (PV production ~14.08 kWh, load ~14.84 kWh, and high CO\u2082 spread), setting a conservative **soc_floor=0.1** avoids deep discharges. The **evening_reserve_kwh=3** ensures enough battery capacity for expensive evening hours, while **export_hold_eur=0.12** (higher than most similar days) prioritizes storing solar surplus when grid prices are low but CO\u2082 emissions are high. Grid charging is disabled ('conservative' mode) to avoid reliance on grid electricity."
+  },
+  "explanation": "Based on the similar past days and the current context (PV production ~14.08 kWh, load ~14.84 kWh, and high CO\u2082 spread), setting a conservative **soc_floor=0.1** avoids deep discharges. The **evening_reserve_kwh=3** ensures enough battery capacity for expensive evening hours, while **export_hold_eur=0.12** (higher than most similar days) prioritizes storing solar surplus when grid prices are low but CO\u2082 emissions are high. Grid charging is disabled ('conservative' mode) to avoid reliance on grid electricity.",
+  "thoughts": "",
+  "tok_in": 1694,
+  "tok_out": 190,
+  "ms": 35003,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 79.54815926458312,
+  "decode_tps": 7.9343612543226
+ },
+ "224d5de6de578a12": {
+  "raw": {
+   "soc_floor": 0.2,
+   "evening_reserve_kwh": 3,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a moderate floor (0.2) to balance energy availability and efficiency, a 3 kWh evening reserve to cover peak demand and expensive evening prices, and a \u20ac0.12/kWh export hold to prioritize self-consumption over selling surplus. This aligns with the similar days' best practices while accounting for today's slightly higher PV spread and CO2 emissions. Grid charging is avoided to ensure resilience against forecast errors."
+  },
+  "explanation": "You chose a moderate floor (0.2) to balance energy availability and efficiency, a 3 kWh evening reserve to cover peak demand and expensive evening prices, and a \u20ac0.12/kWh export hold to prioritize self-consumption over selling surplus. This aligns with the similar days' best practices while accounting for today's slightly higher PV spread and CO2 emissions. Grid charging is avoided to ensure resilience against forecast errors.",
+  "thoughts": "",
+  "tok_in": 1694,
+  "tok_out": 148,
+  "ms": 31613,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 76.49487488669793,
+  "decode_tps": 7.369196388131262
+ },
+ "81d12e2962e12cd3": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a conservative approach with a low state-of-charge floor (0.1) to prevent deep discharges, no evening reserve (since prices are low and CO2 spread is moderate), and a high export hold (\u20ac0.12/kWh) to prioritize storing solar when prices are favorable. This mirrors the best-performing knobs from similar days while avoiding grid charging to protect against price volatility."
+  },
+  "explanation": "You chose a conservative approach with a low state-of-charge floor (0.1) to prevent deep discharges, no evening reserve (since prices are low and CO2 spread is moderate), and a high export hold (\u20ac0.12/kWh) to prioritize storing solar when prices are favorable. This mirrors the best-performing knobs from similar days while avoiding grid charging to protect against price volatility.",
+  "thoughts": "",
+  "tok_in": 1696,
+  "tok_out": 142,
+  "ms": 29315,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 79.76676808527112,
+  "decode_tps": 7.771806531624639
+ },
+ "a364d9a4a52a0f01": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 2,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a conservative approach with a low state-of-charge floor (0.1) to ensure the battery never drains too low, a moderate evening reserve (2 kWh) to cover peak evening demand, and a high export hold (\u20ac0.12/kWh) to prioritize storing solar energy when prices are favorable. This balances cost and CO2 savings while avoiding grid charging entirely, given the volatile price and CO2 spreads."
+  },
+  "explanation": "You chose a conservative approach with a low state-of-charge floor (0.1) to ensure the battery never drains too low, a moderate evening reserve (2 kWh) to cover peak evening demand, and a high export hold (\u20ac0.12/kWh) to prioritize storing solar energy when prices are favorable. This balances cost and CO2 savings while avoiding grid charging entirely, given the volatile price and CO2 spreads.",
+  "thoughts": "",
+  "tok_in": 1697,
+  "tok_out": 149,
+  "ms": 30602,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 78.31434991134392,
+  "decode_tps": 7.696782547275148
+ },
+ "7905629af45ec771": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0,
+   "export_hold_eur": 0.1004,
+   "grid_charge": null,
+   "explanation": "You chose a conservative approach with a low state-of-charge floor (10%) to avoid deep discharges, no evening reserve (since prices are moderate), and a storage cost of \u20ac0.1004/kWh to match historical optimal settings. This aligns with today's similar load/solar conditions and avoids grid charging entirely to mitigate forecast errors."
+  },
+  "explanation": "You chose a conservative approach with a low state-of-charge floor (10%) to avoid deep discharges, no evening reserve (since prices are moderate), and a storage cost of \u20ac0.1004/kWh to match historical optimal settings. This aligns with today's similar load/solar conditions and avoids grid charging entirely to mitigate forecast errors.",
+  "thoughts": "",
+  "tok_in": 1690,
+  "tok_out": 134,
+  "ms": 28657,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 78.28702758699004,
+  "decode_tps": 7.766835623566822
+ },
+ "5b04a60c3b95eb41": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0.0,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a conservative approach with a low state-of-charge floor (0.10) to ensure the battery never drains too deeply, avoiding potential forecast errors. The evening reserve is set to 0 kWh since the price spread is moderate (0.09) and CO2 spread is high (74.2), making evening electricity expensive enough to not need extra storage. The export hold is set at \u20ac0.12/kWh, slightly above the optimal range from similar days, to account for forecast uncertainty. Grid charging is disabled ('null') to avoid unexpected costs in conservative mode."
+  },
+  "explanation": "You chose a conservative approach with a low state-of-charge floor (0.10) to ensure the battery never drains too deeply, avoiding potential forecast errors. The evening reserve is set to 0 kWh since the price spread is moderate (0.09) and CO2 spread is high (74.2), making evening electricity expensive enough to not need extra storage. The export hold is set at \u20ac0.12/kWh, slightly above the optimal range from similar days, to account for forecast uncertainty. Grid charging is disabled ('null') to avoid unexpected costs in conservative mode.",
+  "thoughts": "",
+  "tok_in": 1683,
+  "tok_out": 185,
+  "ms": 35808,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 74.40084496152272,
+  "decode_tps": 7.656569884155681
+ },
+ "662dbb8b26a0c275": {
+  "raw": {
+   "soc_floor": 0.25,
+   "evening_reserve_kwh": 4,
+   "export_hold_eur": 0.15,
+   "grid_charge": null,
+   "explanation": "You chose a moderate floor (0.25) to balance energy availability and storage safety, a 4 kWh evening reserve to cover peak electricity costs and CO\u2082-heavy hours, and a 0.15 \u20ac/kWh export hold to prioritize self-consumption over selling surplus during midday. Grid charging is disabled ('conservative mode') to avoid over-reliance on grid electricity, aligning with the similar past days' optimal settings."
+  },
+  "explanation": "You chose a moderate floor (0.25) to balance energy availability and storage safety, a 4 kWh evening reserve to cover peak electricity costs and CO\u2082-heavy hours, and a 0.15 \u20ac/kWh export hold to prioritize self-consumption over selling surplus during midday. Grid charging is disabled ('conservative mode') to avoid over-reliance on grid electricity, aligning with the similar past days' optimal settings.",
+  "thoughts": "",
+  "tok_in": 1689,
+  "tok_out": 154,
+  "ms": 30451,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 81.02511493597781,
+  "decode_tps": 7.716506252437886
+ },
+ "228b1459650cff36": {
+  "raw": {
+   "soc_floor": 0.2,
+   "evening_reserve_kwh": 3,
+   "export_hold_eur": 0.15,
+   "grid_charge": null,
+   "explanation": "You chose a moderate **soc_floor (20%)** to balance energy availability and battery lifespan, a **3 kWh evening reserve** to cover peak electricity costs and CO\u2082-heavy hours, and a **0.15 \u20ac/kWh export hold** to prioritise storing solar when grid prices are low but CO\u2082 emissions are high. This aligns with the similar day\u2019s best settings while accounting for today\u2019s slightly higher CO\u2082 spread (107 g/kWh) and conservative mode."
+  },
+  "explanation": "You chose a moderate **soc_floor (20%)** to balance energy availability and battery lifespan, a **3 kWh evening reserve** to cover peak electricity costs and CO\u2082-heavy hours, and a **0.15 \u20ac/kWh export hold** to prioritise storing solar when grid prices are low but CO\u2082 emissions are high. This aligns with the similar day\u2019s best settings while accounting for today\u2019s slightly higher CO\u2082 spread (107 g/kWh) and conservative mode.",
+  "thoughts": "",
+  "tok_in": 1694,
+  "tok_out": 164,
+  "ms": 33158,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 74.64892232260887,
+  "decode_tps": 7.6759581550085825
+ },
+ "d98c7bb4b69b3638": {
+  "raw": {
+   "soc_floor": 0.25,
+   "evening_reserve_kwh": 3.0,
+   "export_hold_eur": 0.12,
+   "grid_charge": null,
+   "explanation": "You chose a moderate floor (0.25) to balance energy availability and battery stress, a 3 kWh evening reserve to cover high-cost evening loads, and a 0.12 \u20ac/kWh export hold to prioritize storing solar when prices are low. This aligns with past success in similar PV/load conditions while avoiding grid charging entirely (conservative mode)."
+  },
+  "explanation": "You chose a moderate floor (0.25) to balance energy availability and battery stress, a 3 kWh evening reserve to cover high-cost evening loads, and a 0.12 \u20ac/kWh export hold to prioritize storing solar when prices are low. This aligns with past success in similar PV/load conditions while avoiding grid charging entirely (conservative mode).",
+  "thoughts": "",
+  "tok_in": 1694,
+  "tok_out": 142,
+  "ms": 29392,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 79.0122944203898,
+  "decode_tps": 7.776450327289284
+ },
+ "d71022c3d54c94ec": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 3.0,
+   "export_hold_eur": 0.1004,
+   "grid_charge": null,
+   "explanation": "You\u2019re setting a conservative floor (10% SoC) to avoid deep discharges, a modest evening reserve (3 kWh) to cover peak evening prices, and a hold price (\u20ac0.1004/kWh) slightly above the average spread (~\u20ac0.0327) to balance cost and CO\u2082 savings. This mirrors the best-performing past days with similar PV/load profiles, prioritizing resilience over aggressive savings."
+  },
+  "explanation": "You\u2019re setting a conservative floor (10% SoC) to avoid deep discharges, a modest evening reserve (3 kWh) to cover peak evening prices, and a hold price (\u20ac0.1004/kWh) slightly above the average spread (~\u20ac0.0327) to balance cost and CO\u2082 savings. This mirrors the best-performing past days with similar PV/load profiles, prioritizing resilience over aggressive savings.",
+  "thoughts": "",
+  "tok_in": 1695,
+  "tok_out": 155,
+  "ms": 32191,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 74.07770333033622,
+  "decode_tps": 7.6308689062308925
+ },
+ "52c04f990ae14553": {
+  "raw": {
+   "soc_floor": 0.1,
+   "evening_reserve_kwh": 0,
+   "export_hold_eur": 0.1004,
+   "grid_charge": null,
+   "explanation": "You chose a conservative approach with a low state-of-charge floor (0.1) to ensure the battery never drains too much, no evening reserve (0 kWh) since the evening prices are already high, and a moderate export hold (\u20ac0.1004/kWh) to balance cost and CO2 savings. This mirrors the best-performing settings from similar days, avoiding grid charging entirely to protect against forecast errors."
+  },
+  "explanation": "You chose a conservative approach with a low state-of-charge floor (0.1) to ensure the battery never drains too much, no evening reserve (0 kWh) since the evening prices are already high, and a moderate export hold (\u20ac0.1004/kWh) to balance cost and CO2 savings. This mirrors the best-performing settings from similar days, avoiding grid charging entirely to protect against forecast errors.",
+  "thoughts": "",
+  "tok_in": 1697,
+  "tok_out": 150,
+  "ms": 30878,
+  "json_ok": true,
+  "source": "model",
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "prefill_tps": 79.190597019341,
+  "decode_tps": 7.59493528936729
+ }
+}
