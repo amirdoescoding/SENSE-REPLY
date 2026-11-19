@@ -68,27 +68,25 @@ Thanks, Sydney. We kept the shape of Reply's platform and changed the blue boxes
 **Say aloud:** one call a day instead of about 730.
 **Handover:** Here it is running.
 
-### 6. Demo: Ministral 3 8B wrote every plan of this week, and the replay gate decided which ones the battery ran
-Amir · 1:30 · 127 words (budget 195; the rest is silence while the demo plays)
+### 6. The agent writes three numbers a day; a validator, a rule and a clamp decide what the battery actually does
+Amir · 0:30 + 1:00 demo · 133 words (budget 195; the rest is silence while the demo plays)
 
-**[Click 1: Monday plan at 11:00. 0:20]**
-This is the site at 11:00 on Monday. Ministral 3 8B has just set three knobs for the next 24 hours, and it explains why in plain words. We ran these plans on a laptop; the demo replays them.
+Every morning the agent reads prices, hourly CO2, yesterday's sun and load, and similar past days. It returns three numbers and a reason. The validator checks the format and the ranges, then replays the plan on yesterday. If it costs more than the default plan, the plan is dropped. Every 15 minutes, the rule turns the numbers into kilowatts and the clamp has the last word. The dashed box lists inputs we would add next.
 
-**[Click 2: similar past days, memory arc. 0:20]**
-Before deciding, the model saw these similar past days and the cents each one left on the table. No training: just memory.
+**[Click 1: switch to the demo, Monday 11:00. 0:15]**
+Here is Monday's plan, with the model's reason.
 
-**[Click 3: Tuesday, blocked. 0:20]**
-On Tuesday the replay gate blocked the plan. It lost on recent days, so yesterday's plan ran. Nobody had to step in.
+**[Click 2: similar past days. 0:15]**
+These are the similar days it saw, and what each one left on the table.
 
-**[Click 4: play one day at 16×. 0:15]**
-One day at 16 times. Solar fills the battery, and the battery covers the evening.
-(Stay silent and let it run.)
+**[Click 3: Tuesday, blocked. 0:15]**
+On Tuesday the gate blocked the plan, so yesterday's plan ran.
 
-**[Click 5: KPIs tab. 0:15]**
-Our column sits next to pilots A and C: 15 KPIs out of 20 pass, against 5 and 6.
+**[Click 4: KPIs tab. 0:15]**
+On our KPIs, 15 out of 20 pass, against 5 and 6 for the pilots.
 
 **Say aloud:** the gate decides, not the model.
-**Handover:** Francesco will tell you what the week adds up to.
+**Handover:** Francesco will tell you what it costs to run.
 
 ### 7. Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving
 Francesco · 0:55 · 117 words (budget 119)
@@ -111,9 +109,9 @@ All of this rests on one modelled winter week, with no real weather and no agent
 | Speaker | Slides | Words | Budget at 130 wpm |
 |---|---|---|---|
 | Sydney | 0–4 | 360 | 368 (2:50) |
-| Amir | 5–6 | 219 | 293 (2:15) |
+| Amir | 5–6 | 225 | 293 (2:15) |
 | Francesco | 7–8 | 167 | 184 (1:25) |
-| Total | | 746 | 845 (6:30) |
+| Total | | 752 | 845 (6:30) |
 
 ## Q&A prep
 

@@ -1,6 +1,6 @@
 # Pitch deck: ghost deck (7 minutes, demo included)
 
-Speakers: Sydney (slides 0–4), Amir (5–6, platform + demo), Francesco (7–8). Script: `docs/SCRIPT.md`. Deck: `docs/deck/deck.html`, rendered by `docs/deck/render.sh`.
+Speakers: Sydney (slides 0–4), Amir (5–6, platform, pipeline + demo), Francesco (7–8). Script: `docs/SCRIPT.md`. Deck: `docs/deck/deck.html`, rendered by `docs/deck/render.sh`.
 
 **Three scenarios only:** Pilot A (cost), Pilot C (cost + sustainability), New framework (self-hosted single agent, Ministral 3 8B). The free static rule is the yardstick, not a scenario.
 
@@ -17,7 +17,7 @@ Speakers: Sydney (slides 0–4), Amir (5–6, platform + demo), Francesco (7–8
 3. Both pilots lose to a free rule with an AI bill 8 to 12 times their saving; one daily agent's bill is an eighth of what it saves.
 4. A second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price, while a carbon weight inside one agent costs about nothing.
 5. We change two things on Reply's platform: a self-hosted Ministral 3 8B replaces the retired LLM, and the LLM leaves the 15-minute loop.
-6. Demo: Ministral 3 8B wrote every plan of this week, and the replay gate decided which ones the battery ran.
+6. The agent writes three numbers a day; a validator, a rule and a clamp decide what the battery actually does. (Then the live demo.)
 7. Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving.
 8. One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client.
 
@@ -107,15 +107,29 @@ Reply's "Agentic Operations for E&U" platform, redrawn in deck style. Blue marks
 
 Source: report §3.1, `docs/diagrams/reply-platform.html`.
 
-### 6. Demo (1:30)
-**Slide.** A screenshot of the blocked Tuesday plus four "what to watch" items: Agent, Memory, Validator, KPIs.
+### 6. Pipeline, then the demo (0:30 + 1:00)
+**Slide.** The decision pipeline, using the demo's stage names. A blue band marks "AI plans once a day"; an outlined band marks "executes every 15 minutes, no LLM".
+- **Inputs:** day-ahead buy and sell prices, hourly ENTSO-E CO2, yesterday's PV and load as the forecast, battery charge, and 3–5 similar past days with their regret.
+- **Agent:** Ministral 3 8B, one call at 11:00, goal € + λ·kg CO2. It returns three knobs (SoC floor 10–50%, evening reserve 0–8 kWh at 17:00, hold export above €0–0.20/kWh) and a two-sentence reason.
+- **Validator:**
+  1. schema check;
+  2. limits: knobs clamped to their ranges, grid charging removed;
+  3. replay gate: the plan must not cost more than the default plan on yesterday.
 
-**Click path:**
-1. Plan for Mon at 11:00: knobs and reason. (0:20)
-2. The similar past days and the memory arc. (0:20)
-3. Tue: the gate blocks, and the previous valid plan runs. (0:20)
-4. One day at 16×. (0:15)
-5. KPIs tab: 15 of 20 KPIs Good, against 5 and 6 for the pilots. (0:15)
+  On failure, the previous valid plan runs, then the static rule.
+- **Rule:** turns the knobs into kW every 15 min.
+- **Clamp:** SoC 10–90%, ±5 kW tapering when full, no grid charging, runs on the gateway even offline.
+- **Site:** telemetry every 15 min.
+- **Next inputs, not built yet (dashed box):** weather forecast, day-ahead CO2 forecast (tested: error 8.7% → 5.2%), calendar and EV, soiling and fault alerts, DSO flexibility requests, tariff changes.
+- **Memory:** one row a day, k-NN over similar days, no training.
+
+Source: `demo/agent.py` (RANGES, validate), `demo/sim.py` (gate).
+
+**Demo click path,** from this slide to the site:
+1. Mon 11:00: knobs and reason. (0:15)
+2. Similar past days and the memory arc. (0:15)
+3. Tue: the gate blocks the plan and the previous valid plan runs. (0:15)
+4. KPIs tab: 15 of 20 KPIs Good, against 5 and 6 for the pilots. (0:15)
 
 ### 7. Business case (0:55)
 **Chart.** Log-log: AI cost per site per week against fleet size, 100–10,000 sites. Points come from `model_cost.OPTIONS`.
@@ -157,11 +171,10 @@ Source: report §8.
 - in-house at ~1,000 sites.
 
 ### Appendix (Q&A only)
-- **A1.** The decision pipeline, using the demo's stage names (report §3.2).
-- **A2.** Trade-off matrix, three scenarios (report §7.1).
-- **A3.** KPI formulas (report §4).
-- **A4.** CO2 method (report §4 step 7).
-- **A5.** Data corrections (report §10).
-- **A6.** Ministral bench (report §3.3):
+- **A1.** Trade-off matrix, three scenarios (report §7.1).
+- **A2.** KPI formulas (report §4).
+- **A3.** CO2 method (report §4 step 7).
+- **A4.** Data corrections (report §10).
+- **A5.** Ministral bench (report §3.3):
   - 8B: 21/21 valid JSON, ~27 s per call on an 8 GB laptop;
   - 3B: 14/14 valid JSON, 12–14 s per call.
