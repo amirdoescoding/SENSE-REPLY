@@ -104,6 +104,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .pipeline .flow { display: none; } }
 
 /* playback bar */
+.bar .live { display: flex; align-items: center; gap: 12px; }
+.chip.pending { opacity: .45; cursor: default; }
+.kpis-h .muted { font-weight: 400; }
 .bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; padding: 12px 20px; }
 .play { width: 40px; height: 40px; border: 0; border-radius: 8px; background: var(--ink); display: grid; place-items: center; }
 .time { font-size: 18px; min-width: 190px; }
