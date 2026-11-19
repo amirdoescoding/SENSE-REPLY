@@ -13,7 +13,7 @@ Numbers follow the report basis (`docs/Sense Reply BDD B2 – Full Analysis Repo
 2. We judge every agent against a free rule, because "saved vs no battery" alone makes the pilots look profitable.
 3. Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves.
 4. The second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price; a carbon weight inside one agent costs €31–72.
-5. The agent sets three knobs a day; a rule and a safety clamp run the battery every 15 minutes, and a replay gate blocks any plan that loses to the rule.
+5. The agent sets three knobs a day; a rule and a safety clamp run the battery every 15 minutes, behind a replay gate.
 6. Demo: one week of the framework, played at 16×.
 7. On our own KPIs, the framework goes from 5–6 to 16 conforming KPIs, and its worst case is the free rule.
 8. These results come from one modelled winter week; three data gaps decide whether they hold.
@@ -96,7 +96,7 @@ That leaves 15 s of buffer. The demo plays the **precomputed** week. A live Gemi
 - The full trade-off matrix goes to the appendix. Source: report §6.2, §7.
 
 ### 5. Framework (0:45)
-**The agent sets three knobs a day; a rule and a safety clamp run the battery every 15 minutes, and a replay gate blocks any plan that loses to the rule.**
+**The agent sets three knobs a day; a rule and a safety clamp run the battery every 15 minutes, behind a replay gate.**
 - Exhibit: a left-to-right diagram. Use the same stage names as the demo's pipeline strip, so the audience recognises them on the next slide.
   - Inputs: day-ahead prices, hourly ENTSO-E CO2 for Italy, and memory of the 3–5 most similar past days.
   - Agent: one call a day, goal € + λ·CO2.
