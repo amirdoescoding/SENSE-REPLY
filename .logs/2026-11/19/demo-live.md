@@ -1,0 +1,22 @@
+# demo-live (session 7)
+
+- **Planning:** plan mode with gstack-style questions. The user chose:
+  - a streamed live week;
+  - a passcode on the whole site, 1 run at a time and a cap;
+  - Render free, measure first;
+  - the cue as enlarge + fill, mockup first (c2 tick).
+- **Skills:** emil-design-eng and no-slop-ui in the main session.
+- **Subagents:**
+  - code-reviewer on the cue: found the loop snap and the busy double-count, both fixed;
+  - code-reviewer on live: 1 medium (stale takeover) + 4 low, all fixed;
+  - impeccable finish reviewer: asked for recaptures, then the full review.
+- **Found myself:** the sync SSE generator was never closed when the viewer left. Proved with a stub server, fixed with an async generator.
+- **Commits:** 207f735 mockup · 71f73dc cue · 4ad7682 tick fix (PR #11) · db0b8fe engine · 2853ef8 api · ccf4d10 ui · dfd86fd render · 7f2cb76 review fixes · a09a93f status line.
+- **Measured locally:** live week 51–68 s, 7/7 Gemini, one 503 retried. ENTSO-E timed out today (no regenerate; equivalence checked instead).
+- **Left:** finish-review fixes, push `demo-live`, the Render measurement (user), merge PR #11.
+- **Self-rating: 7/10.**
+  - Good: small diffs, no new deps, every claim checked by sampling the real page.
+  - Weak:
+    - I first claimed Stop saves quota before testing it (it didn't);
+    - one sed chain silently skipped an edit;
+    - the `.tick` class collision cost a round.

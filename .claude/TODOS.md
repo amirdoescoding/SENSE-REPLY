@@ -55,7 +55,17 @@ Close each session with: memory files + `graphify update .`.
   - **Left:** push + PR; connect the Render Blueprint and set `ENTSO_API`; warm up before the demo. Backlog: grid→battery path for upside charging, earlier outcome packet, `compare.json` and step prices still not drawn.
 
 - [x] **6 `demo-polish`** (2026-11-19): grid→battery particle path (upside), Memory→Agent packet at 20:00, plan-day chart in the agent panel (`DayChart.jsx`: SoC ours / pilot C / static rule over the buy price, two panels, no dual axis), KPI strip "Week result" + signed gap to C, blocked-day ring chips, new Agent/Clamp icons, 15 px labels ≥1600, phone fixes. Reviewed by ui-ux-tester, impeccable critique (A+B), code-reviewer (no bugs), impeccable finish pass.
-- [ ] **7 live demo** (next): live Gemini calls from the demo, measure latency / 503s / quota. **If it performs badly, roll back to the original plan: precompute + playback (current main).**
+- [x] **7a `demo-pipeline-cue`** (2026-11-19, PR #11): the working stage enlarges 1.18× and fills (mockup `mock-cue.png`, variant c2). Agent, Validator and Memory ride the packet WAAPI; Rule → Clamp → Site run as a 1.8 s executor loop; reduced motion = fill only.
+- [x] **7b `demo-live`** (2026-11-19, not merged):
+  - "Run the agent live" streams `/api/live` (SSE): real Gemini (cache bypassed), gate, MPC, day by day.
+  - Playback waits at the live frontier; the pipeline follows the server stage with a status line.
+  - Guards: site passcode (Basic auth), 1 run at a time, `LIVE_CAP`/day.
+  - Locally: 51–68 s per week, 7/7 Gemini, one 503 retried.
+- [ ] **7c Render measurement** (needs the user):
+  - Blueprint on `demo-live`, set the secrets, warm up, run 2 live weeks.
+  - Pass: < ~3 min and ≥ 5/7 days from Gemini, then merge.
+  - Slow: Starter ($7).
+  - Bad: don't merge; main stays playback + cue.
 
 ## Honesty flags (show them in the demo)
 - The plain rule won this January week (`analysis/replay.py`), so ours may only tie it. The gate and fallback are part of the story.

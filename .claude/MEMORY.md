@@ -146,3 +146,26 @@
 - KPI strip shows "+x vs C" (ours − pilot C) under a "Week result" heading. User declined renaming the baselines.
 - Craft floor: no unicode glyphs as icons (blocked day = red ring, not ✕).
 - Next session: live Gemini test; roll back to precompute + playback if it performs badly.
+
+## Session 7 (2026-11-19): pipeline cue + live week, branches `demo-pipeline-cue` (PR #11) and `demo-live`
+- **Cue** (mockup `docs/mockups/mock-cue.png`, the user picked c2):
+  - The working stage is enlarged 1.18× (rect + icon; the label stays put) and filled.
+  - Agent, Validator and Memory cues ride the packet WAAPI.
+  - The executor is a WAAPI loop Rule → Clamp → Site every 1.8 s. It is not per step, since a step is ~50 ms at 4×.
+  - Reduced motion: fill only.
+  - Gotcha: the class `.tick` already exists (panel checkmarks). A CSS loop removed at packet boundaries snaps nodes back.
+- **Live** (`/api/live`, SSE):
+  - `agent.ask(live=True)` bypasses `gemini_cache.json`. Otherwise every "live" answer is replayed from the cache, because the prompts are deterministic.
+  - The week streams day by day over the precomputed run (same inputs), and playback waits at the frontier.
+- **Decision reversed:** `GEMINI_API_KEY` now goes on Render (live mode). Guards:
+  - `DEMO_PASSCODE` Basic auth on the whole site except `/healthz`;
+  - one run at a time (owner token + 10-min event heartbeat);
+  - `LIVE_CAP` = 10 runs/day;
+  - Sec-Fetch-Site check.
+- **SSE gotcha:** a sync generator in `StreamingResponse` is never closed when the client leaves, so the worker kept calling Gemini. Use an async generator plus `anyio.to_thread.run_sync(q.get, abandon_on_cancel=True)`.
+- **Local measurement:** a live week takes 51–68 s.
+  - Gemini 5–16 s/day; the gate + MPC ~1.2 s/day.
+  - 7/7 plans from Gemini; one 503 retried.
+  - The live KPIs equal the precomputed ones (same knobs).
+- **Render measurement still to do** (user): pass = < ~3 min/week and ≥ 5/7 from Gemini, else Starter or don't merge `demo-live`.
+- **ENTSO-E** API timed out on 2026-11-19, so `demo/out` was not regenerated. Equivalence was checked old vs new `run_ours` instead.
