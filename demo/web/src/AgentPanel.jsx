@@ -37,13 +37,13 @@ export default function AgentPanel({ run, compare, day, step, lam }) {
       </p>
       <p className="muted small">No grid charging · λ €{lam.toFixed(2)}/kg</p>
 
-      <div className="knobs">
+      {d.knobs ? <div className="knobs">
         <Knob label="Evening reserve" unit="kWh" used={d.knobs.evening_reserve_kwh} proposed={prop.evening_reserve_kwh} show={(v) => v.toFixed(1)} />
         <Knob label="SoC floor" used={d.knobs.soc_floor} proposed={prop.soc_floor} show={(v) => v.toFixed(2)} />
         <Knob label="Hold export above" unit="€/kWh" used={d.knobs.export_hold_eur} proposed={prop.export_hold_eur} show={(v) => v.toFixed(2)} />
-      </div>
+      </div> : <p className="muted small">No valid plan yet this week: the static rule runs the battery today.</p>}
 
-      <p className="why">{blocked && <b>Proposed plan, blocked by the gate: </b>}{d.explanation}</p>
+      <p className="why">{blocked && <b>Proposed plan, blocked by the gate: </b>}{d.explanation.replaceAll('**', '')}</p>
       {d.thoughts && <details className="thoughts">
         <summary>Model reasoning</summary>
         <pre>{d.thoughts.replaceAll('**', '')}</pre>

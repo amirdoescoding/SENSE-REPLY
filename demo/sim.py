@@ -5,7 +5,6 @@ Run: .venv/bin/python demo/sim.py --check   (self-checks against data/Sense_Repl
 KPI formulas follow the KPI Conformity workbook and report §4. Basis: run C inputs, start SoC 0.80.
 """
 import sys
-import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "analysis"))

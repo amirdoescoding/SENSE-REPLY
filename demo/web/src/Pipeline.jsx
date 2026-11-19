@@ -16,7 +16,7 @@ const EVENING = 36 // plan offset of 20:00 (plans start 11:00): the memory packe
 const EASE ='cubic-bezier(.77,0,.175,1)'
 const ARC = `M${X(6)} ${Y - 38} C ${X(6) - 80} 14, ${X(1) + 80} 14, ${X(1)} ${Y - 38}` // clears a node enlarged to 1.18×
 
-// active / fail: node id or null (active = held cue, e.g. a live server stage; status = one line under it). epoch changes on every seek or run switch: in-flight packets are dropped then.
+// active / fail: node id or null (active = held cue; status = the blocked-day line). epoch changes on every seek or run switch: in-flight packets are dropped then.
 // Packets and node pulses are Web Animations kept in `live`, so they can be paused and cancelled together.
 export default function Pipeline({ active, fail, status, step, epoch, playing, speed, reduced }) {
   const live = useRef(new Set())
@@ -28,8 +28,8 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
   const lb = useRef({})
   const svg = useRef(null)
   const busy = useRef(0) // packets in flight: the executor loop rests so one stage reads as 'now'
-  // one mono line under a stage: the live status, else why a blocked day runs the previous plan
-  const line = status && active ? [active, status] : fail === 'validator' && !active ? ['validator', 'blocked, previous plan used'] : null
+  // one mono line under the validator: why a blocked day runs another plan
+  const line = fail === 'validator' && !active ? ['validator', status || 'blocked, previous plan used'] : null
   const [k, setK] = useState(1) // viewBox units per px when the card is narrower than 1400: keeps labels at their real px size
 
   useEffect(() => {

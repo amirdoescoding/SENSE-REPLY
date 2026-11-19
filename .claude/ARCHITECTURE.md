@@ -26,14 +26,15 @@ SENSE-REPLY/
 │   ├── mockups/          # demo mockups: mock.html → render.sh → mock-{1,2,3,kpi}.png; daychart.html → mock-daychart.png; cue.html → mock-cue.png; sky.html → sky.sh → sky-{backdrop,dome}-*.png
 │   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning, 07 self-hosting + simple framework
 ├── demo/                 # hosted demo of PROPOSAL (sessions in .claude/TODOS.md)
-│   ├── sim.py            # engine: daily agent knobs → gate → rolling LP → Excel KPIs (+ META name/unit/group) → out/*.json (--check); run_ours(live, emit) streams stage/day events
-│   ├── agent.py          # Gemini REST + cache (live=True bypasses it) + validator + k-NN memory (seed A+C; live runs append their finished days)
-│   ├── api.py            # FastAPI: /api/run?mode=&lambda=, /api/kpis, /api/compare, /api/live/carbon, /api/live (SSE live week, 1 at a time, LIVE_CAP/day), /healthz; DEMO_PASSCODE Basic auth; serves web/dist
+│   ├── sim.py            # engine: daily agent knobs → gate → rolling LP → Excel KPIs (+ META name/unit/group) → out/*.json (--check); main() regenerates run_{λ}.json with the local model
+│   ├── agent.py          # Ministral 3 8B via llama-server (LLAMA_URL) + committed cache + validator + k-NN memory (seed A+C)
+│   ├── local_bench.py    # bench other local models through the same agent.ask (own bench_cache.json)
+│   ├── api.py            # FastAPI: /api/run?lambda=, /api/kpis, /api/compare, /api/live/carbon (ENTSO-E card), /healthz; DEMO_PASSCODE Basic auth; serves web/dist
 │   ├── test_api.py       # python demo/test_api.py → "api ok"
-│   ├── web/              # Vite + React (plain JS) + three: App (data, header, KPI strip, playback bar, mode/λ state), Kpis (KPIs tab), AgentPanel (+ DayChart: plan-day SoC vs pilot C/rule + price),
-│   │                     #   Pipeline (WAAPI packets + 'now' cue: working stage 1.18× + fill), Site (three.js site + data-driven sky), usePlayback (cap = live frontier), useLive (SSE via fetch), lib; npm run build → dist
-│   └── out/              # precomputed runs (+ per-step price), kpis.json, compare.json, memory.json, gemini_cache.json (last two not served)
-├── render.yaml           # one free Render web service (Python 3.14 + NODE_VERSION 22 for the vite build); secrets ENTSO_API, GEMINI_API_KEY, DEMO_PASSCODE; health /healthz
+│   ├── web/              # Vite + React (plain JS) + three: App (data, header, KPI strip, playback bar, λ state), Kpis (KPIs tab), AgentPanel (+ DayChart: plan-day SoC vs pilot C/rule + price),
+│   │                     #   Pipeline (WAAPI packets + 'now' cue: working stage 1.18× + fill), Site (three.js site + data-driven sky), usePlayback, lib; npm run build → dist
+│   └── out/              # run_{0.0,0.1,0.5}.json (Ministral 3 8B replay), kpis.json (A, C, New framework), compare.json, memory.json, model_cache.json (last two not served)
+├── render.yaml           # one free Render web service (Python 3.14 + NODE_VERSION 22 for the vite build); secrets ENTSO_API, DEMO_PASSCODE (no model on the server); health /healthz
 └── analysis/
     ├── kpis.py           # python3 analysis/kpis.py → KPI table A/B/C, baselines, T1-T3, self-check
     ├── timeseries.py     # per-day KPIs, day-type trade-off, hourly profile, anomalies

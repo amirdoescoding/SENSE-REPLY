@@ -16,7 +16,7 @@ Close each session with: memory files + `graphify update .`.
 - **Guardrails** (§11.3): schema check → clamp (SoC 0.1–0.9, 5 kW) → replay gate vs the static rule → fallback chain (previous valid plan, then the static rule).
 - **Memory:** seeded with the 14 logged days of A + C, scored by regret vs the rule.
 - **Cost basis:** wear €0.005/kWh discharged. Token price = Devstral 2 list $0.40/$2.00 per M at 0.86 €/$ (assumed). Ours also shows the actual Gemini token counts.
-- **Model:** Gemini Flash free tier (`GEMINI_API_KEY` in `.env`), a stand-in for Devstral 2, not a proposal.
+- **Model:** Ministral 3 8B (the proposed model), run locally via llama.cpp; the server only replays the committed plans. (Gemini Flash was the stand-in until session 10.)
 - **Stack:** FastAPI + Vite/React, one Render service; three.js isometric site.
 - **Look:** `docs/DESIGN.md`. Chosen layout = `mock-1` + `mock-kpi`, after the de-slop pass.
 
@@ -72,7 +72,7 @@ Close each session with: memory files + `graphify update .`.
 
 ## Honesty flags (show them in the demo)
 - The plain rule won this January week (`analysis/replay.py`), so ours may only tie it. The gate and fallback are part of the story.
-- Site = Italy is assumed. Gemini ≠ Devstral: it's a capability stand-in.
+- Site = Italy is assumed. The replay's 8B ran at 3-bit on a laptop; the costed set-up serves it at full quality.
 - [x] **9 `report-ministral`** (2026-11-19): diagram (Reply's E&U platform + our changes, `docs/diagrams/reply-platform.*`), KPI workbook and report cut to 3 scenarios (A, C, Ours). Ours = sim conservative λ0.10 + Ministral 3 8B central at 1,000 sites: N1 +0.98, F1 −0.06, 15/20 Good.
-- [ ] **10 demo cleanup:** remove the conservative/upside modes and the S5 columns from the demo (one "Ours" run, λ dial kept?), relabel Gemini → Ministral, decide whether Ministral 3 3B can run on the demo host (Render free = 512 MB RAM, so likely no; options: recorded 3B bench plans, a paid instance, or an API-hosted Ministral).
+- [x] **10 `demo-ministral-replay`** (2026-11-19): replay only (live mode and Gemini removed). The 3 λ runs were regenerated with **Ministral 3 8B Q3_K_S** on the M1 laptop (llama-server, -c 3072, q8 KV): 21/21 valid JSON, 0 clamps, ~27 s/call; the gate kept 2/7 plans at λ 0.10. KPIs tab = Pilot A, Pilot C, New framework (+ F1 row, honesty note). O5 = model_cost central 1,000 sites. Report, workbook and ours_ministral.json synced.
 - [ ] **11 deck:** update `docs/PRESENTATION.md`, `docs/SCRIPT.md` and `docs/deck/deck.pdf` to the 3-scenario, Ministral basis (N1 +0.98, AI €0.18, CO2 12.2 kg, F1 −0.06 caveat, new diagram on the framework slide).
