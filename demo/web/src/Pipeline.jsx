@@ -25,8 +25,11 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
   const layer = useRef(null)
   const ov = useRef({})
   const nd = useRef({})
+  const lb = useRef({})
   const svg = useRef(null)
   const busy = useRef(0) // packets in flight: the executor loop rests so one stage reads as 'now'
+  // one mono line under a stage: the live status, else why a blocked day runs the previous plan
+  const line = status && active ? [active, status] : fail === 'validator' && !active ? ['validator', 'blocked, previous plan used'] : null
   const [k, setK] = useState(1) // viewBox units per px when the card is narrower than 1400: keeps labels at their real px size
 
   useEffect(() => {
@@ -57,7 +60,8 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
     const keys = (off, on) => [{ ...off, easing: 'cubic-bezier(.23,1,.32,1)' }, { ...on, offset: a }, { ...on, offset: b, easing: 'ease-in-out' }, off]
     const on = bad ? { fill: '#FDE7EC', stroke: 'var(--alert)' } : { fill: 'var(--agent-soft)', stroke: 'var(--agent)' }
     for (const a of [go(nd.current[id], keys({ transform: 'scale(1)' }, { transform: 'scale(1.18)' }), { delay, duration: t }),
-      go(nd.current[id].firstChild, keys({}, on), { delay, duration: t })]) if (tick) a.tick = delay
+      go(nd.current[id].firstChild, keys({}, on), { delay, duration: t }),
+      go(lb.current[id], keys({ fill: 'var(--ink-2)', fontWeight: 400 }, { fill: 'var(--ink)', fontWeight: 500 }), { delay, duration: t })]) if (tick) a.tick = delay
   }
   // a packet starts: drop executor ticks that have not begun (running ones finish, so nothing snaps back)
   const quiet = () => live.current.forEach((a) => a.tick !== undefined && a.currentTime < a.tick && a.cancel())
@@ -127,7 +131,7 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
 
   return (
     <section className="card pipeline">
-      <svg ref={svg} viewBox="0 0 1400 190" style={{ '--k': k }} className={reduced ? 'held' : undefined} role="img" aria-label="Decision pipeline: inputs, agent, validator and gate, rule, clamp, site, memory">
+      <svg ref={svg} viewBox={`0 0 1400 ${line ? Math.round(190 + 22 * k) : 190}`} style={{ '--k': k }} className={reduced ? 'held' : undefined} role="img" aria-label="Decision pipeline: inputs, agent, validator and gate, rule, clamp, site, memory">
         <defs>
           <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
             <path d="M1 1l6 3-6 3" fill="none" stroke="context-stroke" strokeWidth="1.2" />
@@ -152,10 +156,10 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
               )}
               <path d={d} transform={`translate(${X(i) - 12} ${Y - 12})`} className="icon" />
             </g>
-            <text x={X(i)} y={Y + 58} textAnchor="middle" className="node-label">
+            <text ref={(e) => { lb.current[id] = e }} x={X(i)} y={Y + 58} textAnchor="middle" className="node-label">
               {k > 1.2 ? label.split(', ').map((t, j) => <tspan key={j} x={X(i)} dy={j ? '1.2em' : 0}>{t}</tspan>) : label}
             </text>
-            {status && active === id && <text x={X(i)} y={Y + 58} dy={k > 1.2 && label.includes(', ') ? '2.6em' : '1.4em'} textAnchor="middle" className="node-status mono">{status}</text>}
+            {line && line[0] === id && <text x={X(i)} y={Y + 58} dy={k > 1.2 && label.includes(', ') ? '2.6em' : '1.4em'} textAnchor="middle" className="node-status mono">{line[1]}</text>}
           </g>
         ))}
         <g ref={layer} />
