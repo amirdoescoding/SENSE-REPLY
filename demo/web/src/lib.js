@@ -18,9 +18,19 @@ export function nextDayWeekday(t) {
   const p = parts(t)
   return WD[new Date(Date.UTC(p.y, p.m - 1, p.d + 1)).getUTCDay()]
 }
+export function prevDayWeekday(t) {
+  const p = parts(t)
+  return WD[new Date(Date.UTC(p.y, p.m - 1, p.d - 1)).getUTCDay()]
+}
 
 export const sgn = (v, n = 2) => { const s = Math.abs(v).toFixed(n); return (v < 0 && +s ? '−' : '+') + s } // no "−0.00"
 export const eur = (v, n = 2) => (v < 0 ? '−' : '') + '€' + Math.abs(v).toFixed(n)
+// why the gate blocked a plan: the numbers for the validator tooltip (scores are € + λ·kg, lower is better)
+export const gateReason = (d, lam) => ({
+  plan: eur(d.gate.score_plan, 3), def: eur(d.gate.score_default, 3), gap: eur(d.gate.score_plan - d.gate.score_default, 3),
+  day: d.gate.basis === 'yesterday' ? `${prevDayWeekday(d.start)}'s data` : "the next day's data (no earlier day yet)",
+  fallback: d.used === 'static rule' ? 'the static rule' : 'the previous plan', co2: lam > 0 ? eur(lam) : null,
+})
 export const num = (v, n = 2) => { const s = Math.abs(v).toFixed(n); return (v < 0 && +s ? '−' : '') + s } // no "−0.00"
 export const kfmt = (n) => (n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n))
 
