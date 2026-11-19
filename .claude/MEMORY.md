@@ -172,3 +172,7 @@
   - Starter would cut it to ~1 min if needed.
   - An existing Render service kept the old health check path (`/api/kpis` → 401 behind the passcode): set it to `/healthz` in Settings or Sync the Blueprint.
 - **ENTSO-E** API timed out on 2026-11-19, so `demo/out` was not regenerated. Equivalence was checked old vs new `run_ours` instead.
+- **Live memory (2026-11-19):** in live runs, finished days join the k-NN pool (14 A/C days + this run). Regret is scored like the seed: day-alone MPC at λ 0.10. Slicing the continuous run gave a +0.07 € bias.
+  - Prompt tag: "earlier day of this run". Costs +1 day-MPC per day (~7 s on Render).
+  - Second Render run (conservative): 4 min 31 s, 7/7 Gemini, one 503 (77 s day). The user accepted this time.
+  - Weather API: deferred. The sim's PV isn't real weather; it belongs in the deck/proposal or a future real-dates "plan tomorrow" mode.
