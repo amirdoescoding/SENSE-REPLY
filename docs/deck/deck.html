@@ -248,7 +248,7 @@ const S={
     {x:0,w:290,t:'Inputs',r:['What the agent knows:','prices, hourly CO2,','similar past days']},
     {x:370,w:260,t:'Agent',r:['Ministral 3 8B, once a day,','writes 3 knobs','and a reason'],k:'ai'},
     {x:690,w:260,t:'Validator',r:['Checks the plan and','replays it on yesterday','before it may run'],k:'ai'},
-    {x:1030,w:200,t:'Rule',r:['Turns the knobs','into kW every','15 minutes']},{x:1290,w:200,t:'Clamp',r:['Safety limits','that always','have the last word']},{x:1550,w:178,t:'Site',r:['PV, battery,','house, grid']}];
+    {x:1030,w:200,t:'Rule',r:['Turns the knobs','into kW every','15 minutes']},{x:1290,w:200,t:'Clamp',r:['Safety limits','that always','have the last word']},{x:1550,w:158,t:'Site',r:['PV, battery,','house, grid']}];
   el(g,'rect',{x:350,y:ny-62,width:620,height:nh+92,rx:12,fill:css('--agent-soft')});
   el(g,'text',{x:370,y:ny-24,class:'lbl',style:`fill:${css('--agent-text')}`},'AI plans once a day');
   el(g,'rect',{x:1010,y:ny-62,width:718,height:nh+92,rx:12,fill:'none',stroke:ln,'stroke-width':1.5});
@@ -258,7 +258,7 @@ const S={
     el(g,'text',{x:n.x+20,y:ny+38,class:'lbl',style:'font-weight:600'},n.t);
     n.r.forEach((r,j)=>el(g,'text',{x:n.x+20,y:ny+72+j*26,class:'sub',style:`fill:${css('--ink2')}`},r));
     if(i<N.length-1)el(g,'line',{x1:n.x+n.w+6,y1:ny+nh/2,x2:N[i+1].x-6,y2:ny+nh/2,stroke:ink,'stroke-width':2,'marker-end':'url(#a)'})});
-  el(g,'path',{d:`M1639,${ny+nh+6} V${ny+nh+86} H145 V${ny+nh+8}`,fill:'none',stroke:ag,'stroke-width':2,'stroke-dasharray':'7 6','marker-end':'url(#am)'});
+  el(g,'path',{d:`M1629,${ny+nh+6} V${ny+nh+86} H145 V${ny+nh+8}`,fill:'none',stroke:ag,'stroke-width':2,'stroke-dasharray':'7 6','marker-end':'url(#am)'});
   el(g,'rect',{x:620,y:ny+nh+70,width:520,height:34,fill:bg});
   el(g,'text',{x:880,y:ny+nh+93,'text-anchor':'middle',class:'sub',style:`fill:${css('--agent-text')}`},'Memory: one row a day (knobs, €, CO2, regret)');
   const fy=ny+nh+150;el(g,'text',{x:0,y:fy,class:'lbl'},'If the agent fails or the gate blocks:');
