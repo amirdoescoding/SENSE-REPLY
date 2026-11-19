@@ -1,187 +1,158 @@
 {
- "basis": "Run C inputs, start SoC 0.80, carbon 0.356 kg/kWh, simulator column 'Ours conservative λ=0.1' from demo/out/kpis.json; only AI-cost-dependent KPIs recomputed",
+ "basis": "Run C inputs, start SoC 0.80, carbon 0.356 kg/kWh; demo/out/kpis.json column 'New framework λ=0.1' = the Ministral 3 8B replay (demo/out/run_0.1.json), AI cost already applied by sim.py",
  "ai_cost_option": "Central on-prem, right-sized GPU node (€4k, 100 W), 1,000 sites",
- "o5_source": "analysis/model_cost.py OPTIONS[...](1000), unrounded",
+ "o5_source": "demo/sim.py O5_NEW = analysis/model_cost.py OPTIONS[...](1000)",
  "kpis": {
   "S_net": {
-   "value": 1.1561,
-   "source": "kpis.json",
+   "value": 1.1586,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "VCR": {
-   "value": 0.6474,
-   "source": "kpis.json",
+   "value": 0.6496,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "VORB": {
-   "value": 0.1142,
-   "source": "kpis.json",
+   "value": 0.1191,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "N1": {
-   "value": 0.979933846153846,
-   "source": "recomputed",
-   "note": "S_net - O5"
+   "value": 0.9824,
+   "source": "demo/out/kpis.json",
+   "note": ""
   },
   "N2": {
-   "value": 0.12460472050230148,
-   "source": "recomputed",
-   "note": "O5 / S (workbook: AI cost / S), S=1.4138"
+   "value": 0.1242,
+   "source": "demo/out/kpis.json",
+   "note": ""
   },
   "F1": {
-   "value": -0.06196615384615384,
-   "source": "recomputed",
-   "note": "VORB - O5"
+   "value": -0.0571,
+   "source": "demo/out/kpis.json",
+   "note": ""
   },
   "O5": {
-   "value": 0.17616615384615383,
-   "source": "recomputed",
-   "note": "analysis/model_cost.py OPTIONS[central on-prem 1,000 sites](1000), Ministral tokenizer, 1 call/day"
+   "value": 0.1762,
+   "source": "demo/out/kpis.json",
+   "note": "sim.py O5_NEW = model_cost.py OPTIONS[central on-prem, 1,000 sites]; N1 = S_net - O5, F1 = VORB - O5, N2 = O5 / S"
   },
   "S2b": {
    "value": -0.2615,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "S3": {
-   "value": 372.5754,
-   "source": "kpis.json",
+   "value": 373.1039,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "MAC": {
-   "value": 0.017314274209784025,
-   "source": "recomputed",
-   "note": "sim.py definition: [(C1+B3+O5)(lam0.1)-(C1+B3+O5)(lam0)]/[S1(lam0)-S1(lam0.1)]; Ministral O5 same in both runs so it cancels; inputs are 4dp-rounded. Excel defn for pilot C (extra cost incl AI / extra CO2 avoided vs A) not applicable"
+   "value": -0.0107,
+   "source": "demo/out/kpis.json",
+   "note": "sim.py: [(C1+B3+O5)(λ0.1) - (C1+B3+O5)(λ0)] / [S1(λ0) - S1(λ0.1)]; negative = the carbon weight saved money too in this run"
   },
   "S1": {
    "value": 12.1597,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "SCR": {
    "value": 0.8203,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "SSR": {
-   "value": 0.6876,
-   "source": "kpis.json",
+   "value": 0.6923,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "PSR": {
-   "value": 0.2965,
-   "source": "kpis.json",
+   "value": 0.5421,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "G2": {
    "value": 0,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "G1": {
-   "value": 3.3761,
-   "source": "kpis.json",
+   "value": 2.1974,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "B1": {
    "value": 0.9025,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "B2": {
-   "value": 5.359,
-   "source": "kpis.json",
+   "value": 5.3838,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "B4": {
    "value": 0.2946,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "B3": {
-   "value": 0.2577,
-   "source": "kpis.json",
+   "value": 0.2602,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "B6": {
-   "value": 0.0506,
-   "source": "kpis.json",
+   "value": 0.0521,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "C5": {
-   "value": 0.7753,
-   "source": "kpis.json",
+   "value": 0.7718,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "C4": {
    "value": 0.0138,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "O1": {
-   "value": 0.010416666666666666,
-   "source": "recomputed",
-   "note": "7 calls / 672 steps"
+   "value": 0.0104,
+   "source": "demo/out/kpis.json",
+   "note": ""
   },
   "O3": {
-   "value": 0.0,
-   "source": "recomputed",
-   "note": "LLM off the control path"
+   "value": 0,
+   "source": "demo/out/kpis.json",
+   "note": ""
   },
   "C1": {
-   "value": 2.1986,
-   "source": "kpis.json",
+   "value": 2.1937,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "S": {
-   "value": 1.4138,
-   "source": "kpis.json",
+   "value": 1.4188,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "IMP": {
-   "value": 32.8235,
-   "source": "kpis.json",
+   "value": 32.3281,
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "EXP": {
    "value": 16.7206,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   },
   "PV": {
    "value": 93.0637,
-   "source": "kpis.json",
+   "source": "demo/out/kpis.json",
    "note": ""
   }
- },
- "bench_check": {
-  "model": "Ministral 3 3B Q4",
-  "conservative": {
-   "S_net": 1.1561,
-   "VORB": 0.1142,
-   "json_ok": 7,
-   "gate_passed": 3,
-   "gate_fell_back": 4,
-   "used": [
-    "plan",
-    "plan",
-    "plan",
-    "previous valid plan",
-    "previous valid plan",
-    "previous valid plan",
-    "previous valid plan"
-   ],
-   "clamped_or_invalid": 0,
-   "tok_in": 11846,
-   "tok_out": 1209
-  },
-  "upside": {
-   "S_net": 1.5683,
-   "VORB": 0.5295,
-   "gate_passed": 7
-  },
-  "same_S_net_as_gemini": true,
-  "note": "plans fall back to previous valid plan on 4/7 days but S_net identical (knobs near defaults)"
  },
  "rule_yardstick": {
   "values": {
@@ -224,5 +195,25 @@
   "IMP": "Context",
   "EXP": "Context",
   "PV": "Context"
+ },
+ "model_run": {
+  "model": "ministral-3-8b-instruct-2512-q3_k_s",
+  "served": "llama.cpp llama-server on an M1 8 GB laptop, -c 3072, q8 KV cache",
+  "calls": 7,
+  "json_ok": 7,
+  "clamped_or_invalid": 0,
+  "used": [
+   "plan",
+   "previous valid plan",
+   "plan",
+   "previous valid plan",
+   "previous valid plan",
+   "previous valid plan",
+   "previous valid plan"
+  ],
+  "gate_passed": 2,
+  "tok_in": 11846,
+  "tok_out": 1141,
+  "note": "the gate keeps or overrides each plan vs the default knobs replayed on yesterday; knob regret is about ±1 cent/day this week"
  }
 }
