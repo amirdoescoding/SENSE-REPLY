@@ -1,156 +1,166 @@
 # Pitch deck: ghost deck (7 minutes, demo included)
 
-Speakers: Sydney (slides 0–4), Amir (5–6, framework + demo), Francesco (7–8). Script: `docs/SCRIPT.md`.
-Numbers follow the report basis (`docs/Sense Reply BDD B2 – Full Analysis Report.docx`):
-- carbon at a constant 0.356 kg/kWh;
-- token price assumed, 0.86 €/$;
-- S5 modelled on run C inputs, start SoC 0.80;
-- site assumed to be in Italy.
+Speakers: Sydney (slides 0–4), Amir (5–6, platform + demo), Francesco (7–9). Script: `docs/SCRIPT.md`. Deck: `docs/deck/deck.html`, rendered by `docs/deck/render.sh`.
+
+**Three scenarios only:** Pilot A (cost), Pilot C (cost + sustainability), New framework (self-hosted single agent, Ministral 3 8B). The free static rule is the yardstick, not a scenario.
+
+**Numbers** follow `docs/REPORT.md` and `data/ours_ministral.json`:
+- the new framework is modelled on run C's sun, load and prices, with start SoC 0.80 and λ = €0.10/kg;
+- carbon uses a constant 0.356 kg/kWh, and the site is assumed to be in Italy;
+- pilot AI cost uses the Devstral 2 list price at 0.86 €/$;
+- the framework's AI cost is Ministral 3 8B on a €4k node at 1,000 sites, ops included (`analysis/model_cost.py`).
 
 ## Title-only read
-0. One carbon-aware agent, not two.
-1. One agent that plans once a day turns the pilot's €7.31 weekly loss into a €1.10 gain and cuts the AI bill by 99%.
+0. One carbon-aware agent, on a model Reply owns.
+1. One self-hosted agent that plans once a day turns pilot C's €7.31 weekly loss into a €0.98 gain and cuts the AI bill by 98%.
 2. We judge every agent against a free rule, because "saved vs no battery" alone makes the pilots look profitable.
 3. Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves.
-4. The second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price; a carbon weight inside one agent costs €31–72.
-5. The agent sets three knobs a day; a rule and a safety clamp run the battery every 15 minutes, behind a replay gate.
-6. Demo: one week of the framework, played at 16×.
-7. On our own KPIs, the framework goes from 5–6 to 16 conforming KPIs, and its worst case is the free rule.
-8. These results come from one modelled winter week; three data gaps decide whether they hold.
+4. A second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price, while a carbon weight inside one agent costs about nothing.
+5. We keep Reply's platform and change two things: a self-hosted Ministral 3 8B replaces the retired external LLM, and the LLM leaves the 15-minute control path.
+6. Demo: Ministral 3 8B wrote every plan of this week, and the replay gate decided which ones the battery ran.
+7. The framework meets 15 of 20 KPIs against 5–6 for the pilots, and draws level with the free rule after AI cost.
+8. Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving.
+9. One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client.
 
-The argument runs: the answer, then the yardstick. The pilots fail it. The second agent buys carbon at a high price. Then the redesign, the demo of it running, its KPI scores and what could break it.
+The argument runs in five steps:
+- the answer, then the yardstick;
+- the pilots fail it, and the second agent buys carbon at a high price;
+- the redesign on Reply's own platform, then the demo;
+- the KPI scores, then the fleet economics and the upsell;
+- the limits and the rollout.
 
 ## Timing and speakers
 
 | # | Time | Speaker | Running total |
 |---|---|---|---|
-| 0–4 | 0:10 + 0:35 + 0:50 + 0:50 + 0:45 | Sydney | 3:10 |
-| 5–6 | 0:45 + 1:30 | Amir | 5:25 |
-| 7–8 | 0:45 + 0:35 | Francesco | 6:45 |
+| 0–4 | 0:10 + 0:30 + 0:40 + 0:45 + 0:35 | Sydney | 2:40 |
+| 5–6 | 0:45 + 1:30 | Amir | 4:55 |
+| 7–9 | 0:40 + 0:45 + 0:25 | Francesco | 6:45 |
 
-That leaves 15 s of buffer. The demo plays the **precomputed** week. A live Gemini week takes 2:44–5:23 on Render free, so never run it live on stage. Keep a 60 s screen recording as a backup.
+**Demo.** It replays the committed Ministral 3 8B plans; nothing runs live. Keep a 60 s screen recording as a backup.
 
 ## Slides
 
 ### 0. Title (0:10)
-- "One carbon-aware agent, not two". Subtitle: Sense Reply B2, Albert School BDD, Nov 2026. Names of the speakers.
-- Exhibit: none.
+"One carbon-aware agent, on a model Reply owns", with the names. No exhibit.
 
-### 1. Answer (0:35)
-**One agent that plans once a day turns the pilot's €7.31 weekly loss into a €1.10 gain and cuts the AI bill by 99%.**
-- Exhibit: three before → after figures, pilot C → S5 conservative:
+### 1. Answer (0:30)
+Three before → after figures, pilot C → New framework:
+- N1: −€7.31 → +€0.98/wk;
+- AI cost: €7.71 → €0.18/wk;
+- grid CO2: 21.3 → 12.2 kg/wk.
 
-| KPI | Pilot C | S5 conservative |
-|---|---|---|
-| N1 net value after AI cost | −€7.31/wk | +€1.10/wk |
-| AI cost | €7.71/wk | €0.01/wk |
-| Grid CO2 | 21.3 kg/wk | 13.5 kg/wk |
+Source: report §1.
 
-- Footer: modelled on one winter week, run C inputs. Source: report §1, §8.2.
+### 2. KPIs (0:40)
+**Layout.** One layer, five category columns: Value, AI economics, Carbon, Self-use and grid, Battery and timing.
 
-### 2. KPIs (0:50)
-**We judge every agent against a free rule, because "saved vs no battery" alone makes the pilots look profitable.**
-- Exhibit: KPI tree, five groups. Show the ID and a plain name only, no formulas:
-  - Value: S_net, VCR, VORB
-  - AI economics: N1, N2, O1, O5
-  - Carbon: S2b, MAC
-  - Self-use and grid: SCR, SSR, PSR
-  - Battery and orchestration: B4, C5
-- Side note: there are three twins for every run (no battery, static rule, perfect-foresight optimiser). Thresholds can be edited in the Excel.
-- Callout: the pilots conform on 5–6 of 19–20 KPIs.
-- Source: report §4 step 3, §5; `data/Sense_Reply_B2_KPI_Conformity.xlsx`.
+**Each of the 20 KPIs is a card with:**
+- a plain question;
+- its code and unit;
+- the pass line;
+- a tag for its yardstick: free rule (blue), no battery, perfect optimiser, or fixed target.
 
-### 3. The two pilots (0:50)
-**Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves.**
-- Exhibit: comparison table, highlighted on N1:
+The thresholds come from `data/Sense_Reply_B2_KPI_Conformity.xlsx`. No results are shown on this slide.
 
-| | Pilot A (cost) | Pilot C (cost + sust.) | Static rule |
+### 3. The two pilots (0:45)
+**Bars.** Saving vs no battery against AI bill, per pilot:
+
+| Pilot | Saving | AI bill | Ratio |
 |---|---|---|---|
-| N1 net after AI (€/wk) | −4.33 | −7.31 | +1.03 |
-| VORB vs rule (€/wk) | −0.73 | −0.67 | 0 |
-| AI cost (€/wk) | 4.74 | 7.71 | 0 |
-| LLM calls per decision | 4.4 | 7.6 | 0 |
-| Grid CO2 (kg/wk) | 21.9 | 21.3 | 11.9 |
+| A | €0.60 | €4.74 | 7.8× |
+| C | €0.63 | €7.71 | 12.2× |
 
-- Three callouts on the causes, taken from the prompts and BSS.json:
-  - a fixed 80% target fills the battery by late morning;
-  - export is valued at zero, so midday PV goes out at €0.09 and comes back at €0.11–0.12 in the evening;
-  - the sustainability agent gets no price and no CO2.
-- Source: report §4 step 9, §5.2.
+**Three causes, from the prompts:**
+- a fixed 80% target;
+- export valued at zero;
+- a blind second agent.
 
-### 4. Cost vs sustainability (0:45)
-**The second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price; a carbon weight inside one agent costs €31–72.**
-- Exhibit: scatter. x = grid CO2 (kg/wk, lower is better), y = N1 (€/wk). Points:
+Source: report §4 step 9, §5.
 
-| Scenario | CO2 (kg/wk) | N1 (€/wk) |
+### 4. Cost vs sustainability (0:35)
+**Scatter.** x = grid CO2, y = N1.
+
+| Point | CO2 (kg/wk) | N1 (€/wk) |
 |---|---|---|
 | A | 21.9 | −4.33 |
 | C | 21.3 | −7.31 |
-| Static rule | 11.9 | +1.03 |
-| S5 conservative | 13.5 | +1.10 |
-| S5 upside | 22.2 | +1.78 |
+| Free rule (hollow) | 11.9 | +1.03 |
+| New framework | 12.2 | +0.98 |
 
-- Callouts:
-  - A → C: +€2.97/wk for −0.7 kg, which is €4,300/t (€2,000/t on hourly carbon), against an EU ETS price of about €90/t;
-  - S5 upside earns the most but emits like the pilots, so it runs in shadow mode.
-- The full trade-off matrix goes to the appendix. Source: report §6.2, §7.
+An arrow runs from A to C: "+€2.97 AI cost, −0.7 kg".
 
-### 5. Framework (0:45)
-**The agent sets three knobs a day; a rule and a safety clamp run the battery every 15 minutes, behind a replay gate.**
-- Exhibit: a left-to-right diagram. Use the same stage names as the demo's pipeline strip, so the audience recognises them on the next slide.
-  - Inputs: day-ahead prices, hourly ENTSO-E CO2 for Italy, and memory of the 3–5 most similar past days.
-  - Agent: one call a day, goal € + λ·CO2.
-  - Validator: schema check, then the replay gate.
-  - Rule: every 15 min.
-  - Clamp: SoC 10–90%, 5 kW.
-  - Site, then back to memory: one row a day.
-- Fallback line under the diagram: agent plan → previous valid plan → static rule.
-- Today vs framework, in small type: LLM calls ~730/day → 1–3/day; LLM leaves the control path; export valued at sellPrice; the 80% target becomes an evening reserve.
-- Source: report §3, `docs/PROPOSAL.md`.
+**Stats:**
+- €4,300/t for the second agent;
+- €90/t EU ETS;
+- ≈ €0/t for a carbon weight (MAC −€0.011/kg, within the gate's noise).
+
+Source: report §7.2.
+
+### 5. Platform (0:45)
+Reply's "Agentic Operations for E&U" platform, redrawn in deck style. Blue marks our change; a dashed outline marks the paid option; red marks what we removed.
+- **Edge:** a rule and a clamp every 15 min, with fallback to yesterday's plan, then the static rule.
+- **Central:** Ministral 3 8B self-hosted, a validator with a replay gate, and the Data Lake as memory.
+- **Paid option:** Ministral 3 3B on the gateway.
+- **Removed:** the external LLM (Devstral 2, retired 31 Jul 2026).
+
+Source: report §3.1, `docs/diagrams/reply-platform.html`.
 
 ### 6. Demo (1:30)
-**Demo: one week of the framework, played at 16×.**
-- Slide: a full-bleed cue with the site URL and "precomputed run, Gemini Flash standing in for Devstral 2".
-- Click path:
-  1. Simulation tab at 11:00 on plan day 1: the agent's knobs and its reason. (0:20)
-  2. Similar past days and their regret; the memory → agent arc fires. (0:20)
-  3. A gate-blocked day: knobs struck through, fallback to the previous plan. (0:20)
-  4. Play at 16× for one day: energy flows and the day chart. (0:15)
-  5. KPIs tab: the "Ours" column next to A, C and the rule. (0:15)
-- Number check: the demo shows N1 ≈ 1.15 for conservative at λ 0.10; the report says 1.10. Say "rerun of the same model". Better: align the demo before the talk.
+**Slide.** A screenshot of the blocked Tuesday plus four "what to watch" items: Agent, Memory, Validator, KPIs.
 
-### 7. Results on our KPIs (0:45)
-**On our own KPIs, the framework goes from 5–6 to 16 conforming KPIs, and its worst case is the free rule.**
-- Exhibit: before/after table; the upside column is greyed and tagged "shadow mode":
+**Click path:**
+1. Plan for Mon at 11:00: knobs and reason. (0:20)
+2. The similar past days and the memory arc. (0:20)
+3. Tue: the gate blocks, and the previous valid plan runs. (0:20)
+4. One day at 16×. (0:15)
+5. KPIs tab. (0:15)
 
-| KPI | Pilot A | Pilot C | S5 cons. | S5 upside |
-|---|---|---|---|---|
-| N1 net after AI (€/wk) | −4.33 | −7.31 | +1.10 | +1.78 |
-| VORB vs rule (€/wk) | −0.73 | −0.67 | +0.08 | +0.79 |
-| AI cost (€/wk) | 4.74 | 7.71 | 0.01 | 0.01 |
-| Grid CO2 (kg/wk) | 21.9 | 21.3 | 13.5 | 22.2 |
-| Self-consumption | 0.52 | 0.54 | 0.78 | 0.53 |
-| Peak import (kW) | 4.81 | 2.93 | 2.24 | 5.11 |
-| KPIs Good | 5–6 | 5–6 | 16 | 14 |
+### 7. Results on our KPIs (0:40)
+**Grid.** The same as slide 2. Each card gets three verdict dots (A · C · New): blue for Good, red for Improvable.
 
-- Callout: most of the conservative gain comes from dropping the 80% target and valuing export, not from intelligence. Say so before the jury does.
-- Source: report §6.2, §8.2.
+**Totals:** A 5/19, C 6/20, New 15/20.
 
-### 8. Limits and next steps (0:35)
-**These results come from one modelled winter week; three data gaps decide whether they hold.**
-- Left, the gaps:
-  1. The data has no CO2 field and no agent proposal logs, so win rate and regret can't be measured on the pilots.
-  2. The runs are not controlled: start SoC differs (A 0.57, C 0.80) and so does panel dirt. Only A vs C, scored against twins, is usable.
-  3. There is one winter week, and the simulated PV is not real weather (peak at 10:00, ~14 h of sun in January).
-- Right, next steps:
-  - replay a summer week;
-  - log the agents' proposals;
-  - feed a weather forecast to the agent;
-  - run the upside mode in shadow mode before going live.
-- Source: report §10.3, §9.3.
+**Money line:**
+- N1 +€0.98, against +€1.03 for the free rule;
+- VORB +€0.12 before AI cost;
+- F1 −€0.06 after AI cost.
+
+**Callout.** Most of the gain comes from design (no 80% target, export valued at its price), not from intelligence.
+
+Source: report §6, workbook.
+
+### 8. Business case (0:45)
+**Chart.** Log-log: AI cost per site per week against fleet size, 100–10,000 sites. Points come from `model_cost.OPTIONS`.
+- **Lines:** on-prem 8B, the same model on an EU API, and the on-site 3B box (flat €1.86–8.12/wk).
+- **Thresholds:**
+  - S_net €1.16: above it, AI eats the whole saving;
+  - VORB €0.12: below it, the agent beats the free rule after AI.
+- **Crossings:** the EU API from ~580 sites; on-prem from ~1,500.
+
+**Upsell.** Every site already runs on without internet: rule, clamp and yesterday's plan. The 3B box adds daily replanning offline and keeps data on site. Price it at or above its cost of €97–422 per site per year.
+
+Source: report §8.
+
+### 9. Limits and rollout (0:25)
+**Limits:**
+- one modelled winter week, with PV that is not real weather;
+- no CO2 field and no logs of agent proposals;
+- the self-hosting cost is an estimate (€4k node, 0.1 FTE).
+
+**Rollout,** report §9 phases 0–4:
+- fix the baseline;
+- prove decision value on other seasons;
+- carbon desk;
+- pilot sites on an EU API;
+- in-house at ~1,000 sites.
 
 ### Appendix (Q&A only)
-- A1. Full trade-off matrix (report §7.1)
-- A2. KPI formulas: C_adj, S, S_net, N1, N2 (report §4 step 4)
-- A3. CO2 method: ENTSO-E A75 → IPCC lifecycle factors → hourly CI (report §4 step 7)
-- A4. Data corrections: cost field, missing sample in B, wear €0.005/kWh (report §10.2)
+- **A1.** The decision pipeline, using the demo's stage names (report §3.2).
+- **A2.** Trade-off matrix, three scenarios (report §7.1).
+- **A3.** KPI formulas (report §4).
+- **A4.** CO2 method (report §4 step 7).
+- **A5.** Data corrections (report §10).
+- **A6.** Ministral bench (report §3.3):
+  - 8B: 21/21 valid JSON, ~27 s per call on an 8 GB laptop;
+  - 3B: 14/14 valid JSON, 12–14 s per call.
