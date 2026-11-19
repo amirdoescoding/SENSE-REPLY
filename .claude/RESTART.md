@@ -3,8 +3,8 @@
 2026-11-19, session 7.
 - **Branches:**
   - `demo-pipeline-cue` = PR #11: the pipeline "now" cue. Ready to merge.
-  - `demo-live` (built on the cue, not pushed): the live Gemini week over SSE, the site passcode and the guards.
-- **Where I stopped:** the impeccable finish review of the live UI and the cue (captures in `.impeccable/review/`). Apply its fixes, then push `demo-live`.
+  - `demo-live` (built on the cue, pushed, no PR): the live Gemini week over SSE, the site passcode and the guards.
+- **Where I stopped:** all review fixes applied. `demo-live` is pushed (no PR until Render passes). PR #11 includes the cue finish fixes.
 - **Next (needs the user): Render measurement.**
   1. Point the Blueprint at `demo-live`.
   2. Set `GEMINI_API_KEY`, `DEMO_PASSCODE` and `ENTSO_API`.
