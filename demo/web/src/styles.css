@@ -101,6 +101,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pipeline .ov.validator { fill: none; stroke: var(--alert); stroke-width: 1.5; }
 .pipeline .flow { stroke: var(--agent); stroke-width: 1.5; stroke-dasharray: 4 8; opacity: .5; animation: flow linear infinite; }
 @keyframes flow { to { stroke-dashoffset: -12; } }
+.pl-wrap { position: relative; }
+.pipeline [data-id='validator'][tabindex] { outline: none; }
+.pipeline [data-id='validator'][tabindex]:focus-visible .node { stroke-width: 3; }
+.gate-tip { position: absolute; width: 300px; max-width: calc(100vw - 32px); background: var(--card); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 2px 8px #151F2714; padding: 10px 12px; font: 14px/1.45 var(--sans); color: var(--ink-2); z-index: 5; pointer-events: none;
+  opacity: 0; transform: translateX(-50%) scale(.97); transform-origin: bottom center; visibility: hidden; transition: opacity 100ms var(--ease-out), transform 100ms var(--ease-out), visibility 0s 100ms; }
+.gate-tip.open { opacity: 1; transform: translateX(-50%) scale(1); visibility: visible; transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out); }
+.gate-tip b { color: var(--alert); font-weight: 500; }
+.gate-tip p { margin: 4px 0 0; }
+.gate-tip .mono { font: 13px var(--monof); color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .gate-tip, .gate-tip.open { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .pipeline .flow { display: none; } }
 
 /* playback bar */
@@ -173,7 +183,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .site > .muted { display: block; max-width: 55%; }
   .site-time { font-size: 13px; }
   .pipeline { overflow-x: auto; }
-  .pipeline svg { min-width: 760px; } /* scroll the strip sideways instead of shrinking it unreadable */
+  .pl-wrap { min-width: 760px; } /* scroll the strip sideways instead of shrinking it unreadable */
+  .gate-tip { position: sticky; left: 0 !important; width: auto; max-width: calc(100vw - 66px); bottom: auto !important; margin-top: 8px; transform: none !important; display: none; }
+  .gate-tip.open { display: block; } /* the scroll strip clips above: open in flow below the svg instead */
   .lab .c { white-space: nowrap; font-size: 12px; padding: 4px 6px; }
 }
 .plan-label { align-self: center; margin-right: 2px; }

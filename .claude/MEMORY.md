@@ -197,3 +197,8 @@
 - KPI columns: A, C, `New framework λ=x`. The static rule stays in sim.EXCEL only as the yardstick and for check 1b; S5 columns, `check_lp` and `run_perfect` are deleted.
 - Report FINAL.docx is a pure pandoc build of REPORT.md (verified identical text), so rebuild it: `cd docs && pandoc REPORT.md --resource-path=. --reference-doc="…FINAL.docx" -o "…FINAL.docx"`. Charts need `/opt/anaconda3/bin/python analysis/report_charts.py` (matplotlib).
 - Headless screenshots: the old swiftshader recipe now fails (WebGL off, shot before data). Use Playwright from the npx cache with `--use-angle=metal` and `waitForSelector('.panel')` (script in the session log).
+
+## Gate tooltip (2026-11-19), branch `demo-gate-reason`
+- Hovering, tapping or keyboard-focusing the red Validator node on a blocked day opens a tooltip with the reason. UI only: `lib.gateReason` uses the existing `d.gate` scores. No sim regeneration (ENTSO-E down), so per-knob attribution is skipped.
+- Status line under the node is just "blocked" (user choice; the old long line overlapped "every 15 min" at 1600 px).
+- Phone: `.pipeline` overflow-x clips upward, so the tooltip opens in flow below the svg. Hover = mouse only, focus = `:focus-visible` only, or a tap opens and closes at once.

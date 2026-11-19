@@ -1,5 +1,7 @@
 # Restart point
 
+2026-11-19 (later): `demo-gate-reason` done (2 commits + docs), not pushed. Validator tooltip explains gate blocks. Next: push + PR, then the deck as below.
+
 2026-11-19: `demo-ministral-replay` session closed. Branch not pushed yet (no PR). Commits:
 - engine: Ministral 3 8B via llama-server replaces Gemini; drop upside, S5, live code; O5 from model_cost;
 - replay: 3 λ runs regenerated with the 8B (Q3_K_S on the M1);

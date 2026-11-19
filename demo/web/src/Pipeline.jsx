@@ -18,7 +18,7 @@ const ARC = `M${X(6)} ${Y - 38} C ${X(6) - 80} 14, ${X(1) + 80} 14, ${X(1)} ${Y 
 
 // active / fail: node id or null (active = held cue; status = the blocked-day line). epoch changes on every seek or run switch: in-flight packets are dropped then.
 // Packets and node pulses are Web Animations kept in `live`, so they can be paused and cancelled together.
-export default function Pipeline({ active, fail, status, step, epoch, playing, speed, reduced }) {
+export default function Pipeline({ active, fail, status, step, epoch, playing, speed, reduced, reason }) {
   const live = useRef(new Set())
   const prev = useRef({ step, epoch })
   const resumed = useRef(false)
@@ -29,7 +29,9 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
   const svg = useRef(null)
   const busy = useRef(0) // packets in flight: the executor loop rests so one stage reads as 'now'
   // one mono line under the validator: why a blocked day runs another plan
-  const line = fail === 'validator' && !active ? ['validator', status || 'blocked, previous plan used'] : null
+  const line = fail === 'validator' && !active ? ['validator', status || 'blocked'] : null
+  const [open, setOpen] = useState(false) // validator tooltip
+  useEffect(() => setOpen(false), [JSON.stringify(reason)]) // reason is rebuilt every render: compare by value
   const [k, setK] = useState(1) // viewBox units per px when the card is narrower than 1400: keeps labels at their real px size
 
   useEffect(() => {
@@ -129,9 +131,11 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
     return () => document.removeEventListener('visibilitychange', f)
   }, [])
 
+  const H = line ? Math.round(190 + 22 * k) : 190
   return (
     <section className="card pipeline">
-      <svg ref={svg} viewBox={`0 0 1400 ${line ? Math.round(190 + 22 * k) : 190}`} style={{ '--k': k }} className={reduced ? 'held' : undefined} role="img" aria-label="Decision pipeline: inputs, agent, validator and gate, rule, clamp, site, memory">
+      <div className="pl-wrap">
+      <svg ref={svg} viewBox={`0 0 1400 ${H}`} style={{ '--k': k }} className={reduced ? 'held' : undefined} role="img" aria-label="Decision pipeline: inputs, agent, validator and gate, rule, clamp, site, memory">
         <defs>
           <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
             <path d="M1 1l6 3-6 3" fill="none" stroke="context-stroke" strokeWidth="1.2" />
@@ -148,7 +152,14 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
             style={{ animationDuration: `${1.5 / speed}s`, animationPlayState: playing ? 'running' : 'paused' }} />
         ))}
         {NODES.map(([id, label, d], i) => (
-          <g key={id} className={(active === id ? 'on' : active ? 'dim' : '') + (fail === id ? ' fail' : '')} data-id={id}>
+          <g key={id} className={(active === id ? 'on' : active ? 'dim' : '') + (fail === id ? ' fail' : '')} data-id={id}
+            {...(reason && id === 'validator' && {
+              tabIndex: 0, 'aria-describedby': 'gate-tip', style: { cursor: 'help' },
+              // hover = mouse only, focus = keyboard only: a tap fires both before its click toggles
+              onPointerEnter: (e) => e.pointerType === 'mouse' && setOpen(true), onPointerLeave: (e) => e.pointerType === 'mouse' && setOpen(false),
+              onFocus: (e) => e.currentTarget.matches(':focus-visible') && setOpen(true), onBlur: () => setOpen(false),
+              onClick: () => setOpen((o) => !o), onKeyDown: (e) => e.key === 'Escape' && setOpen(false),
+            })}>
             <g ref={(e) => { nd.current[id] = e }} className="nd">{/* scaled as one: rect, overlay, icon; the label stays put */}
               <rect x={X(i) - 28} y={Y - 28} width="56" height="56" rx="14" className="node" />
               {(id === 'agent' || id === 'validator') && (
@@ -164,6 +175,14 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
         ))}
         <g ref={layer} />
       </svg>
+      {reason && (
+        <div id="gate-tip" role="tooltip" className={'gate-tip' + (open ? ' open' : '')} style={{ left: `${X(2) / 14}%`, bottom: `calc(${(1 - 68 / H) * 100}% + 10px)` }}>
+          <b>Blocked by the replay gate</b>
+          <p>Replayed on {reason.day}, this plan {reason.co2 ? 'scored' : 'cost'} <span className="mono">{reason.plan}</span>, the default knobs <span className="mono">{reason.def}</span>{reason.co2 ? <> (CO2 priced at <span className="mono">{reason.co2}</span>/kg).</> : '.'}</p>
+          <p>The default was <span className="mono">{reason.gap}</span> {reason.co2 ? 'better' : 'cheaper'}, so {reason.fallback} ran.</p>
+        </div>
+      )}
+      </div>
     </section>
   )
 }

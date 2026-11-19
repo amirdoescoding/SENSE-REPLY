@@ -4,7 +4,7 @@ import Kpis from './Kpis.jsx'
 import Pipeline from './Pipeline.jsx'
 import Site from './Site.jsx'
 import usePlayback from './usePlayback.js'
-import { DAY_STEPS, LAMS, MAX_STEP, num, sgn, sunSeries, timeLabel, weekday } from './lib.js'
+import { DAY_STEPS, LAMS, MAX_STEP, gateReason, num, sgn, sunSeries, timeLabel, weekday } from './lib.js'
 
 const KPIS = [
   ['N1', 'net value after AI', '€/wk', (v) => sgn(v)],
@@ -142,7 +142,7 @@ function Sim({ data, run, lam, setLam }) {
     <main className="sim">
       <KpiStrip kpis={data.kpis} lam={lam} />
       <Site row={run.schedule[pb.step]} step={pb.step} sun={sun[pb.step]} reducedMotion={reduced} />
-      <Pipeline active={reduced && pb.step % DAY_STEPS < 3 ? 'agent' : null} fail={blocked ? 'validator' : null} status={blocked ? `blocked, ${d.used} used` : null}
+      <Pipeline active={reduced && pb.step % DAY_STEPS < 3 ? 'agent' : null} fail={blocked ? 'validator' : null} status={blocked ? 'blocked' : null} reason={blocked ? gateReason(d, lam) : null}
         step={pb.step} epoch={pb.seeks + '_' + lam} playing={pb.playing} speed={pb.speed} reduced={reduced} />
       <PlaybackBar pb={pb} run={run} day={day} lam={lam} setLam={setLam} />
       <AgentPanel run={run} compare={data.compare} day={day} step={pb.step} lam={lam} />
