@@ -108,22 +108,21 @@ Reply's "Agentic Operations for E&U" platform, redrawn in deck style. Blue marks
 Source: report §3.1, `docs/diagrams/reply-platform.html`.
 
 ### 6. Pipeline, then the demo (0:30 + 1:00)
-**Slide.** The decision pipeline, using the demo's stage names. A blue band marks "AI plans once a day"; an outlined band marks "executes every 15 minutes, no LLM".
-- **Inputs:** day-ahead buy and sell prices, hourly ENTSO-E CO2, yesterday's PV and load as the forecast, battery charge, and 3–5 similar past days with their regret.
-- **Agent:** Ministral 3 8B, one call at 11:00, goal € + λ·kg CO2. It returns three knobs (SoC floor 10–50%, evening reserve 0–8 kWh at 17:00, hold export above €0–0.20/kWh) and a two-sentence reason.
-- **Validator:**
-  1. schema check;
-  2. limits: knobs clamped to their ranges, grid charging removed;
-  3. replay gate: the plan must not cost more than the default plan on yesterday.
+**Slide.** The original left-to-right pipeline, using the demo's stage names. Each stage has a one-phrase role:
+- **Inputs:** what the agent knows (prices, hourly CO2, similar past days);
+- **Agent:** Ministral 3 8B, once a day, writes 3 knobs and a reason;
+- **Validator:** checks the plan and replays it on yesterday before it may run;
+- **Rule:** turns the knobs into kW every 15 minutes;
+- **Clamp:** safety limits that always have the last word;
+- **Site.**
 
-  On failure, the previous valid plan runs, then the static rule.
-- **Rule:** turns the knobs into kW every 15 min.
-- **Clamp:** SoC 10–90%, ±5 kW tapering when full, no grid charging, runs on the gateway even offline.
-- **Site:** telemetry every 15 min.
-- **Next inputs, not built yet (dashed box):** weather forecast, day-ahead CO2 forecast (tested: error 8.7% → 5.2%), calendar and EV, soiling and fault alerts, DSO flexibility requests, tariff changes.
-- **Memory:** one row a day, k-NN over similar days, no training.
+Under the boxes:
+- the memory loop;
+- the fallback chain: agent plan → previous valid plan → static rule;
+- one line of next inputs, not built yet;
+- the strip of three changes: calls ~730 → 1, export €0 → sell price, 80% target → evening load.
 
-Source: `demo/agent.py` (RANGES, validate), `demo/sim.py` (gate).
+Amir explains the validator and the rule aloud; details are in `demo/agent.py` and `demo/sim.py`.
 
 **Demo click path,** from this slide to the site:
 1. Mon 11:00: knobs and reason. (0:15)
