@@ -132,7 +132,9 @@ Context: {json.dumps(ctx)}
 Hourly buy prices tomorrow (€/kWh, day-ahead, 24 values from 11:00): {prices}
 Hourly grid CO2 forecast (g/kWh, persistence): {co2_fc}
 Most similar past days, with the knobs that worked best in hindsight and their regret vs a plain rule
-(negative = beat the rule): {json.dumps([dict(context=n["context"], knobs=n["knobs"], regret=n["regret_vs_rule"]) for n in neighbours])}
+(negative = beat the rule): {json.dumps([dict(context=n["context"], knobs=n["knobs"], regret=n["regret_vs_rule"])
+             | ({"note": "earlier day of this run: the knobs it used, not the hindsight best"} if n["run"] == "this run" else {})
+             for n in neighbours])}
 
 Answer JSON only: {{"soc_floor": x, "evening_reserve_kwh": x, "export_hold_eur": x, "grid_charge": null or
 {{"from": h, "to": h}}, "explanation": "2-3 plain sentences for the home owner: what you chose and why"}}"""

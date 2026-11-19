@@ -391,6 +391,12 @@ def run_ours(rows, mode, lam, ci, mem, soc0=0.80, live=False, emit=None):
         if live:
             print(f"live {mode} λ={lam} day {day + 1}: {ans['source']} {ms}", flush=True)
         emit("day", dict(day=days[-1], schedule=schedule(rows[start:start + 96], df), ms=ms))
+        if live and knobs is not None:  # the finished day joins the memory for the rest of this run (live only: the
+            day_rows = rows[start:start + 96]  # precomputed replay keeps the fixed A + C seed until it is regenerated)
+            # scored like the seed (day-alone MPC, λ 0.10): a slice of the continuous run is biased at the day cut
+            regret = (day_score(day_rows, run_day(rows, start, soc, knobs, mode, 0.10, ci), 0.10)[0]
+                      - day_score(day_rows, rule_flows(day_rows, soc), 0.10)[0])
+            mem = mem + [dict(run="this run", day=day, mode=mode, context=ctx, knobs=knobs, regret_vs_rule=float(regret))]
         soc = df["soc"][-1]
     return f, days
 
