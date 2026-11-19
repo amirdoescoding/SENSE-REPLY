@@ -6,7 +6,7 @@ services:
     # The web build needs Node (vite 8) in Render's Python build image: NODE_VERSION pins it.
     buildCommand: pip install -r demo/requirements.txt && cd demo/web && npm ci && npm run build
     startCommand: uvicorn --app-dir demo api:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /api/kpis
+    healthCheckPath: /healthz  # open even with DEMO_PASSCODE set
     envVars:
       - key: PYTHON_VERSION
         value: 3.14.0
@@ -14,3 +14,9 @@ services:
         value: "22"
       - key: ENTSO_API
         sync: false
+      - key: GEMINI_API_KEY  # live agent week; without it the live button falls back to memory
+        sync: false
+      - key: DEMO_PASSCODE  # Basic auth on the whole site (any user name)
+        sync: false
+      - key: LIVE_CAP  # live runs per day (7 Gemini calls each, free tier 500/day)
+        value: "10"
