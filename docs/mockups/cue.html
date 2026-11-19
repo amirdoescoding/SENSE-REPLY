@@ -1,0 +1,89 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Pipeline cue</title>
+<style>
+@font-face { font-family: 'Instrument Sans'; font-weight: 400; src: url(../../demo/web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-400-normal.woff2); }
+@font-face { font-family: 'Instrument Sans'; font-weight: 500; src: url(../../demo/web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-500-normal.woff2); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 400; src: url(../../demo/web/node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2); }
+:root { --ink:#151F27; --ink-2:#3F4D5A; --mute:#66727E; --line:#D6E0EA; --paper:#F4F8FC; --agent:#3A7DDA; --agent-soft:#E8F0FB; --alert:#EB0037; --alert-soft:#FDE7EC; }
+body { margin: 0; padding: 32px 48px; background: var(--paper); color: var(--ink); font: 400 15px/1.4 'Instrument Sans', sans-serif; }
+h1 { font-size: 20px; font-weight: 500; margin: 0 0 4px; }
+.lead { color: var(--ink-2); margin: 0 0 24px; }
+.row { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: center; margin-bottom: 16px; }
+.row p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.row b { display: block; color: var(--ink); font-weight: 500; font-size: 15px; margin-bottom: 4px; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 16px; box-shadow: 0 1px 2px #151F270F; }
+svg { display: block; width: 100%; height: auto; }
+.link { stroke-width: 1.5; }
+.arc { fill: none; stroke: var(--mute); stroke-width: 1; stroke-dasharray: 3 4; }
+.arc-label { font: 400 13px 'Instrument Sans'; fill: var(--mute); paint-order: stroke; stroke: #fff; stroke-width: 8px; }
+.node { fill: #fff; stroke: var(--line); stroke-width: 1.5; }
+.icon { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.label { font: 400 14px 'Instrument Sans'; fill: var(--ink-2); }
+.status { font: 400 12px 'JetBrains Mono'; fill: var(--agent); }
+/* the cue */
+.dim .icon { opacity: .5; } .dim .label { fill: var(--mute); }
+.on .node { fill: var(--agent-soft); stroke: var(--agent); stroke-width: 2; }
+.on .icon { stroke: var(--agent); }
+.on .label { fill: var(--ink); font-weight: 500; }
+.bad .node { fill: var(--alert-soft); stroke: var(--alert); stroke-width: 2; }
+.bad .icon { stroke: var(--alert); }
+.bad .label { fill: var(--ink); font-weight: 500; }
+.bad .status { fill: var(--alert); }
+.packet { fill: var(--agent); }
+h2 { font-size: 15px; font-weight: 500; margin: 28px 0 12px; color: var(--ink); }
+</style></head>
+<body>
+<h1>Pipeline: which stage is working now</h1>
+<p class="lead">Active stage: 1.18× (rect + icon only, label stays put so nothing shifts), blue fill + 2 px stroke, bold ink label. Other stages: icon 50 %, label muted. Motion: 200 ms ease-out scale, no bounce. Reduced motion: fill only.</p>
+<div id="rows"></div>
+<script>
+const NODES = [
+  ['inputs','Inputs','M6 8h12M6 12h12M6 16h8'],
+  ['agent','Agent, 1×/day','M5 6h14v10h-7l-4 3v-3H5zM8.5 9.5h7M8.5 12.5h4'],
+  ['validator','Validator + gate','M6 12.5l4 4 8-9'],
+  ['rule','Rule, every 15 min','M6 8h12M6 12h12M6 16h12M10 6v4M15 10v4M9 14v4'],
+  ['clamp','Clamp 10–90 %, 5 kW','M6 5h12M6 19h12M12 8.5v7M9.5 11l2.5-2.5 2.5 2.5M9.5 13l2.5 2.5 2.5-2.5'],
+  ['site','Site','M5 12l7-6 7 6M7 11v7h10v-7'],
+  ['memory','Memory','M7 5h10v14H7zM10 9h4M10 13h4'],
+]
+const X = (i) => 70 + i * 203, Y = 96
+const ARC = `M${X(6)} ${Y - 34} C ${X(6) - 80} 14, ${X(1) + 80} 14, ${X(1)} ${Y - 34}`
+// cue: {id: 'on'|'bad'}, status: {id: text}, packet: x index, fail: bool
+function strip({ cue = {}, status = {}, packet, fail }) {
+  const any = Object.keys(cue).length
+  const links = NODES.slice(1).map((_, i) => `<line x1="${X(i) + 40}" x2="${X(i + 1) - 40}" y1="${Y}" y2="${Y}" class="link" marker-end="url(#arr)"
+    stroke="${fail && i === 2 ? 'var(--alert)' : i < 2 ? 'var(--agent)' : 'var(--line)'}" ${fail && i === 2 ? 'stroke-dasharray="5 4"' : ''}/>`).join('')
+  const nodes = NODES.map(([id, label, d], i) => {
+    const s = cue[id] ? 1.18 : 1, cls = cue[id] || (any ? 'dim' : '')
+    return `<g class="${cls}">
+      <g transform="translate(${X(i)} ${Y}) scale(${s}) translate(${-X(i)} ${-Y})">
+        <rect class="node" x="${X(i) - 28}" y="${Y - 28}" width="56" height="56" rx="14"/>
+        <path class="icon" d="${d}" transform="translate(${X(i) - 12} ${Y - 12})"/>
+      </g>
+      <text class="label" x="${X(i)}" y="${Y + 58}" text-anchor="middle">${label}</text>
+      ${status[id] ? `<text class="status" x="${X(i)}" y="${Y + 78}" text-anchor="middle">${status[id]}</text>` : ''}
+    </g>`
+  }).join('')
+  const pk = packet == null ? '' : `<circle class="packet" r="4.5" cx="${packet}" cy="${Y}"/>`
+  return `<div class="card"><svg viewBox="0 0 1400 200">
+    <defs><marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1l6 3-6 3" fill="none" stroke="context-stroke" stroke-width="1.2"/></marker></defs>
+    <path d="${ARC}" class="arc" marker-end="url(#arr)"/>
+    <text x="${(X(1) + X(6)) / 2}" y="26" text-anchor="middle" class="arc-label">Every evening: 3–5 most similar good days go back to the agent</text>
+    ${links}${nodes}${pk}</svg></div>`
+}
+const ROWS = [
+  ['h', 'Playback (precomputed week)'],
+  ['a. 11:00 decision', 'The agent is called once a day. Packet travels Inputs → Agent → Validator.', { cue: { agent: 'on' }, packet: (X(1) + X(2)) / 2 }],
+  ['b. Gate blocks the plan', 'Validator turns red, the link to the rule is dashed, previous plan is used.', { cue: { validator: 'bad' }, fail: true, status: { validator: 'blocked, previous plan used' } }],
+  ['c1. Executing, held', 'All day between decisions the Rule stays enlarged. Simple, but it is "on" ~97 % of the time.', { cue: { rule: 'on' } }],
+  ['c2. Executing, 15-min tick', 'Each 15-min step lights Rule → Clamp → Site in turn (~0.5 s at 4×), then rests. Frame shown: Clamp.', { cue: { clamp: 'on' } }],
+  ['d. 20:00 outcome to memory', 'Memory enlarges while the day\'s result travels back along the arc.', { cue: { memory: 'on' } }],
+  ['h', 'Live run (server events)'],
+  ['e. Live: asking Gemini', 'Stage comes from the server stream. Status line under the active stage, mono, updates every second.', { cue: { agent: 'on' }, status: { agent: 'asking Gemini · 6.2 s' } }],
+  ['f. Live: 503, retrying', 'Free-tier "high demand": the wait is shown, not hidden.', { cue: { agent: 'on' }, status: { agent: '503 · retry in 30 s' } }],
+  ['g. Live: replay gate', 'Gate replays the knobs on yesterday (2 × 96 LP solves).', { cue: { validator: 'on' }, status: { validator: 'replaying yesterday · 1.4 s' } }],
+]
+document.getElementById('rows').innerHTML = ROWS.map(([t, p, s]) => t === 'h' ? `<h2>${p}</h2>`
+  : `<div class="row"><p><b>${t}</b>${p}</p>${strip(s)}</div>`).join('')
+</script>
+</body></html>
