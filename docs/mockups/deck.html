@@ -1,0 +1,141 @@
+<!doctype html>
+<!-- Deck mockup. Render: docs/mockups/deck.sh  (?v=1|2|3&s=4|5). Numbers: report §6.2, §7.2, §3. -->
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:IS;src:url(../../demo/web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-400-normal.woff2);font-weight:400}
+@font-face{font-family:IS;src:url(../../demo/web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-500-normal.woff2);font-weight:500}
+@font-face{font-family:IS;src:url(../../demo/web/node_modules/@fontsource/instrument-sans/files/instrument-sans-latin-600-normal.woff2);font-weight:600}
+@font-face{font-family:JB;src:url(../../demo/web/node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2);font-weight:400}
+@font-face{font-family:JB;src:url(../../demo/web/node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2);font-weight:500}
+:root{--bg:#FFFFFF;--ink:#151F27;--ink2:#3F4D5A;--mute:#66727E;--line:#D6E0EA;--faint:#EEF2F6;--card:#F4F8FC;
+  --agent:#3A7DDA;--agent-soft:#E8F0FB;--agent-text:#2F6BC2;--alert:#EB0037;--head-bg:transparent;--head-fg:var(--ink)}
+body.v2{--head-bg:#151F27;--head-fg:#FFFFFF}
+body.v3{--bg:#111A21;--ink:#EEF3F7;--ink2:#BAC6D0;--mute:#8E9CA8;--line:#2C3A46;--faint:#1E2A34;--card:#18232C;
+  --agent:#5E9BEB;--agent-soft:#1B2D44;--agent-text:#7FB0F0;--alert:#FF4D6D;--head-fg:var(--ink)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1920px;height:1080px;overflow:hidden;background:var(--bg);color:var(--ink);font:400 22px/1.4 IS,sans-serif;position:relative}
+.mono{font-family:JB,monospace;font-variant-numeric:tabular-nums}
+header{background:var(--head-bg);color:var(--head-fg);padding:88px 96px 0;height:250px}
+body.v2 header{padding-top:72px;height:236px}
+h1{font:600 46px/1.16 IS;letter-spacing:-0.01em;max-width:1560px;text-wrap:balance}
+main{position:absolute;left:96px;right:96px;top:290px;bottom:112px}
+footer{position:absolute;left:96px;right:96px;bottom:44px;display:flex;justify-content:space-between;font:400 15px JB,monospace;color:var(--mute);border-top:1px solid var(--line);padding-top:14px}
+svg text{font-family:IS}
+.lbl{font:500 20px IS;fill:var(--ink)}
+.sub{font:400 17px IS;fill:var(--mute)}
+.num{font:500 18px JB;fill:var(--mute)}
+/* slide 4 right column */
+.side{position:absolute;right:0;top:0;width:500px;display:flex;flex-direction:column;gap:0}
+.stat{padding:26px 0;border-bottom:1px solid var(--line)}
+.stat:first-child{padding-top:4px}
+.stat .v{font:500 64px/1 JB;letter-spacing:-0.02em}
+.stat .v small{font:400 24px JB;color:var(--mute);margin-left:6px}
+.stat .t{margin-top:12px;color:var(--ink2);font-size:21px;max-width:470px}
+.stat.ours .v{color:var(--agent-text)}
+/* slide 5 */
+.strip{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+.strip>div{padding:22px 28px 0 0}
+.strip>div+div{padding-left:28px;border-left:1px solid var(--line)}
+.strip .k{font:400 17px IS;color:var(--mute)}
+.strip .x{font:500 30px IS;margin-top:6px}
+.strip .x s{color:var(--mute);text-decoration-thickness:2px;margin-right:14px;font-weight:400}
+</style></head>
+<body>
+<header><h1 id="t"></h1></header>
+<main id="m"></main>
+<footer><span id="src"></span><span id="pg"></span></footer>
+<script>
+const q=new URLSearchParams(location.search), v=q.get('v')||'1', s=q.get('s')||'4';
+document.body.classList.add('v'+v);
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+const css=n=>getComputedStyle(document.body).getPropertyValue(n).trim();
+function el(p,tag,a,txt){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;p.appendChild(e);return e}
+
+if(s==='4'){
+  $('t').textContent='The second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price; a carbon weight inside one agent costs €31–72';
+  $('src').textContent='Source: report §6.2, §7.2 · modelled on run C inputs, one winter week · CO2 at 0.356 kg/kWh · Italy assumed';
+  $('pg').textContent='4 / 8';
+  const W=1160,H=660, m={l:96,r:24,t:20,b:76}, X=[10,24], Y=[-8,2.5];
+  const x=d=>m.l+(d-X[0])/(X[1]-X[0])*(W-m.l-m.r), y=d=>m.t+(Y[1]-d)/(Y[1]-Y[0])*(H-m.t-m.b);
+  const g=el($('m'),'svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`});
+  // gridlines + ticks
+  for(let t=-8;t<=2;t+=2){el(g,'line',{x1:m.l,x2:W-m.r,y1:y(t),y2:y(t),stroke:css(t===0?'--ink':'--faint'),'stroke-width':t===0?1.5:1});
+    el(g,'text',{x:m.l-16,y:y(t)+6,'text-anchor':'end',class:'num'},(t>0?'+':t<0?'−':'')+Math.abs(t))}
+  for(let t=10;t<=24;t+=2) el(g,'text',{x:x(t),y:H-m.b+34,'text-anchor':'middle',class:'num'},t);
+  el(g,'text',{x:W-m.r,y:H-8,'text-anchor':'end',class:'sub'},'Grid CO2, kg per week  (lower is cleaner)');
+  el(g,'text',{x:m.l-16,y:m.t-2,'text-anchor':'end',class:'sub'},'€/wk');
+  el(g,'text',{x:W-m.r,y:y(0)+30,'text-anchor':'end',class:'sub'},'Break-even after AI cost');
+  el(g,'text',{x:m.l+12,y:y(-7.6),class:'sub'},'Net value after AI cost (N1)');
+  // A -> C arrow (the second agent)
+  const mk=el(el(g,'defs',{}),'marker',{id:'ah',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:9,markerHeight:9,orient:'auto-start-reverse'});
+  el(mk,'path',{d:'M0,1 L9,5 L0,9',fill:'none',stroke:css('--alert'),'stroke-width':1.6});
+  el(g,'line',{x1:x(21.9)-6,y1:y(-4.33)+14,x2:x(21.3)+4,y2:y(-7.31)-16,stroke:css('--alert'),'stroke-width':2,'stroke-dasharray':'6 5','marker-end':'url(#ah)'});
+  el(g,'text',{x:x(21.6)+22,y:y(-5.9),class:'lbl',fill:css('--alert'),style:`fill:${css('--alert')}`},'+ second agent');
+  el(g,'text',{x:x(21.6)+22,y:y(-5.9)+26,class:'sub'},'+€2.97 AI cost, −0.7 kg');
+  // points
+  const P=[
+    {n:'Pilot A',d:'cost agent',c:21.9,e:-4.33,k:'pilot',lx:-18,ly:6,a:'end'},
+    {n:'Pilot C',d:'cost + sustainability agents',c:21.3,e:-7.31,k:'pilot',lx:-18,ly:6,a:'end'},
+    {n:'Static rule',d:'free, no AI',c:11.9,e:1.03,k:'rule',lx:-4,ly:-46,a:'start'},
+    {n:'Ours, conservative',d:'one agent, λ €0.10/kg',c:13.5,e:1.10,k:'ours',lx:22,ly:28,a:'start'},
+    {n:'Ours, upside',d:'grid charging, shadow mode',c:22.2,e:1.78,k:'up',lx:-20,ly:-20,a:'end'}];
+  for(const p of P){
+    const cx=x(p.c), cy=y(p.e), ink=css('--ink'), ag=css('--agent'), bg=css('--bg');
+    const st={pilot:{fill:ink,stroke:bg},rule:{fill:bg,stroke:css('--ink2')},ours:{fill:ag,stroke:bg},up:{fill:bg,stroke:ag}}[p.k];
+    el(g,'circle',{cx,cy,r:p.k==='ours'?11:10,fill:st.fill,stroke:st.stroke,'stroke-width':p.k==='rule'||p.k==='up'?3:2.5,'stroke-dasharray':p.k==='up'?'4 3':''});
+    el(g,'text',{x:cx+p.lx,y:cy+p.ly,'text-anchor':p.a,class:'lbl',style:p.k==='ours'||p.k==='up'?`fill:${css('--agent-text')}`:''},p.n);
+    el(g,'text',{x:cx+p.lx,y:cy+p.ly+24,'text-anchor':p.a,class:'sub'},p.d+' · '+(p.e>0?'+':'−')+'€'+Math.abs(p.e).toFixed(2));
+  }
+  $('m').insertAdjacentHTML('beforeend',`<div class="side">
+    <div class="stat"><div class="v">4,300<small>€/t</small></div><div class="t">What the second agent pays per tonne of CO2 avoided (€2,000 on hourly carbon)</div></div>
+    <div class="stat"><div class="v">90<small>€/t</small></div><div class="t">EU ETS carbon price, Dec-2026 contract</div></div>
+    <div class="stat ours"><div class="v">31–72<small>€/t</small></div><div class="t">Carbon weight of €0.10/kg inside one agent</div></div></div>`);
+}
+
+if(s==='5'){
+  $('t').textContent='The agent sets three knobs a day; a rule and a safety clamp run the battery every 15 minutes, and a replay gate blocks any plan that loses to the rule';
+  $('src').textContent='Source: report §3, docs/PROPOSAL.md · same stage names as the demo pipeline';
+  $('pg').textContent='5 / 8';
+  const W=1728,H=520, g=el($('m'),'svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`,style:'position:absolute;top:0;left:0'});
+  const ink=css('--ink'),ln=css('--line'),ag=css('--agent'),agS=css('--agent-soft'),card=css('--card'),mu=css('--mute'),bg=css('--bg'),al=css('--alert');
+  const ny=70, nh=150, N=[
+    {x:0,w:290,t:'Inputs',r:['Day-ahead prices','Hourly CO2, ENTSO-E Italy','3–5 similar past days']},
+    {x:370,w:260,t:'Agent',r:['1 call a day','Goal: € + λ·CO2','Returns 3 knobs + reason'],k:'ai'},
+    {x:690,w:260,t:'Validator',r:['Schema + limits','Replay gate:','beats the rule?'],k:'ai'},
+    {x:1030,w:200,t:'Rule',r:['Every 15 min','Knobs → kW'],k:'ex'},
+    {x:1290,w:200,t:'Clamp',r:['SoC 10–90%','±5 kW'],k:'ex'},
+    {x:1550,w:178,t:'Site',r:['PV, battery,','load, grid'],k:'ex'}];
+  // zone bands
+  el(g,'rect',{x:350,y:ny-62,width:620,height:nh+92,rx:12,fill:agS});
+  el(g,'text',{x:370,y:ny-24,class:'lbl',style:`fill:${css('--agent-text')}`},'AI plans once a day');
+  el(g,'rect',{x:1010,y:ny-62,width:718,height:nh+92,rx:12,fill:'none',stroke:ln,'stroke-width':1.5});
+  el(g,'text',{x:1030,y:ny-24,class:'lbl'},'Rule executes, no LLM on the control path');
+  const mk=el(el(g,'defs',{}),'marker',{id:'a',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:8,markerHeight:8,orient:'auto-start-reverse'});
+  el(mk,'path',{d:'M0,1 L9,5 L0,9',fill:'none',stroke:ink,'stroke-width':1.6});
+  N.forEach((n,i)=>{
+    el(g,'rect',{x:n.x,y:ny,width:n.w,height:nh,rx:10,fill:n.k==='ai'?bg:card,stroke:n.k==='ai'?ag:ln,'stroke-width':n.k==='ai'?2:1.5});
+    el(g,'text',{x:n.x+20,y:ny+38,class:'lbl',style:'font-weight:600'},n.t);
+    n.r.forEach((r,j)=>el(g,'text',{x:n.x+20,y:ny+72+j*26,class:'sub',style:`fill:${css('--ink2')}`},r));
+    if(i<N.length-1){const nx=N[i+1].x; el(g,'line',{x1:n.x+n.w+6,y1:ny+nh/2,x2:nx-6,y2:ny+nh/2,stroke:ink,'stroke-width':2,'marker-end':'url(#a)'})}
+  });
+  // memory return arc
+  const sx=1550+89, ix=145;
+  el(g,'path',{d:`M${sx},${ny+nh+6} V${ny+nh+86} H${ix} V${ny+nh+8}`,fill:'none',stroke:ag,'stroke-width':2,'stroke-dasharray':'7 6','marker-end':'url(#am)'});
+  const m2=el(g.querySelector('defs'),'marker',{id:'am',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:8,markerHeight:8,orient:'auto-start-reverse'});
+  el(m2,'path',{d:'M0,1 L9,5 L0,9',fill:'none',stroke:ag,'stroke-width':1.6});
+  el(g,'rect',{x:620,y:ny+nh+70,width:520,height:34,fill:bg});
+  el(g,'text',{x:880,y:ny+nh+93,'text-anchor':'middle',class:'sub',style:`fill:${css('--agent-text')}`},'Memory: one row a day (knobs, €, CO2, regret)');
+  // fallback chain
+  const fy=ny+nh+150;
+  el(g,'text',{x:0,y:fy,class:'lbl'},'If the agent fails or the gate blocks:');
+  const F=['agent plan','previous valid plan','static rule'];let fx=400;
+  F.forEach((f,i)=>{el(g,'text',{x:fx,y:fy,class:'lbl',style:i===0?'':`fill:${css('--ink2')}`},f);
+    const w=f.length*10.4; if(i<2){el(g,'line',{x1:fx+w+14,y1:fy-7,x2:fx+w+58,y2:fy-7,stroke:al,'stroke-width':2,'marker-end':'url(#af)'})} fx+=w+76});
+  const m3=el(g.querySelector('defs'),'marker',{id:'af',viewBox:'0 0 10 10',refX:9,refY:5,markerWidth:8,markerHeight:8,orient:'auto-start-reverse'});
+  el(m3,'path',{d:'M0,1 L9,5 L0,9',fill:'none',stroke:al,'stroke-width':1.6});
+  $('m').insertAdjacentHTML('beforeend',`<div class="strip">
+    <div><div class="k">LLM calls per day</div><div class="x"><span class="mono"><s>~730</s>1–3</span></div></div>
+    <div><div class="k">Export valued at</div><div class="x"><s class="mono">€0</s>sell price</div></div>
+    <div><div class="k">Battery target</div><div class="x"><s class="mono">80% fixed</s>tonight's evening load</div></div></div>`);
+}
+</script></body></html>
