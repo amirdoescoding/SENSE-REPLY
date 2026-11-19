@@ -178,3 +178,13 @@
   - Weather API: deferred. The sim's PV isn't real weather; it belongs in the deck/proposal or a future real-dates "plan tomorrow" mode.
 - Third Render run (conservative, with memory): 5 min 23 s, 7/7 Gemini, 3 × 503. The user accepted the free tier and wants to merge `demo-live` after PR #11. The live URL is behind the passcode.
 - ENTSO-E returned HTTP 599 all of 2026-11-19, so `sim.py --check` stops after check 1. That needs a static fallback (backlog).
+
+## Report + KPIs on Ministral, 3 scenarios (2026-11-19), branch `report-ministral`
+- **User decision: only three scenarios everywhere:** Pilot A (cost), Pilot C (cost + sust.), **New framework** (= "self-hosted single agent"; user renamed it from "Ours" 2026-11-19, use this label in demo and deck too).
+  - Removed: conservative/upside/shadow/S5 wording, Pilot B (one footnote), and the static-rule column. The rule stays only as the yardstick in VORB/F1/S2b and the threshold notes.
+- **Ours basis:** our sim's conservative run, λ 0.10 (`demo/out`, S_net 1.1561), with AI cost from Ministral 3 8B self-hosted centrally at 1,000 sites: O5 €0.1762 (`analysis/model_cost.py`). Gives N1 +0.98, N2 0.12, **F1 −0.06** (loses to the free rule after AI cost; positive at 10k sites or on an EU API), grid CO2 12.16 kg, peak 3.38 kW. 15 Good / 5 Improvable (F1, S2b, S3, B4, C5); A 5, C 6. Values in `data/ours_ministral.json`.
+- **Ministral 3 3B on the gateway = paid option** (offline / data stays on site), not in the headline (€1.86/site/wk → N1 −0.71).
+- **Carbon weight MAC** (λ 0 → 0.10) ≈ €17/t (was €31–72 on Sofia's S5).
+- **Report source** is now `docs/REPORT.md`; the docx is built with pandoc, using the old docx as `--reference-doc`. Charts: `analysis/report_charts.py` → `docs/report/`. Diagram: `docs/diagrams/reply-platform.html` + `render.sh`.
+- LibreOffice is NOT installed (the `/opt/homebrew/bin/soffice` shim points to a missing app). openpyxl lives only in `/opt/anaconda3/bin/python`.
+- The deck, PRESENTATION.md and the demo still show the old S5 numbers (N1 1.10/1.15, AI €0.01). Fix them in the next sessions.
