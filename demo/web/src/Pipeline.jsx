@@ -15,7 +15,6 @@ const Y = 96
 const EVENING = 36 // plan offset of 20:00 (plans start 11:00): the memory packet lands well before the next decision, even at 16×
 const EASE ='cubic-bezier(.77,0,.175,1)'
 const ARC = `M${X(6)} ${Y - 38} C ${X(6) - 80} 14, ${X(1) + 80} 14, ${X(1)} ${Y - 38}` // clears a node enlarged to 1.18×
-const TICK = { rule: 0, clamp: 0.6, site: 1.2 } // executor loop delays (s), see .exec in styles.css
 
 // active / fail: node id or null (active = held cue, e.g. a live server stage; status = one line under it). epoch changes on every seek or run switch: in-flight packets are dropped then.
 // Packets and node pulses are Web Animations kept in `live`, so they can be paused and cancelled together.
@@ -27,7 +26,7 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
   const ov = useRef({})
   const nd = useRef({})
   const svg = useRef(null)
-  const [busy, setBusy] = useState(0) // packets in flight: the executor loop rests so one stage reads as 'now'
+  const busy = useRef(0) // packets in flight: the executor loop rests so one stage reads as 'now'
   const [k, setK] = useState(1) // viewBox units per px when the card is narrower than 1400: keeps labels at their real px size
 
   useEffect(() => {
@@ -40,8 +39,10 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
     const a = el.animate(keys, opts)
     live.current.add(a)
     const packet = el.tagName === 'circle'
-    if (packet) setBusy((n) => n + 1)
-    a.onfinish = a.oncancel = () => { live.current.delete(a); if (packet) { el.remove(); setBusy((n) => n - 1) } }
+    if (packet) busy.current++
+    let done = false // cancel() after finish still fires oncancel: count once
+    a.onfinish = a.oncancel = () => { if (done) return; done = true; live.current.delete(a); if (packet) { el.remove(); busy.current-- } }
+    return a
   }
   const packet = () => {
     const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
@@ -51,14 +52,18 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
     return c
   }
   // Enlarge a stage for `hold` ms from `delay`: up 200 ms ease-out, down 160 ms. Same WAAPI set as the packets.
-  const cue = (id, delay, hold, bad) => {
+  const cue = (id, delay, hold, bad, tick) => {
     const t = hold + 360, a = 200 / t, b = (200 + hold) / t
     const keys = (off, on) => [{ ...off, easing: 'cubic-bezier(.23,1,.32,1)' }, { ...on, offset: a }, { ...on, offset: b, easing: 'ease-in-out' }, off]
-    go(nd.current[id], keys({ transform: 'scale(1)' }, { transform: 'scale(1.18)' }), { delay, duration: t })
-    go(nd.current[id].firstChild, keys({}, bad ? { fill: '#FDE7EC', stroke: 'var(--alert)' } : { fill: 'var(--agent-soft)', stroke: 'var(--agent)' }), { delay, duration: t })
+    const on = bad ? { fill: '#FDE7EC', stroke: 'var(--alert)' } : { fill: 'var(--agent-soft)', stroke: 'var(--agent)' }
+    for (const a of [go(nd.current[id], keys({ transform: 'scale(1)' }, { transform: 'scale(1.18)' }), { delay, duration: t }),
+      go(nd.current[id].firstChild, keys({}, on), { delay, duration: t })]) if (tick) a.tick = delay
   }
+  // a packet starts: drop executor ticks that have not begun (running ones finish, so nothing snaps back)
+  const quiet = () => live.current.forEach((a) => a.tick !== undefined && a.currentTime < a.tick && a.cancel())
   // Inputs > Agent (breathes) > Validator (holds) > Site; a blocked day turns the dot red on the dashed link.
   const decision = (dur, blocked) => {
+    quiet()
     const ha = Math.min(600, dur * 0.35), hv = Math.min(450, dur * 0.3), u = (dur - ha - hv) / 5
     const t = [0, u, u + ha, 2 * u + ha, 2 * u + ha + hv, dur], x = [0, 1, 1, 2, 2, 5]
     go(packet(), t.map((v, k) => ({
@@ -72,6 +77,7 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
     if (blocked) go(ov.current.validator, [{ opacity: 0 }, { opacity: 1, offset: 0.4 }, { opacity: 0 }], { ...pulse, delay: 2 * u + ha, duration: hv })
   }
   const outcome = (dur) => {
+    quiet()
     // sample the arc into translate() keyframes (offset-path on SVG children is unreliable across browsers)
     const c = packet(), path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
     path.setAttribute('d', ARC)
@@ -99,6 +105,15 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
     if (Math.floor((step - EVENING) / DAY_STEPS) > Math.floor((p.step - EVENING) / DAY_STEPS)) outcome(dur)
   }, [step, epoch])
 
+  // Executor loop while playing: Rule > Clamp > Site in turn every 1.8 s (fixed: a 15-min step is ~50 ms at 4x)
+  useEffect(() => {
+    if (!playing || reduced || active) return
+    const f = () => { if (!busy.current && !document.hidden) ['rule', 'clamp', 'site'].forEach((n, i) => cue(n, i * 600, 200, false, true)) }
+    f()
+    const id = setInterval(f, 1800)
+    return () => clearInterval(id)
+  }, [playing, reduced, active])
+
   useEffect(() => {
     if (!playing && step >= MAX_STEP) return // the week ended: let the last packet finish
     live.current.forEach((a) => (playing ? a.play() : a.pause()))
@@ -112,7 +127,7 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
 
   return (
     <section className="card pipeline">
-      <svg ref={svg} viewBox="0 0 1400 190" style={{ '--k': k }} className={reduced ? 'held' : playing && !active && !busy ? 'exec' : ''} role="img" aria-label="Decision pipeline: inputs, agent, validator and gate, rule, clamp, site, memory">
+      <svg ref={svg} viewBox="0 0 1400 190" style={{ '--k': k }} className={reduced ? 'held' : undefined} role="img" aria-label="Decision pipeline: inputs, agent, validator and gate, rule, clamp, site, memory">
         <defs>
           <marker id="arr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
             <path d="M1 1l6 3-6 3" fill="none" stroke="context-stroke" strokeWidth="1.2" />
@@ -129,7 +144,7 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
             style={{ animationDuration: `${1.5 / speed}s`, animationPlayState: playing ? 'running' : 'paused' }} />
         ))}
         {NODES.map(([id, label, d], i) => (
-          <g key={id} className={(active === id ? 'on' : active ? 'dim' : '') + (fail === id ? ' fail' : '')} style={id in TICK ? { '--d': TICK[id] + 's' } : undefined}>
+          <g key={id} className={(active === id ? 'on' : active ? 'dim' : '') + (fail === id ? ' fail' : '')} data-id={id}>
             <g ref={(e) => { nd.current[id] = e }} className="nd">{/* scaled as one: rect, overlay, icon; the label stays put */}
               <rect x={X(i) - 28} y={Y - 28} width="56" height="56" rx="14" className="node" />
               {(id === 'agent' || id === 'validator') && (

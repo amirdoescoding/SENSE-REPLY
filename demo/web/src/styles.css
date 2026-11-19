@@ -90,16 +90,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pipeline .on .node-label { fill: var(--ink); font-weight: 500; }
 .pipeline .dim .icon { opacity: .5; }
 .pipeline .dim .node-label { fill: var(--mute); }
-/* executor loop while playing: Rule > Clamp > Site in turn (1.8 s, fixed: a 15-min step is ~50 ms at 4x) */
-.pipeline .exec [style*='--d'] .nd { animation: tick 1.8s var(--d) infinite; }
-.pipeline .exec [style*='--d'] .node { animation: tick-fill 1.8s var(--d) infinite; }
-.pipeline .exec [style*='--d'] .node-label { animation: tick-label 1.8s var(--d) infinite; }
-@keyframes tick { 0% { transform: scale(1); animation-timing-function: cubic-bezier(.23, 1, .32, 1); } 11%, 30% { transform: scale(1.18); animation-timing-function: ease-in-out; } 39%, 100% { transform: scale(1); } }
-@keyframes tick-fill { 0%, 39%, 100% { fill: #fff; stroke: var(--line); } 8%, 30% { fill: var(--agent-soft); stroke: var(--agent); } }
-@keyframes tick-label { 0%, 39%, 100% { fill: var(--ink-2); } 8%, 30% { fill: var(--ink); } }
 /* reduced motion: no scaling, the executor is simply held */
 .pipeline .held .nd { transform: none !important; transition: none; }
-.pipeline .held:not(:has(.on)) [style*='--d: 0s'] .node { fill: var(--agent-soft); stroke: var(--agent); }
+.pipeline .held:not(:has(.on)) [data-id='rule'] .node { fill: var(--agent-soft); stroke: var(--agent); }
 
 .pipeline .packet { fill: var(--agent); opacity: 0; pointer-events: none; }
 .pipeline .ov { opacity: 0; pointer-events: none; }
