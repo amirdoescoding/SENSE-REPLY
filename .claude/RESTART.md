@@ -5,7 +5,7 @@
   - `demo-pipeline-cue` = PR #11: the pipeline "now" cue. Ready to merge.
   - `demo-live` (built on the cue, pushed, no PR): the live Gemini week over SSE, the site passcode and the guards.
 - **Where I stopped:** all review fixes applied. `demo-live` is pushed (no PR until Render passes). PR #11 includes the cue finish fixes.
-- **Next (needs the user): Render measurement.**
+- **Render measurement done:** free tier, 2 min 44 s/week, 7/7 Gemini (passes). Live at https://sense-reply-demo.onrender.com (passcode). Next: open a PR for `demo-live` and merge after PR #11. Original steps:
   1. Point the Blueprint at `demo-live`.
   2. Set `GEMINI_API_KEY`, `DEMO_PASSCODE` and `ENTSO_API`.
   3. Warm up and run 2 live weeks.

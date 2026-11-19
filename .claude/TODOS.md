@@ -61,7 +61,8 @@ Close each session with: memory files + `graphify update .`.
   - Playback waits at the live frontier; the pipeline follows the server stage with a status line.
   - Guards: site passcode (Basic auth), 1 run at a time, `LIVE_CAP`/day.
   - Locally: 51–68 s per week, 7/7 Gemini, one 503 retried.
-- [ ] **7c Render measurement** (needs the user):
+- [x] **7c Render measurement** (2026-11-19): free tier, 2 min 44 s/week, 7/7 Gemini → passes. One more run (other mode), then the PR.
+  - Original criteria:
   - Blueprint on `demo-live`, set the secrets, warm up, run 2 live weeks.
   - Pass: < ~3 min and ≥ 5/7 days from Gemini, then merge.
   - Slow: Starter ($7).

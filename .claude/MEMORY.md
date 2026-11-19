@@ -167,5 +167,8 @@
   - Gemini 5–16 s/day; the gate + MPC ~1.2 s/day.
   - 7/7 plans from Gemini; one 503 retried.
   - The live KPIs equal the precomputed ones (same knobs).
-- **Render measurement still to do** (user): pass = < ~3 min/week and ≥ 5/7 from Gemini, else Starter or don't merge `demo-live`.
+- **Render free measurement (2026-11-19, upside λ0.1):** a live week took 2 min 44 s, 7/7 from Gemini. Passes (< 3 min, ≥ 5/7).
+  - Per day: Gemini 0.7–6.7 s, gate ~8.5 s (15.6 cold), sim ~7 s. The CPU is ~12× slower than the laptop, so compute is the bottleneck, not Gemini.
+  - Starter would cut it to ~1 min if needed.
+  - An existing Render service kept the old health check path (`/api/kpis` → 401 behind the passcode): set it to `/healthz` in Settings or Sync the Blueprint.
 - **ENTSO-E** API timed out on 2026-11-19, so `demo/out` was not regenerated. Equivalence was checked old vs new `run_ours` instead.
