@@ -146,3 +146,33 @@
 - KPI strip shows "+x vs C" (ours − pilot C) under a "Week result" heading. User declined renaming the baselines.
 - Craft floor: no unicode glyphs as icons (blocked day = red ring, not ✕).
 - Next session: live Gemini test; roll back to precompute + playback if it performs badly.
+
+## Session 7 (2026-11-19): pipeline cue + live week, branches `demo-pipeline-cue` (PR #11) and `demo-live`
+- **Cue** (mockup `docs/mockups/mock-cue.png`, the user picked c2):
+  - The working stage is enlarged 1.18× (rect + icon; the label stays put) and filled.
+  - Agent, Validator and Memory cues ride the packet WAAPI.
+  - The executor is a WAAPI loop Rule → Clamp → Site every 1.8 s. It is not per step, since a step is ~50 ms at 4×.
+  - Reduced motion: fill only.
+  - Gotcha: the class `.tick` already exists (panel checkmarks). A CSS loop removed at packet boundaries snaps nodes back.
+- **Live** (`/api/live`, SSE):
+  - `agent.ask(live=True)` bypasses `gemini_cache.json`. Otherwise every "live" answer is replayed from the cache, because the prompts are deterministic.
+  - The week streams day by day over the precomputed run (same inputs), and playback waits at the frontier.
+- **Decision reversed:** `GEMINI_API_KEY` now goes on Render (live mode). Guards:
+  - `DEMO_PASSCODE` Basic auth on the whole site except `/healthz`;
+  - one run at a time (owner token + 10-min event heartbeat);
+  - `LIVE_CAP` = 10 runs/day;
+  - Sec-Fetch-Site check.
+- **SSE gotcha:** a sync generator in `StreamingResponse` is never closed when the client leaves, so the worker kept calling Gemini. Use an async generator plus `anyio.to_thread.run_sync(q.get, abandon_on_cancel=True)`.
+- **Local measurement:** a live week takes 51–68 s.
+  - Gemini 5–16 s/day; the gate + MPC ~1.2 s/day.
+  - 7/7 plans from Gemini; one 503 retried.
+  - The live KPIs equal the precomputed ones (same knobs).
+- **Render free measurement (2026-11-19, upside λ0.1):** a live week took 2 min 44 s, 7/7 from Gemini. Passes (< 3 min, ≥ 5/7).
+  - Per day: Gemini 0.7–6.7 s, gate ~8.5 s (15.6 cold), sim ~7 s. The CPU is ~12× slower than the laptop, so compute is the bottleneck, not Gemini.
+  - Starter would cut it to ~1 min if needed.
+  - An existing Render service kept the old health check path (`/api/kpis` → 401 behind the passcode): set it to `/healthz` in Settings or Sync the Blueprint.
+- **ENTSO-E** API timed out on 2026-11-19, so `demo/out` was not regenerated. Equivalence was checked old vs new `run_ours` instead.
+- **Live memory (2026-11-19):** in live runs, finished days join the k-NN pool (14 A/C days + this run). Regret is scored like the seed: day-alone MPC at λ 0.10. Slicing the continuous run gave a +0.07 € bias.
+  - Prompt tag: "earlier day of this run". Costs +1 day-MPC per day (~7 s on Render).
+  - Second Render run (conservative): 4 min 31 s, 7/7 Gemini, one 503 (77 s day). The user accepted this time.
+  - Weather API: deferred. The sim's PV isn't real weather; it belongs in the deck/proposal or a future real-dates "plan tomorrow" mode.

@@ -132,17 +132,21 @@ Context: {json.dumps(ctx)}
 Hourly buy prices tomorrow (€/kWh, day-ahead, 24 values from 11:00): {prices}
 Hourly grid CO2 forecast (g/kWh, persistence): {co2_fc}
 Most similar past days, with the knobs that worked best in hindsight and their regret vs a plain rule
-(negative = beat the rule): {json.dumps([dict(context=n["context"], knobs=n["knobs"], regret=n["regret_vs_rule"]) for n in neighbours])}
+(negative = beat the rule): {json.dumps([dict(context=n["context"], knobs=n["knobs"], regret=n["regret_vs_rule"])
+             | ({"note": "earlier day of this run: the knobs it used, not the hindsight best"} if n["run"] == "this run" else {})
+             for n in neighbours])}
 
 Answer JSON only: {{"soc_floor": x, "evening_reserve_kwh": x, "export_hold_eur": x, "grid_charge": null or
 {{"from": h, "to": h}}, "explanation": "2-3 plain sentences for the home owner: what you chose and why"}}"""
 
 
-def ask(text):
+def ask(text, live=False, on_wait=None):
     """One Gemini call (cached by prompt hash). Returns dict(raw, explanation, thoughts, tok_in, tok_out, source)
-    or None when no key / API error (caller falls back to memory)."""
+    or None when no key / API error (caller falls back to memory).
+    live=True: no cache read or write (the prompts are deterministic, so the cache would replay every answer);
+    on_wait(msg) hears about 503 back-offs."""
     global QUOTA_HIT
-    cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
+    cache = {} if live else json.loads(CACHE.read_text()) if CACHE.exists() else {}
     h = hashlib.sha256((MODEL + text).encode()).hexdigest()[:16]
     if h in cache:
         return cache[h]
@@ -154,6 +158,7 @@ def ask(text):
     req = urllib.request.Request(
         f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
         data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
+    t0 = time.monotonic()
     for wait in (10, 30, 60, None):  # 503 "high demand" / 429 are common on the free tier: back off, then give up
         try:
             with urllib.request.urlopen(req, timeout=180) as r:
@@ -167,6 +172,8 @@ def ask(text):
                 return None
             if wait is None or code not in (500, 503):
                 return None
+            if on_wait:
+                on_wait(f"{code} · retry in {wait} s")
             time.sleep(wait)
     parts = d["candidates"][0]["content"]["parts"]
     answer = "".join(p.get("text", "") for p in parts if not p.get("thought"))
@@ -179,13 +186,15 @@ def ask(text):
                thoughts="".join(p.get("text", "") for p in parts if p.get("thought")),
                tok_in=u.get("promptTokenCount", 0), tok_out=u.get("candidatesTokenCount", 0)
                + u.get("thoughtsTokenCount", 0), source="gemini", model=MODEL)
+    if live:
+        return out | dict(ms=round((time.monotonic() - t0) * 1000))
     cache[h] = out
     OUT.mkdir(exist_ok=True)
     CACHE.write_text(json.dumps(cache, indent=1))
     return out
 
 
-def propose(rows, start, soc0, ci, mode, lam, mem):
+def propose(rows, start, soc0, ci, mode, lam, mem, live=False, on_wait=None):
     """Gemini's knobs for the day at `start`, else 'copy the most similar good day' (memory fallback)."""
     ctx = context(rows, start, soc0, ci)
     nb = nearest(mem, ctx, mode, exclude=("C", start // 96))
@@ -193,7 +202,7 @@ def propose(rows, start, soc0, ci, mode, lam, mem):
     prev = rows[start - 96:start] if start >= 96 else rows[start + 96:start + 192]
     prices = [round(day[i]["grid"]["buyPrice"], 4) for i in range(0, len(day), 4)]
     co2 = [round(ci(prev[i]["dt"])) for i in range(0, len(prev), 4)]
-    ans = ask(prompt(ctx, prices, co2, mode, lam, nb))
+    ans = ask(prompt(ctx, prices, co2, mode, lam, nb), live, on_wait)
     if ans is None:
         good = min(nb, key=lambda m: m["regret_vs_rule"])
         return dict(raw=dict(good["knobs"]), explanation=f"No model answer: copied the knobs of the most similar "

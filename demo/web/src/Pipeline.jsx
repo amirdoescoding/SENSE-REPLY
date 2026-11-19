@@ -138,7 +138,7 @@ export default function Pipeline({ active, fail, status, step, epoch, playing, s
           </marker>
         </defs>
         <path d={ARC} className="arc" markerEnd="url(#arr)" />
-        <text x={(X(1) + X(6)) / 2} y="26" textAnchor="middle" className="arc-label">Every evening: 3–5 most similar good days go back to the agent</text>
+        <text x={(X(1) + X(6)) / 2} y="26" textAnchor="middle" className="arc-label">Every evening: the 3 most similar past days go back to the agent (live: this run's days join them)</text>
         {NODES.slice(1).map(([id], i) => (
           <line key={id} x1={X(i) + 34} x2={X(i + 1) - 34} y1={Y} y2={Y} markerEnd="url(#arr)"
             className={'link' + (fail === 'validator' && i === 2 ? ' fail-dash' : '')} stroke={i < 2 ? 'var(--agent)' : 'var(--line)'} />

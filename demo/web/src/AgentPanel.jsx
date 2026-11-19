@@ -17,8 +17,15 @@ function Knob({ label, unit, used, proposed, show }) {
   )
 }
 
-export default function AgentPanel({ run, compare, day, step, mode, lam }) {
+export default function AgentPanel({ run, compare, day, step, mode, lam, status }) {
   const d = run.days[day]
+  if (d.pending) return (
+    <aside className="card panel">
+      <h2>Plan for {dayLabel(d.start)}</h2>
+      <p className="muted">The agent is planning this day live. It appears here once the gate has checked it.</p>
+      {status && <p className="mono pending-status">{status}</p>}
+    </aside>
+  )
   const blocked = !d.gate.passed
   const prop = blocked ? d.proposed : {}
   const delta = d.gate.score_default - d.gate.score_plan

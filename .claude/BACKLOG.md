@@ -37,5 +37,7 @@
 - [ ] Deploy on Render: connect Blueprint, set ENTSO_API secret, check the build finds Node 22 and Python 3.14.0, warm up before the demo
 - [x] Demo polish (session 6 `demo-polish`): grid→battery path, Memory→Agent packet at 20:00, day chart (compare.json + prices), QA/critique fixes
 - [ ] Push `demo-polish` + PR
-- [ ] Session 7: live Gemini calls in the demo; if poor, roll back to precompute + playback
+- [x] Session 7: pipeline 'now' cue (`demo-pipeline-cue`, PR #11) + live agent week over SSE (`demo-live`)
+- [ ] Merge PR #11 (cue); push `demo-live` + PR only after the Render measurement passes
+- [ ] Render: Blueprint on `demo-live`, set GEMINI_API_KEY + DEMO_PASSCODE (+ ENTSO_API), time 2 live weeks; pass = < ~3 min and ≥ 5/7 from Gemini, else Starter ($7) or don't merge
 - [ ] Optional: 1600×900 playback bar wraps (λ on a 2nd row); panel scrolls at 1080 on long blocked-day explanations; baseline naming ('free rule' / 'default knobs' / 'regret vs rule') left as is by user choice

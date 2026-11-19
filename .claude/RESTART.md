@@ -1,7 +1,18 @@
 # Restart point
 
-2026-11-19: Branch `demo-polish` (6 commits, not pushed). Session 6 is done: UI/UX polish + QA.
-- Next (session 7): **live Gemini calls in the demo**. Test latency, 503 "high demand" and the free-tier quota (gemini-3.5-flash-lite, 500 req/day) in a live run. **If it performs badly, roll back to the original plan: precompute + playback** (what is on main now). Keep the work on its own branch so the rollback is just not merging it.
-- Also open: push `demo-polish` + PR; Render deploy (Blueprint, `ENTSO_API` secret, warm up before the demo).
-- Run locally: `cd demo/web && npm run build && cd ../.. && .venv/bin/uvicorn --app-dir demo api:app`, then open http://localhost:8000 (`#kpis` for the KPIs tab). An old uvicorn may already hold :8000; it serves the fresh `dist` from disk.
-- Checks: `.venv/bin/python demo/sim.py --check` and `.venv/bin/python demo/test_api.py` → "api ok".
+2026-11-19, session 7.
+- **Branches:**
+  - `demo-pipeline-cue` = PR #11: the pipeline "now" cue. Ready to merge.
+  - `demo-live` (built on the cue, pushed, no PR): the live Gemini week over SSE, the site passcode and the guards.
+- **Where I stopped:** all review fixes applied. `demo-live` is pushed (no PR until Render passes). PR #11 includes the cue finish fixes.
+- **Render measurement done:** free tier, 2 min 44 s/week, 7/7 Gemini (passes). Live at https://sense-reply-demo.onrender.com (passcode). Next: open a PR for `demo-live` and merge after PR #11. Original steps:
+  1. Point the Blueprint at `demo-live`.
+  2. Set `GEMINI_API_KEY`, `DEMO_PASSCODE` and `ENTSO_API`.
+  3. Warm up and run 2 live weeks.
+  4. Pass (< ~3 min/week, ≥ 5/7 days from Gemini): open a PR and merge.
+  5. Slow: Starter ($7). Bad: don't merge; main stays playback + cue.
+- **Run locally:** `cd demo/web && npm run build && cd ../.. && .venv/bin/uvicorn --app-dir demo api:app`, then open http://localhost:8000. "Run the agent live" spends 7 Gemini calls.
+- **Checks:**
+  - `.venv/bin/python demo/test_api.py` prints "api ok" (live stream via the memory fallback, 409/429/403/401, /healthz);
+  - `.venv/bin/python demo/sim.py --check`.
+- **Headless checks without the Chrome extension:** scratchpad `cdp.mjs` (CDP over Node's WebSocket). Env `RM=1` emulates reduced motion; `WS=390,2900` sets the window size.

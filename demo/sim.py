@@ -5,6 +5,7 @@ Run: .venv/bin/python demo/sim.py --check   (self-checks against data/Sense_Repl
 KPI formulas follow the KPI Conformity workbook and report §4. Basis: run C inputs, start SoC 0.80.
 """
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "analysis"))
@@ -347,16 +348,26 @@ def gate(rows, start, knobs, mode, lam, ci, mean_buy):
     return bool(s_k <= s_d + 1e-6), round(float(s_k), 4), round(float(s_d), 4)
 
 
-def run_ours(rows, mode, lam, ci, mem, soc0=0.80):
+def run_ours(rows, mode, lam, ci, mem, soc0=0.80, live=False, emit=None):
+    """The daily loop. live: real Gemini calls (no cache). emit(event, data) streams it: 'stage' (pipeline node
+    now working) and 'day' (the finished day + its 96 schedule rows + timings)."""
     import agent
+    emit = emit or (lambda *_: None)
+    agent.QUOTA_HIT = False  # per run: a long-lived server must not stay on memory after one 429
     mean_buy = sum(r["grid"]["buyPrice"] for r in rows) / len(rows)
     f = dict(imp=[], exp=[], chg=[], dis=[], soc=[], soc0=soc0, viol=0)
     days, soc, last_ok = [], soc0, None
     for day in range(len(rows) // 96):
         start = day * 96
-        ans, ctx, nb = agent.propose(rows, start, soc, ci, mode, lam, mem)
+        emit("stage", dict(day=day, stage="agent", msg="asking Gemini" if live else "reading the plan"))
+        ans, ctx, nb = agent.propose(rows, start, soc, ci, mode, lam, mem, live,
+                                     lambda m: emit("stage", dict(day=day, stage="agent", msg=m)))
+        emit("stage", dict(day=day, stage="validator", msg="replaying yesterday"))
+        t0 = time.monotonic()
         knobs, notes = agent.validate(ans["raw"], mode, mean_buy)
         ok, s_k, s_d = gate(rows, start, knobs, mode, lam, ci, mean_buy)
+        t1 = time.monotonic()
+        emit("stage", dict(day=day, stage="rule", msg="running 96 steps"))
         if ok:
             used, last_ok = "plan", knobs
         elif last_ok:
@@ -376,8 +387,26 @@ def run_ours(rows, mode, lam, ci, mem, soc0=0.80):
                                    "next day (day-1 stand-in)"),
                          used=used, knobs=knobs, source=ans["source"], explanation=ans["explanation"],
                          thoughts=ans["thoughts"], tok_in=ans["tok_in"], tok_out=ans["tok_out"]))
+        ms = dict(gemini=ans.get("ms"), gate=round((t1 - t0) * 1000), run=round((time.monotonic() - t1) * 1000))
+        if live:
+            print(f"live {mode} λ={lam} day {day + 1}: {ans['source']} {ms}", flush=True)
+        emit("day", dict(day=days[-1], schedule=schedule(rows[start:start + 96], df), ms=ms))
+        if live and knobs is not None:  # the finished day joins the memory for the rest of this run (live only: the
+            day_rows = rows[start:start + 96]  # precomputed replay keeps the fixed A + C seed until it is regenerated)
+            # scored like the seed (day-alone MPC, λ 0.10): a slice of the continuous run is biased at the day cut
+            regret = (day_score(day_rows, run_day(rows, start, soc, knobs, mode, 0.10, ci), 0.10)[0]
+                      - day_score(day_rows, rule_flows(day_rows, soc), 0.10)[0])
+            mem = mem + [dict(run="this run", day=day, mode=mode, context=ctx, knobs=knobs, regret_vs_rule=float(regret))]
         soc = df["soc"][-1]
     return f, days
+
+
+def ours_kpis(rows, f, days, rule, ci=None):
+    """Workbook KPIs of an 'ours' run + its token totals (ci: hourly lookup for S3, else None)."""
+    calls = sum(d["source"] == "gemini" for d in days)
+    tin, tout = sum(d["tok_in"] for d in days), sum(d["tok_out"] for d in days)
+    ai = ai_cost(calls, tin, tout, 0, len(rows))  # O3 = 0: the LLM is off the 15-min control path
+    return kpis_excel(rows, f, rule, ai, ci=ci), dict(calls=calls, tok_in=tin, tok_out=tout)
 
 
 def schedule(rows, f):
@@ -440,11 +469,9 @@ def main():
         for lam in LAMBDAS:
             f, days = run_ours(rows, mode, lam, ci, mem)
             check_run(rows, f, mode)
-            calls = sum(d["source"] == "gemini" for d in days)
-            tin, tout = sum(d["tok_in"] for d in days), sum(d["tok_out"] for d in days)
-            ai = ai_cost(calls, tin, tout, 0, len(rows))  # O3 = 0: the LLM is off the 15-min control path
-            k = kpis_excel(rows, f, rule, ai, ci=ci if hours else None)
-            runs[(mode, lam)] = (f, days, k, dict(calls=calls, tok_in=tin, tok_out=tout))
+            k, tok = ours_kpis(rows, f, days, rule, ci if hours else None)
+            calls = tok["calls"]
+            runs[(mode, lam)] = (f, days, k, tok)
             print(f"{mode} λ={lam}: S_net {k['S_net']:.3f} VORB {k['VORB']:+.3f} N1 {k['N1']:.3f} "
                   f"S1 {k['S1']:.1f} kg, gemini days {calls}/7, gate blocks {sum(not d['gate']['passed'] for d in days)}")
     for (mode, lam), (f, days, k, tok) in runs.items():
