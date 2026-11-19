@@ -38,6 +38,34 @@ api.carbon.hourly_ci = lambda *a: (_ for _ in ()).throw(AssertionError("network 
 j = get("/api/live/carbon").json()
 assert j["source"] == "constant-0.356" and j["points"] == [], j
 
+# live week, no key: the memory fallback runs, so no quota is spent (and no network: token patched above)
+import agent, time  # noqa: E401
+agent._key = lambda: None
+r = c.get("/api/live?mode=conservative&lambda=0.1")
+assert r.status_code == 200 and r.headers["content-type"].startswith("text/event-stream")
+ev = [l[7:] for l in r.text.splitlines() if l.startswith("event: ")]
+assert ev[0] == "start" and ev.count("day") == 7 and ev[-1] == "done" and "stage" in ev, ev
+done = __import__("json").loads(r.text.rsplit("data: ", 1)[1])
+assert done["kpis"]["N1"]["value"] is not None and done["tokens"]["calls"] == 0, done
+bodies.append(r.text)
+time.sleep(0.2)
+assert api._live["busy"] == 0.0
+api._live["busy"] = time.monotonic()
+assert c.get("/api/live?mode=upside&lambda=0").status_code == 409
+api._live.update(busy=0.0, runs=99)
+assert c.get("/api/live?mode=upside&lambda=0").status_code == 429
+assert c.get("/api/live?mode=upside&lambda=0.3").status_code == 422
+api._live["runs"] = 0
+
+# site passcode (Basic auth, any user), health check stays open for Render
+api.PASS = b"letmein"
+assert c.get("/api/kpis").status_code == 401
+assert c.get("/api/kpis", auth=("jury", "nope")).status_code == 401
+assert c.get("/api/kpis", headers={"Authorization": "Basic !!!"}).status_code == 401
+assert c.get("/api/kpis", auth=("jury", "letmein")).status_code == 200
+assert c.get("/healthz").status_code == 200
+api.PASS = b""
+
 env = {}
 f = D.parent / ".env"
 if f.exists():

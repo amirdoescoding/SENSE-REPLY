@@ -1,16 +1,24 @@
-"""Demo API: serves the precomputed sim runs, plus a cached live ENTSO-E carbon pull.
+"""Demo API: serves the precomputed sim runs, a cached live ENTSO-E carbon pull, and a live agent week (SSE).
 
 Run: .venv/bin/uvicorn --app-dir demo api:app
+Env: DEMO_PASSCODE (Basic auth on the whole site, any user name), GEMINI_API_KEY (live week), LIVE_CAP (runs/day).
 """
+import base64
+import json
+import os
+import queue
+import secrets
 import sys
+import threading
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
+from functools import cache
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "analysis"))
@@ -21,6 +29,28 @@ DIST = Path(__file__).resolve().parent / "web" / "dist"
 app = FastAPI()
 app.add_middleware(GZipMiddleware)  # 6 x ~120 KB runs on a slow free instance
 _cache = (0.0, None)  # (monotonic time, payload); real data 1 h, fallback 5 min
+PASS = os.environ.get("DEMO_PASSCODE", "").encode()
+# ponytail: in-memory guard, resets when the free instance sleeps or restarts; Gemini's own 429 is the backstop
+_live = dict(busy=0.0, day=None, runs=0)
+_guard = threading.Lock()
+
+
+@app.middleware("http")
+async def passcode(request: Request, call_next):
+    if PASS and request.url.path != "/healthz":
+        h = request.headers.get("authorization", "")
+        try:
+            ok = h.startswith("Basic ") and secrets.compare_digest(base64.b64decode(h[6:]).partition(b":")[2], PASS)
+        except ValueError:
+            ok = False
+        if not ok:
+            return Response(status_code=401, headers={"WWW-Authenticate": 'Basic realm="Sense Reply demo"'})
+    return await call_next(request)
+
+
+@app.get("/healthz")
+def healthz():
+    return {"ok": True}
 
 
 @app.get("/api/run")
@@ -61,6 +91,78 @@ def live_carbon():
         # cache the fallback for 5 min so an ENTSO-E outage doesn't make every visitor wait out the timeout
         _cache = (time.monotonic() - 3300, {"source": "constant-0.356", "g_per_kwh": 356, "points": [], "fetched_at": now.isoformat()})
         return _cache[1]
+
+
+@cache
+def _inputs():
+    """Run C rows, the carbon lookup and the memory, once per process (ENTSO-E is pulled once, not per run)."""
+    import agent
+    import sim
+    try:
+        ci = carbon.ci_lookup()[0]
+    except Exception as e:  # ENTSO-E down: the workbook's static factor, as without a token
+        print("live carbon fallback:", type(e).__name__)
+        ci = lambda dt: carbon.STATIC  # noqa: E731
+    rows = sim.load_run("C")
+    return rows, ci, agent.seed_memory(ci), sim.rule_flows(rows, 0.80)
+
+
+def _work(mode, lam, q, stop):
+    import agent
+    import sim
+    from sim import verdict
+
+    def emit(ev, data):
+        if stop.is_set():  # the viewer left: don't spend more of the quota
+            raise InterruptedError
+        q.put((ev, data))
+    try:
+        rows, ci, mem, rule = _inputs()
+        q.put(("start", dict(mode=mode, lam=lam, model=agent.MODEL, key=bool(agent._key()))))
+        f, days = sim.run_ours(rows, mode, lam, ci, mem, live=True, emit=emit)
+        k, tok = sim.ours_kpis(rows, f, days, rule)
+        k["MAC"] = None  # needs the λ=0 run
+        q.put(("done", dict(tokens=tok, kpis={x: dict(value=None if k.get(x) is None else round(k[x], 4),
+                                                      verdict=verdict(x, k.get(x))) for x in sim.THRESH})))
+    except InterruptedError:
+        print("live: viewer left, run stopped", flush=True)
+    except Exception as e:
+        print("live error:", type(e).__name__, e, flush=True)
+        q.put(("error", dict(msg=type(e).__name__)))
+    finally:
+        _live["busy"] = 0.0
+
+
+@app.get("/api/live")
+def live(mode: Literal["conservative", "upside"], lam: float = Query(alias="lambda")):
+    """One live agent week, streamed as server-sent events: start, stage*, day x7, done (or error)."""
+    if lam not in (0.0, 0.1, 0.5):
+        raise HTTPException(422, "lambda must be 0.0, 0.1 or 0.5")
+    with _guard:
+        if _live["day"] != date.today():
+            _live.update(day=date.today(), runs=0)
+        if _live["busy"] and time.monotonic() - _live["busy"] < 600:  # stale after 10 min: a stuck run frees the slot
+            raise HTTPException(409, "a live run is in progress, try again in a few minutes")
+        if _live["runs"] >= int(os.environ.get("LIVE_CAP", 10)):
+            raise HTTPException(429, "today's live runs are used up, the replay is still available")
+        _live["busy"], _live["runs"] = time.monotonic(), _live["runs"] + 1
+    q, stop = queue.Queue(), threading.Event()
+    threading.Thread(target=_work, args=(mode, abs(lam), q, stop), daemon=True).start()
+
+    def stream():  # sync generator: Starlette runs it in the threadpool, so the event loop stays free
+        try:
+            while True:
+                try:
+                    ev, data = q.get(timeout=10)
+                except queue.Empty:
+                    yield ": ping\n\n"  # keeps proxies from closing a quiet stream (Gemini back-off can be 60 s)
+                    continue
+                yield f"event: {ev}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+                if ev in ("done", "error"):
+                    return
+        finally:
+            stop.set()
+    return StreamingResponse(stream(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})
 
 
 if DIST.exists():
