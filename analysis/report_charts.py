@@ -1,7 +1,7 @@
 """Two report charts, three scenarios only (Pilot A, Pilot C, New framework). The free rule is a grey reference.
 
 Run: /opt/anaconda3/bin/python analysis/report_charts.py -> docs/report/fig-soc.png, fig-tradeoff.png
-Ours = demo/out/run_conservative_0.1.json (run C inputs). Scatter values = data/ours_ministral.json + workbook.
+Ours = demo/out/run_0.1.json (run C inputs). Scatter values = data/ours_ministral.json + workbook.
 """
 import json
 from collections import defaultdict
@@ -28,7 +28,7 @@ def by_hour(pairs):
 def soc_chart():
     a = load(ROOT / "data/DatasetV4" / FILES["A"])
     c = load(ROOT / "data/DatasetV4" / FILES["C"])
-    ours = json.loads((ROOT / "demo/out/run_conservative_0.1.json").read_text())["schedule"]
+    ours = json.loads((ROOT / "demo/out/run_0.1.json").read_text())["schedule"]
     series = [("Pilot A (cost agent)", by_hour((r["dt"], r["bess"]["soc"]) for r in a), MUTE, "-"),
               ("Pilot C (cost + sustainability)", by_hour((r["dt"], r["bess"]["soc"]) for r in c), INK, "-"),
               ("New framework (self-hosted single agent)", by_hour((r["t"], r["soc"]) for r in ours), BLUE, "-")]

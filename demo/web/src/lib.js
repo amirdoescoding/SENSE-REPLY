@@ -1,4 +1,3 @@
-export const MODES = ['conservative', 'upside']
 export const LAMS = [0, 0.1, 0.5]
 export const MAX_STEP = 671
 export const DAY_STEPS = 96

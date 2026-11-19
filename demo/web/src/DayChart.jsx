@@ -4,7 +4,7 @@ import { DAY_STEPS } from './lib.js'
 // Plan-day SoC (ours vs pilot C vs static rule) over the grid buy price: two panels on one time axis, never a dual axis.
 // compare.json is on run C inputs, the same inputs as every replay run. The readout follows the hover, else the playback step.
 const S_H = 64, P_H = 30, TOP = 8, L = 48
-const SERIES = [['ours', 'Ours', 'var(--agent)', ''], ['pilot', 'Pilot C', 'var(--ink)', ''], ['rule', 'Static rule', 'var(--mute)', '4 3']]
+const SERIES = [['ours', 'New framework', 'var(--agent)', ''], ['pilot', 'Pilot C', 'var(--ink)', ''], ['rule', 'Static rule', 'var(--mute)', '4 3']]
 const pct = (v) => Math.round(v * 100) + ' %'
 
 export default function DayChart({ run, compare, day, step }) {

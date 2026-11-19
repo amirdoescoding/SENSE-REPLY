@@ -21,7 +21,7 @@ A free **static rule** (charge on solar surplus, discharge when the house needs 
 | KPI (per site, per week) | Pilot A | Pilot C | New framework |
 |---|---|---|---|
 | Saving vs no battery, net of wear | €0.41 | €0.40 | €1.16 |
-| Value over the free rule, before AI cost | −€0.73 | −€0.67 | +€0.11 |
+| Value over the free rule, before AI cost | −€0.73 | −€0.67 | +€0.12 |
 | AI cost | €4.74 | €7.71 | €0.18 |
 | **Net value after AI cost (N1)** | **−€4.33** | **−€7.31** | **+€0.98** |
 | Grid CO2 | 21.9 kg | 21.3 kg | 12.2 kg |
@@ -29,14 +29,14 @@ A free **static rule** (charge on solar surplus, discharge when the house needs 
 
 **Where the pilots go wrong.** A fixed 80% charge target fills the battery by late morning. Midday solar is then exported at about €0.09/kWh and bought back at €0.11–0.12 in the evening. Both prompts value export at zero. The sustainability agent gets no price and no CO2 data, so it can only push "import less". Two agents setting one number add LLM calls but no information. The AI bill is 8 to 12 times what the battery saves.
 
-**What the second agent buys.** Pilot C costs €2.97 a week more than A and avoids 0.7 kg of CO2: about €4,300 per tonne, 48 times the EU carbon price (~€90/t). A carbon weight inside one agent costs about €17 per tonne in our model.
+**What the second agent buys.** Pilot C costs €2.97 a week more than A and avoids 0.7 kg of CO2: about €4,300 per tonne, 48 times the EU carbon price (~€90/t). A carbon weight inside one agent costs nothing extra in our model: it was slightly cheaper and cleaner this week.
 
 **The model.** Devstral 2, which ran the pilots, was retired on 31 July 2026. We pick **Mistral Ministral 3**: open weights, Apache-2.0, EU origin, so Reply holds the file and no vendor can retire it.
 
 - The **8B** runs on Reply's own platform. That is the default, and it is what the numbers above assume (1,000 sites, operations included).
 - The **3B** can run on the site gateway as a paid option, for sites that must work offline or keep data on site.
 
-**One honest caveat.** Before AI cost, our agent beats the free rule by €0.11 a week. At 1,000 sites the self-hosted model costs €0.18, so after AI cost we are €0.06 a week behind the rule (KPI F1). We clear the rule from about 10,000 sites, or on an EU API. In this January week the model's value is a reliable daily plan, an explanation and a cost-vs-CO2 dial, not better decisions than the rule. It has to prove decision value on other seasons (§9).
+**One honest caveat.** Before AI cost, our agent beats the free rule by €0.12 a week. At 1,000 sites the self-hosted model costs €0.18, so after AI cost we are €0.06 a week behind the rule (KPI F1). We clear the rule from about 1,500 sites, or on an EU API. In this January week the model's value is a reliable daily plan, an explanation and a cost-vs-CO2 dial, not better decisions than the rule. It has to prove decision value on other seasons (§9).
 
 **How far to trust this.** The pilots are measured. The new framework is modelled on the same inputs with a "tomorrow looks like today" forecast. The evidence is one winter week at one site, with a constant carbon factor (0.356 kg/kWh) and a site assumed to be in Italy. Treat it as pilot evidence, not proof.
 
@@ -100,13 +100,13 @@ Everything else stays in place:
 
 - **Governance.** With open weights, Reply holds the model file. Updates become Reply's decision, gated by the replay gate. Devstral 2 was retired mid-project; a hosted model can be retired again.
 - **Licence and origin.** Apache-2.0 allows commercial use. EU origin makes procurement and the AI Act story easiest for an Italian client. It is also the same vendor family as Devstral, which eases the port.
-- **Fit.** The task is three numbers and two sentences once a day. We ran the week on **Ministral 3 3B on a laptop** (8 GB, the memory class of a Jetson Orin Nano):
-  - 14 of 14 plans were valid JSON, with no clamped knobs;
-  - the week's saving was identical to the cloud model we used in the demo;
-  - each call took 12–14 s, which doesn't matter once a day.
+- **Fit.** The task is three numbers and two sentences once a day. We ran the week on **Ministral 3 8B on a laptop** (8 GB, 3-bit quantised so it fits), and earlier on the 3B (the memory class of a Jetson Orin Nano):
+  - 8B: 21 of 21 plans were valid JSON, with no clamped knobs (three carbon weights × 7 days); the demo replays these plans;
+  - 3B: 14 of 14 valid, the same week's saving within half a cent;
+  - each call took about 27 s on the laptop (8B) and 12–14 s (3B), which doesn't matter once a day.
 - **Where it runs.** The default is the **8B on Reply's platform**. The **3B on the gateway** is a paid option for offline sites or for clients whose data must stay on site. A box per site costs more than the battery saves (§8), so it is not the default.
 
-The 8B has not yet run our prompts; the 3B has, and the two share a template and tokenizer. Run the 8B once on the central node before go-live.
+The 8B ran at 3-bit on a laptop; the costed set-up serves it at full quality on Reply's node. Re-run the week there before go-live.
 
 ## 4. How we analysed the data
 
@@ -185,7 +185,7 @@ Win rate, agent agreement and regret cannot be computed on the pilots, because t
 |---|---|---|---|---|
 | S_net: saving vs no battery, net of wear (€/wk) | 0.41 | 0.40 | 1.16 | higher |
 | VCR: share of the achievable saving | 0.28 | 0.29 | 0.65 | higher |
-| VORB: value over the free rule (€/wk) | −0.73 | −0.67 | +0.11 | higher |
+| VORB: value over the free rule (€/wk) | −0.73 | −0.67 | +0.12 | higher |
 | O5: AI cost (€/wk) | 4.74 | 7.71 | 0.18 | lower |
 | N1: net after AI cost (€/wk) | −4.33 | −7.31 | +0.98 | higher |
 | N2: AI cost per € saved | 7.84 | 12.24 | 0.12 | lower |
@@ -194,12 +194,12 @@ Win rate, agent agreement and regret cannot be computed on the pilots, because t
 | S2b: CO2 avoided vs the rule (kg/wk) | −10.0 | −9.4 | −0.3 | higher |
 | SCR: self-consumption of PV | 0.52 | 0.54 | 0.82 | higher |
 | SSR: self-sufficiency | 0.39 | 0.44 | 0.69 | higher |
-| PSR: peak shaving | 0.00 | 0.39 | 0.30 | higher |
-| Peak grid import (kW) | 4.81 | 2.93 | 3.38 | lower |
-| Grid import / export (kWh/wk) | 63.8 / 45.1 | 58.7 / 42.9 | 32.8 / 16.7 | — |
+| PSR: peak shaving | 0.00 | 0.39 | 0.54 | higher |
+| Peak grid import (kW) | 4.81 | 2.93 | 2.20 | lower |
+| Grid import / export (kWh/wk) | 63.8 / 45.1 | 58.7 / 42.9 | 32.3 / 16.7 | — |
 | Equivalent full cycles (per wk) | 4.3 | 4.7 | 5.4 | lower |
 | Time at charge limits | 0% | 0% | 29% | lower |
-| C5: expensive-import share | 0.81 | 0.80 | 0.78 | lower |
+| C5: expensive-import share | 0.81 | 0.80 | 0.77 | lower |
 | O1: LLM calls per 15-min decision | 4.39 | 7.62 | 0.01 | lower |
 
 For reference, the free rule saves €1.03 a week net and emits 11.9 kg. The new framework is modelled on run C's inputs with a starting charge of 80% and λ = €0.10/kg.
@@ -210,8 +210,8 @@ For reference, the free rule saves €1.03 a week net and emits 11.9 kg. The new
 
 - **The pilots are dominated.** They lose to the free rule on every value KPI, and their AI bill is 8 to 12 times the saving.
 - **The new framework turns the economics positive.** Saving is almost 3× pilot C's, and the AI bill is 98% lower. Net value goes from −€7.31 to +€0.98 a week.
-- **The new framework is much cleaner.** Grid import falls 44% and grid CO2 43% against pilot C. It sits next to the rule: 0.3 kg a week dirtier, €0.12 richer before AI cost.
-- **Where it is weaker.** The peak import is 3.38 kW, above pilot C's 2.93 but below A's 4.81. The battery sits at its limits 29% of the time, because the 80% cap is gone. Cycles are 5.4 a week, still below a 7-cycle limit.
+- **The new framework is much cleaner.** Grid import falls 44% and grid CO2 43% against pilot C. It sits next to the rule: 0.3 kg a week dirtier, €0.12 richer before AI cost. It also has the lowest grid peak of the three (2.2 kW).
+- **Where it is weaker.** The battery sits at its limits 29% of the time, because the 80% cap is gone. Cycles are 5.4 a week, still below a 7-cycle limit.
 - **Most of the gain is design, not intelligence.** Dropping the 80% target and valuing export does most of the work. We say so before anyone else does.
 
 ## 7. Trade-off: cost against sustainability
@@ -223,10 +223,10 @@ Ratings are strong, medium or weak, on the week analysed.
 | | Pilot A | Pilot C | New framework |
 |---|---|---|---|
 | Net saving | Weak: €0.41 | Weak: €0.40 | Strong: €1.16 |
-| Value over the free rule | Weak: −€0.73 | Weak: −€0.67 | Medium: +€0.11 before AI, −€0.06 after |
+| Value over the free rule | Weak: −€0.73 | Weak: −€0.67 | Medium: +€0.12 before AI, −€0.06 after |
 | AI cost | Weak: €4.74/wk | Weak: €7.71/wk | Strong: €0.18/wk |
 | Grid CO2 | Weak: 21.9 kg | Weak: 21.3 kg | Strong: 12.2 kg |
-| Peak on the grid connection | Weak: 4.8 kW | Strong: 2.9 kW | Medium: 3.4 kW |
+| Peak on the grid connection | Weak: 4.8 kW | Strong: 2.9 kW | Strong: 2.2 kW |
 | Battery stress | Strong: 0% at limits | Strong: 0% at limits | Medium: 29% at limits |
 | Failure points | Weak: LLM on the control path | Weak: two agents on the path | Strong: rule + clamp, fallback chain |
 | Who controls the model | Weak: external API, retired | Weak: external API, retired | Strong: open weights, held by Reply |
@@ -235,7 +235,7 @@ Ratings are strong, medium or weak, on the week analysed.
 ### 7.2 What a kilogram of CO2 costs
 
 - **A second agent:** about €4,300 per tonne (pilot C against A: +€2.97 a week for −0.7 kg). That is 48 times the EU ETS price of about €90/t. On hourly carbon it is still about €2,000/t.
-- **A carbon weight inside one agent:** about €17 per tonne. Moving λ from 0 to €0.10/kg in our model costs €0.017 per kg avoided, well below the carbon price.
+- **A carbon weight inside one agent:** free in this week. Moving λ from 0 to €0.10/kg avoided 0.85 kg and saved about €0.01 (MAC −€0.011/kg). That gap is within the gate's noise, so read it as "about zero", far below the carbon price.
 - **Conclusion.** Carbon should be a parameter of one agent's goal, not a second agent.
 
 ### 7.3 Sensitivities
@@ -252,13 +252,13 @@ Ratings are strong, medium or weak, on the week analysed.
 
 ### 8.1 AI cost per site: where the model runs
 
-The token volume is measured on the Ministral 3 3B bench: about 12k in and 1.3k out per site per week, at one call a day. Hardware is amortised over 5 years. Power is priced at €0.32/kWh. Operations are 0.1 FTE (estimate). The script is `analysis/model_cost.py`.
+The token volume is measured on the Ministral 3 bench: about 12k in and 1.1–1.3k out per site per week, at one call a day. Hardware is amortised over 5 years. Power is priced at €0.32/kWh. Operations are 0.1 FTE (estimate). The script is `analysis/model_cost.py`.
 
 | Where the model runs | AI cost, € per site per week (100 / 1,000 / 10,000 sites) | N1, € per week (100 / 1,000 / 10,000 sites) |
 |---|---|---|
-| **Ministral 3 8B on Reply's platform (default)** | 1.76 / **0.18** / 0.018 | −0.61 / **+0.98** / +1.14 |
+| **Ministral 3 8B on Reply's platform (default)** | 1.76 / **0.18** / 0.018 | −0.60 / **+0.98** / +1.14 |
 | Same model on an EU API (small fleets) | 0.67 / 0.069 / 0.008 | +0.48 / +1.09 / +1.15 |
-| Ministral 3 3B on a gateway box (paid option) | 1.86 per site at any fleet size | −0.71 |
+| Ministral 3 3B on a gateway box (paid option) | 1.86 per site at any fleet size | −0.70 |
 | Pilot C, for reference | 7.71 | −7.31 |
 
 - **The model is nearly free; people and boxes are not.** Operations are about three quarters of the on-prem figure at 1,000 sites. If Reply already runs the compute and an MLOps team, the marginal cost falls to about €0.04 a site a week.
@@ -300,7 +300,7 @@ If the model never beats the memory-only baseline, ship the rule with the daily 
 - The simulated PV peaks at 10:00 with about 14 hours of sun in January. That is not real Italian weather.
 - Carbon is an average intensity, not marginal, and imports are not in the ENTSO-E production mix.
 - The AI cost of the self-hosted model is an estimate: €4k node, 0.1 FTE of operations, 1,000 sites. Confirm with Sense Reply.
-- In this week, plans from Ministral 3B, from a cloud model and from "copy the most similar good day" all give the same result. On 4 of 7 days the replay gate kept the previous plan. The model's decision value is not yet shown.
+- In this week, plans from Ministral 3 8B, the 3B, a cloud model and "copy the most similar good day" give the same result within half a cent. On 5 of 7 days (λ 0.10) the replay gate kept the previous plan. The model's decision value is not yet shown.
 
 **What we corrected from earlier documents.**
 
@@ -320,4 +320,4 @@ If the model never beats the memory-only baseline, ship the rule with the daily 
 - Mistral Ministral 3 model cards (Hugging Face, Apache-2.0).
 - EU ETS price: EUA Dec-2026 about €90/t (market reports, November 2026).
 
-<!-- Build: cd docs && pandoc REPORT.md --resource-path=. --reference-doc="<old report>.docx" -o "Sense Reply BDD B2 – Full Analysis Report.docx" -->
+<!-- Build: cd docs && pandoc REPORT.md --resource-path=. --reference-doc="Sense Reply BDD B2 – Full Analysis Report FINAL.docx" -o "Sense Reply BDD B2 – Full Analysis Report FINAL.docx" -->

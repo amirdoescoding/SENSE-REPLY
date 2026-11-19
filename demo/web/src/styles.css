@@ -104,12 +104,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 @media (prefers-reduced-motion: reduce) { .pipeline .flow { display: none; } }
 
 /* playback bar */
-.bar .live { display: flex; align-items: center; gap: 12px; }
-.chip:disabled, .seg button:disabled { opacity: .45; cursor: not-allowed; }
-.lam input:disabled { cursor: not-allowed; }
-.live-err { color: var(--alert); }
-.pending-status { color: var(--agent-text); font-size: 14px; }
-.kpis-h .muted { font-weight: 400; }
 .bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; padding: 12px 20px; }
 .play { width: 40px; height: 40px; border: 0; border-radius: 8px; background: var(--ink); display: grid; place-items: center; }
 .time { font-size: 18px; min-width: 190px; }
@@ -117,10 +111,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .chip { display: inline-flex; align-items: center; padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font-size: 13px; }
 .chip.solid { background: var(--ink); border-color: var(--ink); color: #fff; }
 .chip.cur { background: var(--agent-soft); border-color: var(--agent); }
-.seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; margin-left: auto; }
-.seg button { padding: 5px 12px; border: 0; background: #fff; font-size: 13px; }
-.seg button.on { background: var(--ink); color: #fff; }
-.lam { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; }
+.lam { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; margin-left: auto; }
 .lam > .muted { padding-top: 2px; }
 .slider { display: flex; flex-direction: column; width: 160px; }
 .slider input { width: 100%; margin: 2px 0 0; accent-color: var(--agent); }
@@ -218,8 +209,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .cnt { display: grid; grid-template-columns: minmax(0, 9.5em) minmax(60px, 1fr) 44px; gap: 12px; align-items: center; margin-top: 10px; font-size: 14px; }
 .bar-bg { height: 10px; background: var(--paper); border-radius: 5px; overflow: hidden; }
 .bar-bg > div { height: 100%; background: var(--ink-2); border-radius: 5px; }
-.bar-bg > .rule { background: var(--mute); }
-.bar-bg > .s5 { background: #9DBEEC; }
 .bar-bg > .ours { background: var(--agent); }
 .cnt .mono { text-align: right; }
 .co2-now { margin: 0 0 4px; }

@@ -38,9 +38,13 @@
 - [x] Demo polish (session 6 `demo-polish`): grid→battery path, Memory→Agent packet at 20:00, day chart (compare.json + prices), QA/critique fixes
 - [ ] Push `demo-polish` + PR
 - [x] Session 7: pipeline 'now' cue (`demo-pipeline-cue`, PR #11) + live agent week over SSE (`demo-live`)
-- [ ] Merge PR #11 (cue), then open + merge the `demo-live` PR (Render measured and accepted: 2:44–5:23/week, 7/7 Gemini); switch Render back to `main`
-- [ ] Regenerate the replay when ENTSO-E is back; decide whether the replay also uses the live memory pool (live-only today)
+- [x] Merge PR #11 (cue) and `demo-live` (both in main)
+- [x] Regenerate the replay (2026-11-19, Ministral 3 8B Q3_K_S; live mode removed)
 - [ ] `sim.py --check` / `agent.py` crash when ENTSO-E is down (HTTP 599): fall back to the static factor like `api._carbon`
-- [ ] Optional: a 'Gemini call N of 7 · 6.2 s' line in each plan panel; weather forecast input only for a real-dates 'plan tomorrow' mode (deck: production would use Open-Meteo or a met service)
+- [ ] Optional: weather forecast input only for a real-dates 'plan tomorrow' mode (deck: production would use Open-Meteo or a met service)
 - [x] Render: Blueprint on `demo-live`, secrets set, 3 live weeks timed (accepted on free)
 - [ ] Optional: 1600×900 playback bar wraps (λ on a 2nd row); panel scrolls at 1080 on long blocked-day explanations; baseline naming ('free rule' / 'default knobs' / 'regret vs rule') left as is by user choice
+- [x] Demo cleanup (`demo-ministral-replay`): replay only, Ministral 3 8B, A / C / New framework; report + workbook synced
+- [ ] Push `demo-ministral-replay` + PR; point Render at `main` after merge; remove GEMINI_API_KEY / LIVE_CAP from the Render dashboard
+- [ ] Optional: re-run the replay on the full-precision 8B (central node or a GPU box) to confirm the Q3 laptop plans
+- [ ] Deck session: PRESENTATION.md, SCRIPT.md, deck.pdf on the new numbers (N1 +0.98, VORB +0.12, F1 −0.06, peak 2.2 kW, MAC ≈ 0, 15/20 Good)

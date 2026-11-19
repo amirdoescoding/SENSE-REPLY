@@ -188,3 +188,12 @@
 - **Report source** is now `docs/REPORT.md`; the docx is built with pandoc, using the old docx as `--reference-doc`. Charts: `analysis/report_charts.py` → `docs/report/`. Diagram: `docs/diagrams/reply-platform.html` + `render.sh`.
 - LibreOffice is NOT installed (the `/opt/homebrew/bin/soffice` shim points to a missing app). openpyxl lives only in `/opt/anaconda3/bin/python`.
 - The deck, PRESENTATION.md and the demo still show the old S5 numbers (N1 1.10/1.15, AI €0.01). Fix them in the next sessions.
+
+## Demo on Ministral 3 8B, replay only (2026-11-19), branch `demo-ministral-replay`
+- **Live mode and Gemini are gone** (user: "forget about the live"). The server only replays committed plans: `run_{0.0,0.1,0.5}.json` + `model_cache.json`. `/api/run?lambda=` (no mode). Render secrets: ENTSO_API, DEMO_PASSCODE only.
+- `agent.ask` calls llama-server (`LLAMA_URL`, default :8080), cache keyed by sha256(MODEL + prompt). `python demo/sim.py` regenerates everything; `local_bench.py` reuses `agent.ask` with its own `bench_cache.json` (gitignored).
+- **The 8B ran on the M1 8 GB:** unsloth `Ministral-3-8B-Instruct-2512-Q3_K_S.gguf` (3.9 GB, ~/models), `-c 3072 -np 1 -ctk q8_0 -ctv q8_0 -fa on`, with Dia closed and VS Code open. Pressure stayed at "warning" (level 2), never critical. ~27 s/call (prefill 90 tok/s, decode 9 tok/s), prompts ~850–1,700 tokens. 21/21 valid JSON, 0 clamps.
+- New framework (λ 0.10): S_net 1.1586, VORB +0.119, N1 +0.98, F1 −0.057, S1 12.16 kg, peak G1 2.20 kW (was 3.38, now below pilot C), PSR 0.54, 15/20 Good. The gate kept only 2/7 plans (λ 0: 1/7, λ 0.5: 4/7). MAC λ0→0.10 = −€0.011/kg (cheaper AND cleaner; within gate noise, report says "≈ free"). F1 > 0 from ~1,500 sites (central option).
+- KPI columns: A, C, `New framework λ=x`. The static rule stays in sim.EXCEL only as the yardstick and for check 1b; S5 columns, `check_lp` and `run_perfect` are deleted.
+- Report FINAL.docx is a pure pandoc build of REPORT.md (verified identical text), so rebuild it: `cd docs && pandoc REPORT.md --resource-path=. --reference-doc="…FINAL.docx" -o "…FINAL.docx"`. Charts need `/opt/anaconda3/bin/python analysis/report_charts.py` (matplotlib).
+- Headless screenshots: the old swiftshader recipe now fails (WebGL off, shot before data). Use Playwright from the npx cache with `--use-angle=metal` and `waitForSelector('.panel')` (script in the session log).
