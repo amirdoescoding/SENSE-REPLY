@@ -167,7 +167,7 @@
   - Gemini 5–16 s/day; the gate + MPC ~1.2 s/day.
   - 7/7 plans from Gemini; one 503 retried.
   - The live KPIs equal the precomputed ones (same knobs).
-- **Render free measurement (2026-11-19, upside λ0.1):** a live week took 2 min 44 s, 7/7 from Gemini. Passes (< 3 min, ≥ 5/7).
+- **Render free measurement (2026-11-19, upside λ0.1, run 1 of 3):** a live week took 2 min 44 s, 7/7 from Gemini. Passes (< 3 min, ≥ 5/7).
   - Per day: Gemini 0.7–6.7 s, gate ~8.5 s (15.6 cold), sim ~7 s. The CPU is ~12× slower than the laptop, so compute is the bottleneck, not Gemini.
   - Starter would cut it to ~1 min if needed.
   - An existing Render service kept the old health check path (`/api/kpis` → 401 behind the passcode): set it to `/healthz` in Settings or Sync the Blueprint.
@@ -176,3 +176,5 @@
   - Prompt tag: "earlier day of this run". Costs +1 day-MPC per day (~7 s on Render).
   - Second Render run (conservative): 4 min 31 s, 7/7 Gemini, one 503 (77 s day). The user accepted this time.
   - Weather API: deferred. The sim's PV isn't real weather; it belongs in the deck/proposal or a future real-dates "plan tomorrow" mode.
+- Third Render run (conservative, with memory): 5 min 23 s, 7/7 Gemini, 3 × 503. The user accepted the free tier and wants to merge `demo-live` after PR #11. The live URL is behind the passcode.
+- ENTSO-E returned HTTP 599 all of 2026-11-19, so `sim.py --check` stops after check 1. That needs a static fallback (backlog).

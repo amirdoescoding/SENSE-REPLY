@@ -27,7 +27,7 @@ SENSE-REPLY/
 │   └── research/         # 00-synthesis.md = entry point; 05 hosting, 06 loop/learning, 07 self-hosting + simple framework
 ├── demo/                 # hosted demo of PROPOSAL (sessions in .claude/TODOS.md)
 │   ├── sim.py            # engine: daily agent knobs → gate → rolling LP → Excel KPIs (+ META name/unit/group) → out/*.json (--check); run_ours(live, emit) streams stage/day events
-│   ├── agent.py          # Gemini REST + cache (live=True bypasses it) + validator + k-NN memory
+│   ├── agent.py          # Gemini REST + cache (live=True bypasses it) + validator + k-NN memory (seed A+C; live runs append their finished days)
 │   ├── api.py            # FastAPI: /api/run?mode=&lambda=, /api/kpis, /api/compare, /api/live/carbon, /api/live (SSE live week, 1 at a time, LIVE_CAP/day), /healthz; DEMO_PASSCODE Basic auth; serves web/dist
 │   ├── test_api.py       # python demo/test_api.py → "api ok"
 │   ├── web/              # Vite + React (plain JS) + three: App (data, header, KPI strip, playback bar, mode/λ state), Kpis (KPIs tab), AgentPanel (+ DayChart: plan-day SoC vs pilot C/rule + price),

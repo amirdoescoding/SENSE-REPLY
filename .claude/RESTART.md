@@ -1,18 +1,18 @@
 # Restart point
 
-2026-11-19, session 7.
+2026-11-19: session 7 closed.
 - **Branches:**
   - `demo-pipeline-cue` = PR #11: the pipeline "now" cue. Ready to merge.
-  - `demo-live` (built on the cue, pushed, no PR): the live Gemini week over SSE, the site passcode and the guards.
-- **Where I stopped:** all review fixes applied. `demo-live` is pushed (no PR until Render passes). PR #11 includes the cue finish fixes.
-- **Render measurement done:** free tier, 2 min 44 s/week, 7/7 Gemini (passes). Live at https://sense-reply-demo.onrender.com (passcode). Next: open a PR for `demo-live` and merge after PR #11. Original steps:
-  1. Point the Blueprint at `demo-live`.
-  2. Set `GEMINI_API_KEY`, `DEMO_PASSCODE` and `ENTSO_API`.
-  3. Warm up and run 2 live weeks.
-  4. Pass (< ~3 min/week, ≥ 5/7 days from Gemini): open a PR and merge.
-  5. Slow: Starter ($7). Bad: don't merge; main stays playback + cue.
+  - `demo-live` (built on the cue, pushed, **no PR yet**): the live Gemini week over SSE, the live memory pool, the site passcode and the guards. Deployed on Render free from this branch: https://sense-reply-demo.onrender.com (Basic auth, any user name, password = `DEMO_PASSCODE`).
+- **Render measured:** 2:44 / 4:31 / 5:23 per live week, all 7/7 Gemini. The variance is Gemini 503s. The user accepted the free tier.
+- **Next:**
+  1. Merge PR #11, then open and merge the `demo-live` PR. After the merge, switch the Render branch back to `main`.
+  2. When ENTSO-E is back (HTTP 599 all of 2026-11-19), regenerate the replay: `.venv/bin/python demo/sim.py`, 42 Gemini calls, cache misses only where prompts changed. Decide first whether the replay should also use the live memory pool; today it is live-only.
+  3. Make `sim.py --check` and `agent.py` fall back to the static factor when ENTSO-E is down, like `api._carbon`.
+- **Demo day:**
+  - open the site 2–3 min early (the free instance sleeps; the first day is slowest);
+  - play at 16× to show each Gemini call pausing on the Agent stage.
+- **Render gotcha:** an existing service keeps its old health check path; it must be `/healthz`.
 - **Run locally:** `cd demo/web && npm run build && cd ../.. && .venv/bin/uvicorn --app-dir demo api:app`, then open http://localhost:8000. "Run the agent live" spends 7 Gemini calls.
-- **Checks:**
-  - `.venv/bin/python demo/test_api.py` prints "api ok" (live stream via the memory fallback, 409/429/403/401, /healthz);
-  - `.venv/bin/python demo/sim.py --check`.
-- **Headless checks without the Chrome extension:** scratchpad `cdp.mjs` (CDP over Node's WebSocket). Env `RM=1` emulates reduced motion; `WS=390,2900` sets the window size.
+- **Checks:** `.venv/bin/python demo/test_api.py` prints "api ok"; `.venv/bin/python demo/sim.py --check` (needs ENTSO-E).
+- **Headless checks:** scratchpad `cdp.mjs` (CDP via Node's WebSocket). It is lost on reboot; it is a ~30-line Node script.

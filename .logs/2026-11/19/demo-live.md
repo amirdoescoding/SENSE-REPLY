@@ -11,12 +11,33 @@
   - code-reviewer on live: 1 medium (stale takeover) + 4 low, all fixed;
   - impeccable finish reviewer: asked for recaptures (`.impeccable/review/`), then 8 fixes, all applied (bold label on cues, blocked-day line, --agent-text 5.25:1, stage announced, red alert on failure, disabled look, Mode/λ locked for any live run, status in the pending panel).
 - **Found myself:** the sync SSE generator was never closed when the viewer left. Proved with a stub server, fixed with an async generator.
-- **Commits:** 207f735 mockup · 71f73dc cue · 4ad7682 tick fix (PR #11) · db0b8fe engine · 2853ef8 api · ccf4d10 ui · dfd86fd render · 7f2cb76 review fixes · a09a93f status line.
-- **Measured locally:** live week 51–68 s, 7/7 Gemini, one 503 retried. ENTSO-E timed out today (no regenerate; equivalence checked instead).
-- **Left:** the Render measurement (user), merge PR #11.
-- **Self-rating: 7/10.**
+- **Commits:**
+  - PR #11: mockup, cue, tick fix, cue finish fixes.
+  - `demo-live`: engine, api, ui, render, review fixes, live finish fixes, live memory pool (3ed6828), docs.
+- **After the reviews:**
+  - Render deploy: the health check path was stuck on `/api/kpis` (401 behind the passcode). Fixed in Settings to `/healthz`.
+  - The user asked how the live call works: one Gemini call per day, sequential. The server runs ahead of playback, so the calls look continuous.
+  - The user asked what the agent's input is; answered from `prompt()` / `context()`.
+  - Live memory: the user proposed pooling the A/C seed with the run's own finished days. Built.
+    - Caught a scoring bias first: a day sliced from the continuous run scored +0.07 € vs ~0, so live days are scored day-alone like the seed.
+    - The prompt tags live days; seeded prompts are byte-identical.
+  - Weather API: deferred (the simulated PV isn't real weather).
+- **Measured:**
+  - Locally: 51–68 s, 7/7 Gemini.
+  - Render free:
+    - upside 2:44 (0 × 503);
+    - conservative 4:31 (1 × 503);
+    - conservative with memory 5:23 (3 × 503).
+  - Every run 7/7 Gemini. The user accepted the free tier.
+  - Compute is ~22 s/day on Render (gate 8.5 + sim 6.6 + memory scoring ~7).
+- **QA at close:**
+  - `test_api` ok and the build is clean;
+  - `sim.py --check` passed check 1, then crashed on ENTSO-E (HTTP 599 all day; backlog item to fall back to static).
+- **Left:** merge PR #11, open + merge the `demo-live` PR, regenerate the replay (memory pool + ENTSO-E) when ENTSO-E is back, and make `--check` survive an ENTSO-E outage.
+- **Self-rating: 7.5/10.**
   - Good: small diffs, no new deps, every claim checked by sampling the real page.
   - Weak:
     - I first claimed Stop saves quota before testing it (it didn't);
     - one sed chain silently skipped an edit;
-    - the `.tick` class collision cost a round.
+    - the `.tick` class collision cost a round;
+    - the first memory version stored biased regrets (caught by looking at the numbers before shipping).

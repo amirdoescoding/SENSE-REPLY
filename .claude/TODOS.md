@@ -61,7 +61,9 @@ Close each session with: memory files + `graphify update .`.
   - Playback waits at the live frontier; the pipeline follows the server stage with a status line.
   - Guards: site passcode (Basic auth), 1 run at a time, `LIVE_CAP`/day.
   - Locally: 51–68 s per week, 7/7 Gemini, one 503 retried.
-- [x] **7c Render measurement** (2026-11-19): free tier, 2 min 44 s/week, 7/7 Gemini → passes. One more run (other mode), then the PR.
+- [x] **7c Render measurement** (2026-11-19): free tier, 3 runs: 2:44 / 4:31 / 5:23, all 7/7 Gemini. Variance comes from 503s. The user accepted the free tier.
+- [x] **7d live memory pool:** live runs add their finished days to the k-NN memory, scored like the seed. The agent's reasoning cites earlier days.
+- [ ] **8 (next):** merge PR #11 + the `demo-live` PR; regenerate the replay when ENTSO-E is back.
   - Original criteria:
   - Blueprint on `demo-live`, set the secrets, warm up, run 2 live weeks.
   - Pass: < ~3 min and ≥ 5/7 days from Gemini, then merge.
