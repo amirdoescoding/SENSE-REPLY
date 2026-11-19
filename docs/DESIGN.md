@@ -25,6 +25,7 @@ Visual system for the demo app (sessions 4–5 in `.claude/TODOS.md`).
 | `--card` | `#FFFFFF` | panels |
 | `--agent` | `#3A7DDA` | intelligence: agent, plans, LLM calls (Reply brand blue) |
 | `--agent-soft` | `#E8F0FB` | agent fills, "Ours" column |
+| `--agent-text` | `#2F6BC2` | small agent-blue text on white (≈5.2:1, AA at 12 px), e.g. the pipeline status line |
 | `--sun` | `#F2A900` | PV energy |
 | `--store` | `#02B843` | battery |
 | `--grid` | `#586674` | grid import/export |

@@ -1,6 +1,6 @@
 :root {
   --ink: #151F27; --ink-2: #3F4D5A; --mute: #66727E; --line: #D6E0EA; --paper: #F4F8FC; --card: #FFFFFF;
-  --agent: #3A7DDA; --agent-soft: #E8F0FB; --sun: #F2A900; --store: #02B843; --grid: #586674; --alert: #EB0037;
+  --agent: #3A7DDA; --agent-soft: #E8F0FB; --agent-text: #2F6BC2; --sun: #F2A900; --store: #02B843; --grid: #586674; --alert: #EB0037;
   --co2-hi: #C9733A; --good-bg: #E3F7EA; --good-fg: #027A31; --imp-bg: #FDE7EC; --imp-fg: #B0002A;
   --ease-in-out: cubic-bezier(.77, 0, .175, 1);
   --ease-out: cubic-bezier(.23, 1, .32, 1);
@@ -69,17 +69,31 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* pipeline */
 .pipeline { padding: 8px 16px; }
-.pipeline svg { display: block; width: 100%; height: auto; max-height: 190px; }
+.pipeline svg { display: block; width: 100%; height: auto; max-height: 230px; }
 .pipeline .link { stroke-width: 1.5; }
 .pipeline .fail-dash { stroke: var(--alert) !important; stroke-dasharray: 5 4; }
 .pipeline .arc { fill: none; stroke: var(--mute); stroke-width: 1; stroke-dasharray: 3 4; }
 .pipeline .arc-label { font: 400 calc(13px * var(--k, 1)) var(--sans); fill: var(--mute); paint-order: stroke; stroke: #fff; stroke-width: 8px; }
 .pipeline .node { fill: #fff; stroke: var(--line); stroke-width: 1.5; transition: fill 180ms ease, stroke 180ms ease; }
-.pipeline .node.active { fill: var(--agent-soft); stroke: var(--agent); }
-.pipeline .node.fail { stroke: var(--alert); }
-.pipeline .icon { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.pipeline .node-label { font: 400 calc(14px * var(--k, 1)) var(--sans); fill: var(--ink-2); }
-.pipeline .node-label.on { fill: var(--ink); font-weight: 500; }
+.pipeline .fail .node { stroke: var(--alert); }
+.pipeline .icon { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: opacity 180ms ease; }
+.pipeline .node-label { font: 400 calc(14px * var(--k, 1)) var(--sans); fill: var(--ink-2); transition: fill 180ms ease; }
+.pipeline .node-status { font-size: calc(12px * var(--k, 1)); fill: var(--agent-text); }
+.pipeline .fail .node-status { fill: var(--alert); }
+/* "now" cue: the working stage is enlarged 1.18x (rect + icon; the label stays put) and filled */
+.pipeline .nd { transform-box: fill-box; transform-origin: center; transition: transform 200ms var(--ease-out); }
+.pipeline .on .nd { transform: scale(1.18); }
+.pipeline .on .node { fill: var(--agent-soft); stroke: var(--agent); stroke-width: 2; }
+.pipeline .on.fail .node { fill: #FDE7EC; stroke: var(--alert); }
+.pipeline .on .icon { stroke: var(--agent); }
+.pipeline .on.fail .icon { stroke: var(--alert); }
+.pipeline .on .node-label { fill: var(--ink); font-weight: 500; }
+.pipeline .dim .icon { opacity: .5; }
+.pipeline .dim .node-label { fill: var(--mute); }
+/* reduced motion: no scaling, the executor is simply held */
+.pipeline .held .nd { transform: none !important; transition: none; }
+.pipeline .held:not(:has(.on)) [data-id='rule'] .node { fill: var(--agent-soft); stroke: var(--agent); }
+.pipeline .held:not(:has(.on)) [data-id='rule'] .node-label { fill: var(--ink); font-weight: 500; }
 
 .pipeline .packet { fill: var(--agent); opacity: 0; pointer-events: none; }
 .pipeline .ov { opacity: 0; pointer-events: none; }

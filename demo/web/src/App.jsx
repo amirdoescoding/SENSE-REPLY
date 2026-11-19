@@ -151,7 +151,7 @@ function Sim({ data, mode, lam, setMode, setLam }) {
     <main className="sim">
       <KpiStrip kpis={data.kpis} mode={mode} lam={lam} />
       <Site row={run.schedule[pb.step]} step={pb.step} sun={sun[pb.step]} reducedMotion={reduced} />
-      <Pipeline active={pb.step % DAY_STEPS < 3 ? 'agent' : null} fail={blocked ? 'validator' : null}
+      <Pipeline active={reduced && pb.step % DAY_STEPS < 3 ? 'agent' : null} fail={blocked ? 'validator' : null}
         step={pb.step} epoch={pb.seeks + key(mode, lam)} playing={pb.playing} speed={pb.speed} reduced={reduced} />
       <PlaybackBar pb={pb} run={run} day={day} mode={mode} lam={lam} setMode={setMode} setLam={setLam} />
       <AgentPanel run={run} compare={data.compare} day={day} step={pb.step} mode={mode} lam={lam} />
