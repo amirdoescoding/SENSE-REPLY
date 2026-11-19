@@ -1,0 +1,99 @@
+<!doctype html>
+<!-- Reply's "Agentic Operations for E&U" (brief PDF p.2) with our two changes.
+     Render: docs/diagrams/render.sh  ->  reply-platform.png (1920x1080) -->
+<html><head><meta charset="utf-8"><title>Reply platform, adapted</title>
+<style>
+  :root{--ink:#151F27;--blue:#3A7DDA;--mute:#66727E;--line:#9aa3ab;--new:#E8F0FB;--red:#c0392b}
+  *{box-sizing:border-box}
+  body{margin:0;width:1920px;height:1080px;background:#fff;font-family:Arial,Helvetica,sans-serif;color:var(--ink);position:relative;overflow:hidden}
+  h1{position:absolute;left:0;right:0;top:22px;margin:0;text-align:center;font-size:44px;font-weight:900;letter-spacing:.5px}
+  .sub{position:absolute;left:0;right:0;top:80px;text-align:center;font-size:20px;color:var(--mute)}
+  .zone{position:absolute;border:2px solid var(--blue)}
+  .zone>.t{position:absolute;left:16px;top:10px;font-weight:700;color:var(--blue);font-size:21px}
+  .inner{position:absolute;border:1.5px solid var(--blue)}
+  .inner>.t{position:absolute;left:14px;top:8px;font-size:18px}
+  .b{position:absolute;border:1.5px solid var(--line);background:#fff;padding:10px 12px;font-size:17px;line-height:1.3;text-align:center;display:flex;flex-direction:column;justify-content:center}
+  .b b{font-size:19px}
+  .b small{font-size:15px;color:var(--mute)}
+  .new{background:var(--new);border:2.5px solid var(--blue)}
+  .new small{color:#47525C}
+  .opt{border:2.5px dashed var(--blue)}
+  .gone{border:2px dashed var(--red);background:#f6f6f6;color:#888}
+  .gone b{text-decoration:line-through}
+  .lbl{position:absolute;font-size:15px;color:var(--ink);background:#fff;padding:0 4px}
+  .legend{position:absolute;left:60px;bottom:28px;display:flex;gap:30px;font-size:16px;align-items:center}
+  .sw{display:inline-block;width:34px;height:20px;vertical-align:middle;margin-right:8px;border:1.5px solid var(--line)}
+  .foot{position:absolute;right:40px;bottom:30px;font-size:14px;color:var(--mute)}
+  svg{position:absolute;left:0;top:0}
+</style></head><body>
+<h1>AGENTIC OPERATIONS FOR E&amp;U: WITH OUR CHANGES</h1>
+<div class="sub">Reply's platform, unchanged in shape. Two changes: one self-hosted carbon-aware agent instead of the external LLM, and a daily plan run by a rule on the edge.</div>
+
+<!-- FIELD -->
+<div class="zone" style="left:60px;top:130px;width:720px;height:700px"><div class="t">Field Devices (one home site)</div></div>
+<div class="b" style="left:95px;top:205px;width:230px;height:90px"><b>PV, 9 panels</b></div>
+<div class="b" style="left:95px;top:340px;width:230px;height:90px"><b>Battery 10 kWh</b><small>SoC 10–90%, 5 kW</small></div>
+<div class="b" style="left:95px;top:475px;width:230px;height:90px"><b>House load + grid meter</b></div>
+<div class="b new" style="left:400px;top:170px;width:350px;height:140px"><b>Edge AI Agent</b>rule + safety clamp every 15 min, runs the daily plan<small>fallback: yesterday's plan, then the static rule</small></div>
+<div class="b" style="left:440px;top:350px;width:270px;height:90px"><b>IoT Edge Gateway</b></div>
+<div class="b opt" style="left:400px;top:520px;width:350px;height:130px"><b>Ministral 3 3B on the gateway</b>paid option: offline sites, or data must stay on site</div>
+<div class="b" style="left:95px;top:700px;width:655px;height:100px;border:none;text-align:left;font-size:16px;color:var(--mute)">No LLM on the 15-minute control path: 1 call a day per site, against ~730 in the pilots.</div>
+
+<!-- PLATFORM -->
+<div class="zone" style="left:880px;top:130px;width:740px;height:700px"><div class="t">Centralized Platform (Reply on-premise)</div></div>
+<div class="inner" style="left:910px;top:180px;width:680px;height:140px"><div class="t">Business Applications</div></div>
+<div class="b" style="left:1060px;top:215px;width:380px;height:90px"><b>Owner app</b>today's plan + reason, λ dial € ↔ CO2</div>
+<div class="inner" style="left:910px;top:360px;width:680px;height:450px"><div class="t">Industrial IoT Platform</div></div>
+<div class="b new" style="left:930px;top:405px;width:310px;height:185px"><b>Validator + replay gate</b>schema and limits, then replays the plan on recent days; must not lose to yesterday's plan</div>
+<div class="b new" style="left:1260px;top:405px;width:310px;height:185px"><b>Ministral 3 8B, self-hosted</b>in Computational Resources. One carbon-aware agent, goal € + λ·CO2<small>1 call per site per day</small></div>
+<div class="b" style="left:930px;top:630px;width:310px;height:160px"><b>Edge Apps Store</b>ships the edge agent and, for the paid option, signed 3B weights</div>
+<div class="b" style="left:1260px;top:630px;width:310px;height:160px"><b>Data Lake</b>telemetry, memory of past days, replay logs</div>
+
+<!-- RIGHT -->
+<div class="b" style="left:1680px;top:215px;width:200px;height:90px"><b>Business users</b><small>site owners</small></div>
+<div class="b" style="left:1680px;top:470px;width:200px;height:90px"><b>IoT Infrastructure Operator</b></div>
+<div class="b new" style="left:1680px;top:650px;width:200px;height:140px"><b>External feeds</b>day-ahead prices, ENTSO-E hourly CO2 (Italy)</div>
+
+<!-- BELOW -->
+<div class="b gone" style="left:1010px;top:870px;width:480px;height:80px"><b>External AI Service Provider (LLM)</b>removed: Devstral 2 was retired 31 Jul 2026</div>
+
+<svg width="1920" height="1080">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#3A7DDA"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c0392b"/></marker>
+  </defs>
+  <g stroke="#3A7DDA" stroke-width="2.5" fill="none" marker-end="url(#a)">
+    <path d="M325 250 H380 V385 H440"/>
+    <path d="M325 385 H440" marker-start="url(#a)"/>
+    <path d="M325 520 H380 V395"/>
+    <path d="M575 310 V350" marker-start="url(#a)"/>
+    <path d="M710 395 H910" marker-start="url(#a)"/>
+    <path d="M1260 497 H1240"/>
+    <path d="M1415 630 V590"/>
+    <path d="M1250 320 V360" marker-start="url(#a)"/>
+    <path d="M1590 260 H1680" marker-start="url(#a)"/>
+    <path d="M1590 515 H1680" marker-start="url(#a)"/>
+    <path d="M1680 720 H1620 V560 H1570"/>
+    <path d="M930 710 H765 V425 H710" stroke-dasharray="7 5"/>
+  </g>
+  <path d="M575 520 V440" stroke="#3A7DDA" stroke-width="2.5" stroke-dasharray="7 5" fill="none" marker-end="url(#a)"/>
+  <path d="M1250 870 V810" stroke="#c0392b" stroke-width="2" stroke-dasharray="5 5" fill="none"/>
+  <line x1="1236" y1="826" x2="1264" y2="854" stroke="#c0392b" stroke-width="3"/>
+  <line x1="1264" y1="826" x2="1236" y2="854" stroke="#c0392b" stroke-width="3"/>
+  <!-- lock -->
+  <g transform="translate(812 368)"><rect x="0" y="12" width="26" height="20" rx="3" fill="#151F27"/><path d="M5 12 V7 a8 8 0 0 1 16 0 V12" stroke="#151F27" stroke-width="3" fill="none"/></g>
+</svg>
+<div class="lbl" style="left:716px;top:336px">telemetry up</div>
+<div class="lbl" style="left:716px;top:357px">plan down</div>
+<div class="lbl" style="left:590px;top:470px">optional</div>
+<div class="lbl" style="left:772px;top:600px">deploy</div>
+<div class="lbl" style="left:1425px;top:600px">3–5 similar past days</div>
+
+<div class="legend">
+  <span><span class="sw"></span>Reply's platform, unchanged</span>
+  <span><span class="sw" style="background:#E8F0FB;border:2.5px solid #3A7DDA"></span>our change</span>
+  <span><span class="sw" style="border:2.5px dashed #3A7DDA"></span>paid option</span>
+  <span><span class="sw" style="background:#f6f6f6;border:2px dashed #c0392b"></span>removed</span>
+</div>
+<div class="foot">Adapted from Sense Reply, "Agentic Operations for E&amp;U" (BDD brief). Site assumed Italy.</div>
+</body></html>
