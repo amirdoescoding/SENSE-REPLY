@@ -265,7 +265,7 @@ const S={
   // pilots pay per token, so their AI cost per site is flat in fleet size (report §6)
   [[7.71,'Pilot C'],[4.74,'Pilot A']].forEach(([v,t])=>{el(g,'line',{x1:m.l,x2:W-m.r,y1:y(v),y2:y(v),stroke:al,'stroke-width':3.5});
     el(g,'text',{x:W-m.r+14,y:y(v)+7,class:'lbl',style:`fill:${css('--alert-text')};font-weight:600`},t+' €'+v)});
-  el(g,'text',{x:m.l+12,y:y(7.71)-12,class:'sub',style:`fill:${css('--alert-text')}`},'Pilots pay per token: the bill never falls with scale');
+  el(g,'text',{x:m.l+12,y:y(4.74)+28,class:'sub',style:`fill:${css('--alert-text')}`},'Pilots pay per token: the bill never falls with scale');
   el(g,'line',{x1:m.l,x2:W-m.r,y1:y(1.86),y2:y(1.86),stroke:ag,'stroke-width':2.5,'stroke-dasharray':'10 6'});
   el(g,'text',{x:W-m.r+14,y:y(1.86)+7,class:'lbl',style:`fill:${css('--agent-text')}`},'3B box €1.86+');
   [[1.1586,'Above €1.16: AI eats the whole saving'],[0.1191,'Below €0.12: beats the rule after AI']].forEach(([v,t])=>{
