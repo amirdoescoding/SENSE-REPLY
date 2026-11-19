@@ -1,6 +1,6 @@
 # Pitch deck: ghost deck (7 minutes, demo included)
 
-Speakers: Francesco, Sydney, Amir. Script comes later.
+Speakers: Sydney (slides 0–4), Amir (5–6, framework + demo), Francesco (7–8). Script: `docs/SCRIPT.md`.
 Numbers follow the report basis (`docs/Sense Reply BDD B2 – Full Analysis Report.docx`):
 - carbon at a constant 0.356 kg/kWh;
 - token price assumed, 0.86 €/$;
@@ -24,9 +24,9 @@ The argument runs: the answer, then the yardstick. The pilots fail it. The secon
 
 | # | Time | Speaker | Running total |
 |---|---|---|---|
-| 0–2 | 0:10 + 0:35 + 0:50 | Francesco | 1:35 |
-| 3–5 | 0:50 + 0:45 + 0:45 | Sydney | 3:55 |
-| 6–8 | 1:30 + 0:45 + 0:35 | Amir | 6:45 |
+| 0–4 | 0:10 + 0:35 + 0:50 + 0:50 + 0:45 | Sydney | 3:10 |
+| 5–6 | 0:45 + 1:30 | Amir | 5:25 |
+| 7–8 | 0:45 + 0:35 | Francesco | 6:45 |
 
 That leaves 15 s of buffer. The demo plays the **precomputed** week. A live Gemini week takes 2:44–5:23 on Render free, so never run it live on stage. Keep a 60 s screen recording as a backup.
 
