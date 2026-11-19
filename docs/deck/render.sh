@@ -2,7 +2,7 @@
 # Render every slide of deck.html to PNG, then join them into deck.pdf.
 cd "$(dirname "$0")"
 B=$(ls -d ~/Library/Caches/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-mac-arm64/chrome-headless-shell | tail -1)
-ALL="0 1 2 3 4 5 6 7 8 9 a1 a2 a3 a4 a5 a6"
+ALL="0 1 2 3 4 5 6 7 8 a1 a2 a3 a4 a5 a6"
 for s in ${S:-$ALL}; do
   "$B" --headless --hide-scrollbars --allow-file-access-from-files --window-size=1920,1080 \
     --virtual-time-budget=4000 --screenshot="$PWD/slide-$s.png" "file://$PWD/deck.html?s=$s" 2>/dev/null

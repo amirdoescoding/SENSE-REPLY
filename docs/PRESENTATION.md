@@ -1,6 +1,6 @@
 # Pitch deck: ghost deck (7 minutes, demo included)
 
-Speakers: Sydney (slides 0–4), Amir (5–6, platform + demo), Francesco (7–9). Script: `docs/SCRIPT.md`. Deck: `docs/deck/deck.html`, rendered by `docs/deck/render.sh`.
+Speakers: Sydney (slides 0–4), Amir (5–6, platform + demo), Francesco (7–8). Script: `docs/SCRIPT.md`. Deck: `docs/deck/deck.html`, rendered by `docs/deck/render.sh`.
 
 **Three scenarios only:** Pilot A (cost), Pilot C (cost + sustainability), New framework (self-hosted single agent, Ministral 3 8B). The free static rule is the yardstick, not a scenario.
 
@@ -16,26 +16,25 @@ Speakers: Sydney (slides 0–4), Amir (5–6, platform + demo), Francesco (7–9
 2. We judge every agent against a free rule, because "saved vs no battery" alone makes the pilots look profitable.
 3. Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves.
 4. A second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price, while a carbon weight inside one agent costs about nothing.
-5. We keep Reply's platform and change two things: a self-hosted Ministral 3 8B replaces the retired external LLM, and the LLM leaves the 15-minute control path.
+5. We change two things on Reply's platform: a self-hosted Ministral 3 8B replaces the retired LLM, and the LLM leaves the 15-minute loop.
 6. Demo: Ministral 3 8B wrote every plan of this week, and the replay gate decided which ones the battery ran.
-7. The framework meets 15 of 20 KPIs against 5–6 for the pilots, and draws level with the free rule after AI cost.
-8. Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving.
-9. One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client.
+7. Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving.
+8. One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client.
 
 The argument runs in five steps:
 - the answer, then the yardstick;
 - the pilots fail it, and the second agent buys carbon at a high price;
 - the redesign on Reply's own platform, then the demo;
-- the KPI scores, then the fleet economics and the upsell;
+- the fleet economics and the upsell (the KPI scores live in the demo's KPI tab);
 - the limits and the rollout.
 
 ## Timing and speakers
 
 | # | Time | Speaker | Running total |
 |---|---|---|---|
-| 0–4 | 0:10 + 0:30 + 0:40 + 0:45 + 0:35 | Sydney | 2:40 |
-| 5–6 | 0:45 + 1:30 | Amir | 4:55 |
-| 7–9 | 0:40 + 0:45 + 0:25 | Francesco | 6:45 |
+| 0–4 | 0:10 + 0:30 + 0:50 + 0:45 + 0:35 | Sydney | 2:50 |
+| 5–6 | 0:45 + 1:30 | Amir | 5:05 |
+| 7–8 | 0:55 + 0:30 | Francesco | 6:30 |
 
 **Demo.** It replays the committed Ministral 3 8B plans; nothing runs live. Keep a 60 s screen recording as a backup.
 
@@ -52,16 +51,14 @@ Three before → after figures, pilot C → New framework:
 
 Source: report §1.
 
-### 2. KPIs (0:40)
-**Layout.** One layer, five category columns: Value, AI economics, Carbon, Self-use and grid, Battery and timing.
+### 2. KPIs (0:50)
+**Left panel: the free rule, our yardstick.**
+- Two lines: if the sun makes more than the house uses, charge; if the house uses more, discharge. No AI, no forecast, no cost.
+- It saves €1.03 a week on the pilot week. Any AI must beat it, or Reply should ship the rule.
 
-**Each of the 20 KPIs is a card with:**
-- a plain question;
-- its code and unit;
-- the pass line;
-- a tag for its yardstick: free rule (blue), no battery, perfect optimiser, or fixed target.
+**Right: the 20 KPIs in five category columns.** Each card shows a plain question, its code and the pass line. A blue edge marks the four KPIs compared with the rule: S net, VORB, F1, S2b.
 
-The thresholds come from `data/Sense_Reply_B2_KPI_Conformity.xlsx`. No results are shown on this slide.
+The thresholds come from `data/Sense_Reply_B2_KPI_Conformity.xlsx`. No results appear here; the verdicts per scenario are in the demo's KPI tab.
 
 ### 3. The two pilots (0:45)
 **Bars.** Saving vs no battery against AI bill, per pilot:
@@ -114,23 +111,9 @@ Source: report §3.1, `docs/diagrams/reply-platform.html`.
 2. The similar past days and the memory arc. (0:20)
 3. Tue: the gate blocks, and the previous valid plan runs. (0:20)
 4. One day at 16×. (0:15)
-5. KPIs tab. (0:15)
+5. KPIs tab: 15 of 20 KPIs Good, against 5 and 6 for the pilots. (0:15)
 
-### 7. Results on our KPIs (0:40)
-**Grid.** The same as slide 2. Each card gets three verdict dots (A · C · New): blue for Good, red for Improvable.
-
-**Totals:** A 5/19, C 6/20, New 15/20.
-
-**Money line:**
-- N1 +€0.98, against +€1.03 for the free rule;
-- VORB +€0.12 before AI cost;
-- F1 −€0.06 after AI cost.
-
-**Callout.** Most of the gain comes from design (no 80% target, export valued at its price), not from intelligence.
-
-Source: report §6, workbook.
-
-### 8. Business case (0:45)
+### 7. Business case (0:55)
 **Chart.** Log-log: AI cost per site per week against fleet size, 100–10,000 sites. Points come from `model_cost.OPTIONS`.
 - **Lines:** on-prem 8B, the same model on an EU API, and the on-site 3B box (flat €1.86–8.12/wk).
 - **Thresholds:**
@@ -138,11 +121,22 @@ Source: report §6, workbook.
   - VORB €0.12: below it, the agent beats the free rule after AI.
 - **Crossings:** the EU API from ~580 sites; on-prem from ~1,500.
 
+**Right panel: where ~1,500 comes from** (model_cost.py `central()`, 1,000–25,000 sites):
+
+| Step | Value |
+|---|---|
+| Servers, power and people per year: 2 GPU nodes × (€4,000 / 5 yr + 100 W × 8,760 h × €0.32) + 0.1 FTE ops €7,000 | €9,160 |
+| AI cost per site per week: €9,160 ÷ 52 ÷ sites | €176 ÷ sites |
+| Our lead over the free rule before AI cost (VORB) | €0.12 |
+| AI cost falls below the lead when | sites > 1,480 |
+
+The EU API reaches the same point at ~580 sites.
+
 **Upsell.** Every site already runs on without internet: rule, clamp and yesterday's plan. The 3B box adds daily replanning offline and keeps data on site. Price it at or above its cost of €97–422 per site per year.
 
 Source: report §8.
 
-### 9. Limits and rollout (0:25)
+### 8. Limits and rollout (0:30)
 **Limits:**
 - one modelled winter week, with PV that is not real weather;
 - no CO2 field and no logs of agent proposals;

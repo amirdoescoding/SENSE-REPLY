@@ -11,8 +11,8 @@ This is the spoken script for the deck in `docs/PRESENTATION.md`. Titles and num
 | Governing thought | | One carbon-aware agent on a model Reply hosts beats both pilots, emits 43% less, and pays for itself once the fleet is large enough. |
 | Situation | 0–2 | Sense Reply piloted two LLM setups on a home battery. We built the yardstick: a free rule and 20 KPIs. |
 | Complication | 3–4 | Both pilots lose to the free rule, and their AI bill is 8 to 12 times the saving. The second agent buys CO2 at €4,300 a tonne. |
-| Resolution | 5–8 | Two changes on Reply's platform. The demo shows them running. The framework meets 15 of 20 KPIs. Fleet size decides the AI bill, and an on-site model becomes a paid option. |
-| Caveat | 9 | One modelled winter week, so a summer replay gates any promise. |
+| Resolution | 5–7 | Two changes on Reply's platform. The demo shows them running and the 15 of 20 KPIs. Fleet size decides the AI bill, and an on-site model becomes a paid option. |
+| Caveat | 8 | One modelled winter week, so a summer replay gates any promise. |
 
 ## Slides
 
@@ -33,11 +33,11 @@ Pilot C runs two LLM agents on a home battery. After its AI bill, it loses €7.
 **Handover:** To judge any agent fairly, we first needed a yardstick.
 
 ### 2. We judge every agent against a free rule, because "saved vs no battery" alone makes the pilots look profitable
-Sydney · 0:40 · 82 words (budget 87)
+Sydney · 0:50 · 107 words (budget 108)
 
-Next to the same house without a battery, both pilots look profitable. The free rule charges on solar surplus and discharges when the house needs power. It costs nothing, so any AI has to beat it. Each card is one KPI: a plain question, its code and the pass line. The coloured edge shows what we measure against, and blue means the free rule. You can edit every threshold in our Excel.
+Next to the same house without a battery, both pilots look profitable. So we built a tougher yardstick: the free rule on the left. It is two lines of code. When the sun makes more than the house uses, charge. When the house uses more, discharge. No AI, no forecast, and on this week it saves €1.03. Any AI has to beat it, or Reply should ship the rule. On the right are our 20 KPIs in five families. Each card asks one plain question and gives its pass line. The blue ones compare against the rule.
 
-**Say aloud:** blue edge means "measured against the free rule".
+**Say aloud:** two lines of code save €1.03 a week.
 **Handover:** Here is how the two pilots do against that rule.
 
 ### 3. Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves
@@ -69,7 +69,7 @@ Thanks, Sydney. We kept the shape of Reply's platform and changed the blue boxes
 **Handover:** Here it is running.
 
 ### 6. Demo: Ministral 3 8B wrote every plan of this week, and the replay gate decided which ones the battery ran
-Amir · 1:30 · 117 words (budget 195; the rest is silence while the demo plays)
+Amir · 1:30 · 127 words (budget 195; the rest is silence while the demo plays)
 
 **[Click 1: Monday plan at 11:00. 0:20]**
 This is the site at 11:00 on Monday. Ministral 3 8B has just set three knobs for the next 24 hours, and it explains why in plain words. We ran these plans on a laptop; the demo replays them.
@@ -85,29 +85,21 @@ One day at 16 times. Solar fills the battery, and the battery covers the evening
 (Stay silent and let it run.)
 
 **[Click 5: KPIs tab. 0:15]**
-Our column sits next to pilots A and C.
+Our column sits next to pilots A and C: 15 KPIs out of 20 pass, against 5 and 6.
 
 **Say aloud:** the gate decides, not the model.
 **Handover:** Francesco will tell you what the week adds up to.
 
-### 7. The framework meets 15 of 20 KPIs against 5–6 for the pilots, and draws level with the free rule after AI cost
-Francesco · 0:40 · 80 words (budget 87)
+### 7. Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving
+Francesco · 0:55 · 114 words (budget 119)
 
-Same grid, now with a dot for A, C and us. The pilots pass 5 and 6 KPIs; we pass 15 of 20. In AI economics we fail one card, honestly. Before AI cost we beat the free rule by 12 cents a week. After 18 cents of AI, we sit 6 cents behind it. Most of our gain comes from two design fixes: no 80% target, and export valued at its price.
+Before AI cost, our agent beats the free rule by 12 cents a week per site. The question is whether the AI costs less than that. On the right is the math. Two GPU servers, their power, and a tenth of an engineer cost about €9,160 a year. Divide by 52 weeks and by the number of sites. At 1,000 sites that is 18 cents, more than our 12-cent lead. From about 1,500 sites it drops below. On an EU API, with the same weights, it happens at 580. The grey band is a box on every site: €97 to €422 a year. Sell it to clients who need offline replanning.
 
-**Say aloud:** 15 of 20, against 5 and 6.
-**Handover:** Those 6 cents depend on fleet size.
-
-### 8. Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving
-Francesco · 0:45 · 88 words (budget 98)
-
-The model costs almost nothing; servers and people do. Spread them over more sites and the cost per site falls along the blue line. It crosses the dotted line, where we beat the free rule after AI, at about 1,500 sites. Below that, Reply can start on an EU API with the same weights and move in-house later. The grey band is a box on every site: €97 to €422 a year. Sell it to clients who need offline replanning or data that stays home.
-
-**Say aloud:** about 1,500 sites.
+**Say aloud:** €9,160 a year, divided by sites, below 12 cents from 1,500.
 **Handover:** Now the limits.
 
-### 9. One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client
-Francesco · 0:25 · 50 words (budget 54)
+### 8. One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client
+Francesco · 0:30 · 50 words (budget 65)
 
 All of this rests on one modelled winter week, with no real weather and no agent logs. Our hosting cost is an estimate. So we roll out in steps: fix the baseline, replay summer, then pilot sites on an API, then in-house at scale.
 
@@ -118,10 +110,10 @@ All of this rests on one modelled winter week, with no real weather and no agent
 
 | Speaker | Slides | Words | Budget at 130 wpm |
 |---|---|---|---|
-| Sydney | 0–4 | 335 | 348 (2:40) |
-| Amir | 5–6 | 209 | 293 (2:15) |
-| Francesco | 7–9 | 218 | 239 (1:50) |
-| Total | | 762 | 880 (6:45) |
+| Sydney | 0–4 | 360 | 368 (2:50) |
+| Amir | 5–6 | 219 | 293 (2:15) |
+| Francesco | 7–8 | 164 | 184 (1:25) |
+| Total | | 743 | 845 (6:30) |
 
 ## Q&A prep
 

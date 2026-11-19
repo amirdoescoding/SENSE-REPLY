@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Pitch deck, style v1 (docs/mockups/deck-v1-*). Render: docs/deck/render.sh  (?s=0..9|a1..a6).
+<!-- Pitch deck, style v1 (docs/mockups/deck-v1-*). Render: docs/deck/render.sh  (?s=0..8|a1..a6).
      Numbers: docs/REPORT.md, data/ours_ministral.json, data/Sense_Reply_B2_KPI_Conformity.xlsx, analysis/model_cost.py
      (see docs/PRESENTATION.md). Three scenarios: Pilot A, Pilot C, New framework. One family, tabular figures, no mono. -->
 <html><head><meta charset="utf-8">
@@ -51,11 +51,7 @@ ol.n li span{color:var(--ink2);font-size:20px}
 .kc{padding:9px 0 9px 14px;margin-bottom:8px;border-left:4px solid var(--line);background:var(--card);border-radius:0 6px 6px 0}
 .kc b{display:block;font:600 19px/1.25 IS}
 .kc i{display:block;font:400 16px/1.3 IS;font-style:normal;color:var(--mute);margin-top:3px}
-.kc.rule{border-left-color:var(--agent)} .kc.nb{border-left-color:var(--ink)} .kc.opt{border-left-style:dotted;border-left-color:var(--ink)}
-.kc.v{display:flex;align-items:center;justify-content:space-between;padding-right:12px}
-.dots{display:flex;gap:9px;flex:none;margin-left:10px}
-.dots i{width:18px;height:18px;border-radius:50%;margin:0}
-.dots .G{background:var(--good)} .dots .i{background:var(--alert)} .dots .x{border:2px solid var(--line)}
+.kc.rule{border-left-color:var(--agent)}
 .key{display:flex;gap:30px;font-size:17px;color:var(--ink2);align-items:center}
 .key s{display:inline-block;width:5px;height:20px;margin-right:9px;vertical-align:-4px;text-decoration:none}
 /* platform diagram (slide 5) */
@@ -86,34 +82,28 @@ function arrow(defs,id,color){const m=el(defs,'marker',{id,viewBox:'0 0 10 10',r
 const eur=v=>(v>0?'+':v<0?'−':'')+'€'+Math.abs(v).toFixed(2);
 function frame(title,src,page){$('t').textContent=title;$('src').textContent=src;$('pg').textContent=page}
 
-// 20 assessed KPIs: [code, plain question, unit + pass line, yardstick, verdicts A C New (G good, i improvable, - n/a)]
-// Thresholds and values: workbook "KPI Verdicts" sheet; verdicts recomputed from them (A 5/19, C 6/20, New 15/20).
-const KPI=[['Value',[['S net','Saves more than the free rule?','€/wk · good if ≥ €1.03','rule','iiG'],
-    ['VCR','Share of the best possible saving','ratio · good if ≥ 0.60','opt','iiG'],
-    ['VORB','Beats the free rule before AI cost?','€/wk · good if > €0','rule','iiG']]],
-  ['AI economics',[['N1','Profitable after AI cost?','€/wk · good if > €0','nb','iiG'],
-    ['F1','Beats the free rule after AI cost?','€/wk · good if > €0','rule','iii'],
-    ['N2','AI cost per € saved','ratio · good if < 0.2','tgt','iiG'],
-    ['O5','AI cost per site','€/wk · good if < €0.50','tgt','iiG'],
-    ['O1','LLM calls per 15-min decision','calls · good if < 0.3','tgt','iiG'],
-    ['O3','LLM time in the 15-min slot','share · good if < 10%','tgt','GGG']]],
-  ['Carbon',[['S2b','Cleaner than the free rule?','kg CO2/wk · good if > 0','rule','iii'],
-    ['S3','Imports at clean hours?','g/kWh · good if < 356 grid mean','tgt','iii'],
-    ['MAC','Cost per kg of CO2 avoided','€/kg · good if < €0.09 EU ETS','tgt','-iG']]],
-  ['Self-use and grid',[['SCR','Solar used on site','ratio · good if ≥ 0.70','tgt','iiG'],
-    ['SSR','Self-sufficiency','ratio · good if ≥ 0.60','tgt','iiG'],
-    ['PSR','Peak cut vs no battery','ratio · good if ≥ 0.25','nb','iGG'],
-    ['G2','Grid violations','count · good if 0','tgt','GGG']]],
-  ['Battery and timing',[['B1','Storage efficiency','ratio · good if ≥ 0.88','tgt','GGG'],
-    ['B2','Full cycles per week','cycles · good if ≤ 7','tgt','GGG'],
-    ['B4','Time at charge limits','share · good if ≤ 25%','tgt','GGi'],
-    ['C5','Imports at expensive hours','share · good if ≤ 50%','tgt','iii']]]];
-function kpiGrid(verdicts){
-  return `<div class="kg">${KPI.map(g=>`<div><h3>${g[0]}${verdicts?'<span>A · C · New</span>':''}</h3>
-    ${g[1].map(k=>verdicts
-      ?`<div class="kc v ${k[3]}"><div><b>${k[1]}</b><i>${k[0]}</i></div><div class="dots">${[...k[4]].map(v=>`<i class="${v==='-'?'x':v}"></i>`).join('')}</div></div>`
-      :`<div class="kc ${k[3]}"><b>${k[1]}</b><i>${k[0]} · ${k[2]}</i></div>`).join('')}</div>`).join('')}</div>`;
-}
+// 20 assessed KPIs: [code, plain question, unit + pass line, compared with the free rule?]
+// Thresholds: workbook "KPI Verdicts" sheet. Results per scenario live in the demo's KPI tab.
+const KPI=[['Value',[['S net','Saves at least as much as the rule?','€/wk · good if ≥ €1.03',1],
+    ['VCR','Share of the best possible saving','ratio · good if ≥ 0.60'],
+    ['VORB','Gain over the rule, before AI cost','€/wk · good if > 0',1]]],
+  ['AI economics',[['N1','Profitable after AI cost?','€/wk · good if > 0'],
+    ['F1','Gain over the rule, after AI cost','€/wk · good if > 0',1],
+    ['N2','AI cost per € saved','ratio · good if < 0.2'],
+    ['O5','AI cost per site','€/wk · good if < 0.50'],
+    ['O1','LLM calls per 15-min decision','good if < 0.3'],
+    ['O3','LLM time in the 15-min slot','good if < 10%']]],
+  ['Carbon',[['S2b','CO2 avoided vs the rule','kg/wk · good if > 0',1],
+    ['S3','Imports at clean hours?','g/kWh · good if < 356'],
+    ['MAC','Cost per kg of CO2 avoided','€/kg · good if < 0.09']]],
+  ['Self-use and grid',[['SCR','Solar used on site','good if ≥ 70%'],
+    ['SSR','Self-sufficiency','good if ≥ 60%'],
+    ['PSR','Peak cut vs no battery','good if ≥ 25%'],
+    ['G2','Grid violations','good if 0']]],
+  ['Battery and timing',[['B1','Storage efficiency','good if ≥ 88%'],
+    ['B2','Full cycles per week','good if ≤ 7'],
+    ['B4','Time at charge limits','good if ≤ 25%'],
+    ['C5','Imports at expensive hours','good if ≤ 50%']]]];
 
 const S={
 '0'(){ // title
@@ -127,7 +117,7 @@ const S={
 },
 '1'(){
   frame('One self-hosted agent that plans once a day turns pilot C\'s €7.31 weekly loss into a €0.98 gain and cuts the AI bill by 98%',
-    'Source: report §1, §6 · pilot C measured; new framework modelled on the same sun, load and prices · Ministral 3 8B at 1,000 sites · one winter week, Italy assumed','1 / 9');
+    'Source: report §1, §6 · pilot C measured; new framework modelled on the same sun, load and prices · Ministral 3 8B at 1,000 sites · one winter week, Italy assumed','1 / 8');
   const C=[['Net value after AI cost','€ per site per week','−7.31','+0.98'],['AI bill','€ per site per week','7.71','0.18'],['Grid CO2','kg per week','21.3','12.2']];
   M.innerHTML=`<div class="cols" style="grid-template-columns:repeat(3,1fr);margin-top:150px">${C.map(c=>`
     <div style="border-top:1px solid var(--ink);padding-top:26px">
@@ -140,15 +130,23 @@ const S={
 },
 '2'(){
   frame('We judge every agent against a free rule, because "saved vs no battery" alone makes the pilots look profitable',
-    'Source: report §4, §5 · data/Sense_Reply_B2_KPI_Conformity.xlsx (thresholds editable) · each twin is built on the run\'s own sun, load and prices','2 / 9');
+    'Source: report §4, §5 · data/Sense_Reply_B2_KPI_Conformity.xlsx (thresholds editable) · the rule is simulated on each run\'s own sun, load and prices','2 / 8');
   M.style.top='262px';
-  M.innerHTML=`<div class="key" style="margin-bottom:22px"><span>Measured against</span>
-    <span><s style="background:var(--agent)"></s>the free rule</span><span><s style="background:var(--ink)"></s>no battery</span>
-    <span><s style="border-left:4px dotted var(--ink);width:0"></s>a perfect-foresight optimiser</span><span><s style="background:var(--line)"></s>a fixed target</span></div>${kpiGrid(false)}`;
+  M.innerHTML=`<div style="position:absolute;left:0;top:0;width:400px;bottom:0;background:var(--agent-soft);border-radius:12px;padding:30px 30px">
+     <div style="font:600 26px IS;color:var(--agent-text)">The free rule</div>
+     <div style="color:var(--ink2);font-size:19px;margin-top:6px">Two lines of code. No AI, no forecast, costs nothing.</div>
+     <div style="margin-top:28px;font:500 21px/1.5 IS">If the sun makes more than the house uses, <span class="blue">charge</span>.</div>
+     <div style="margin-top:14px;font:500 21px/1.5 IS">If the house uses more than the sun makes, <span class="blue">discharge</span>.</div>
+     <div style="margin-top:28px;padding-top:22px;border-top:1px solid var(--line);font-size:19px;color:var(--ink2)">On the pilot week it saves</div>
+     <div class="stat"><div class="v" style="font-size:56px">€1.03<small>per week</small></div></div>
+     <div style="margin-top:22px;font-size:19px;color:var(--ink2)">Any AI must beat this. If it cannot, ship the rule.</div></div>
+   <div class="kg" style="position:absolute;left:440px;right:0;top:0;gap:20px">${KPI.map(g=>`<div><h3 style="font-size:20px">${g[0]}</h3>
+     ${g[1].map(k=>`<div class="kc${k[3]?' rule':''}"><b style="font-size:18px">${k[1]}</b><i style="font-size:15px">${k[0]} · ${k[2]}</i></div>`).join('')}</div>`).join('')}</div>
+   <div class="key" style="position:absolute;left:440px;bottom:0"><span><s style="background:var(--agent)"></s>blue edge: compared with the free rule</span></div>`;
 },
 '3'(){
   frame('Both pilots lose to a free rule, and their AI bill is 8 to 12 times what the battery saves',
-    'Source: report §1, §4 step 9 · AI cost at the assumed Devstral 2 list price ($0.40 / $2.00 per M tokens, 0.86 €/$)','3 / 9');
+    'Source: report §1, §4 step 9 · AI cost at the assumed Devstral 2 list price ($0.40 / $2.00 per M tokens, 0.86 €/$)','3 / 8');
   const W=1080,H=520,x0=250,sc=(W-x0-150)/8, g=el(M,'svg',{width:W,height:H,style:'position:absolute;left:0;top:10px'});
   const ink=css('--ink'),ag=css('--agent');
   const R=[{n:'Pilot A',d:'cost agent',sv:0.60,ai:4.74,r:'7.8×'},{n:'Pilot C',d:'cost + sustainability',sv:0.63,ai:7.71,r:'12.2×'}];
@@ -170,7 +168,7 @@ const S={
 },
 '4'(){
   frame('A second agent buys CO2 at €4,300 a tonne, 48 times the EU carbon price, while a carbon weight inside one agent costs about nothing',
-    'Source: report §6, §7.2 · new framework modelled on run C inputs, one winter week · CO2 at 0.356 kg/kWh · Italy assumed','4 / 9');
+    'Source: report §6, §7.2 · new framework modelled on run C inputs, one winter week · CO2 at 0.356 kg/kWh · Italy assumed','4 / 8');
   const W=1160,H=660, m={l:96,r:24,t:20,b:76}, X=[10,24], Y=[-8,2.5];
   const x=d=>m.l+(d-X[0])/(X[1]-X[0])*(W-m.l-m.r), y=d=>m.t+(Y[1]-d)/(Y[1]-Y[0])*(H-m.t-m.b);
   const g=el(M,'svg',{width:W,height:H,viewBox:`0 0 ${W} ${H}`});
@@ -200,7 +198,7 @@ const S={
 },
 '5'(){
   frame('We change two things on Reply\'s platform: a self-hosted Ministral 3 8B replaces the retired LLM, and the LLM leaves the 15-minute loop',
-    'Source: report §3.1 · adapted from Sense Reply, "Agentic Operations for E&U" (BDD brief) · site assumed Italy','5 / 9');
+    'Source: report §3.1 · adapted from Sense Reply, "Agentic Operations for E&U" (BDD brief) · site assumed Italy','5 / 8');
   const B=(x,y,w,h,c,html)=>`<div class="pb ${c}" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px">${html}</div>`;
   M.innerHTML=`
    <div class="pz" style="left:0;top:0;width:620px;height:630px"><div class="t">Field devices, one home site</div></div>
@@ -243,7 +241,7 @@ const S={
 },
 '6'(){
   frame('Demo: Ministral 3 8B wrote every plan of this week, and the replay gate decided which ones the battery ran',
-    'Replay of the committed Ministral 3 8B plans on run C\'s sun, load and prices · λ €0.10/kg · backup: 60 s recording','6 / 9');
+    'Replay of the committed Ministral 3 8B plans on run C\'s sun, load and prices · λ €0.10/kg · backup: 60 s recording','6 / 8');
   const W=[['Agent','Monday 11:00: three knobs and the reason the model gives'],['Memory','The similar past days it was shown, and how they went'],['Validator','Tuesday: the replay gate blocks the plan, so the previous valid plan runs'],['KPIs','The new framework next to pilot A and pilot C']];
   M.innerHTML=`<img src="demo-shot.png" alt="" style="position:absolute;right:0;top:0;width:1040px;border:1px solid var(--line);border-radius:10px">
    <div style="font:500 24px IS;color:var(--ink2)">sense-reply-demo.onrender.com</div>
@@ -251,19 +249,8 @@ const S={
    <ol class="n" style="max-width:600px">${W.map(w=>`<li><b>${w[0]}</b><span>${w[1]}</span></li>`).join('')}</ol>`;
 },
 '7'(){
-  frame('The framework meets 15 of 20 KPIs against 5–6 for the pilots, and draws level with the free rule after AI cost',
-    'Source: report §6 · workbook "KPI Verdicts" (editable thresholds) · new framework modelled on run C inputs, Ministral 3 8B at 1,000 sites','7 / 9');
-  M.style.top='262px';M.style.bottom='100px';
-  M.innerHTML=`${kpiGrid(true)}
-   <div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--ink);padding-top:14px">
-     <div class="key" style="font-size:19px"><span>Good on</span><span>Pilot A <b style="font-weight:600">5 / 19</b></span><span>Pilot C <b style="font-weight:600">6 / 20</b></span>
-       <span class="blue">New framework <b style="font-weight:600">15 / 20</b></span>
-       <span><span class="dots" style="display:inline-flex;vertical-align:-3px"><i class="G"></i></span> good <span class="dots" style="display:inline-flex;vertical-align:-3px"><i class="i"></i></span> improvable</span></div>
-     <div style="font-size:19px;color:var(--ink2)">After AI cost: <b style="font-weight:600;color:var(--ink)">+€0.98</b> vs the rule's +€1.03 (F1 −€0.06) · before AI cost: +€0.12 over the rule</div></div>`;
-},
-'8'(){
   frame('Self-hosting beats the free rule from about 1,500 sites; an on-site model is a paid option for offline sites, not a saving',
-    'Source: report §8 · analysis/model_cost.py OPTIONS: €4k GPU node (HA pair), 100 W, 0.1 FTE ops, 5-year life; EU API at $0.15/M tokens; box €400–2,000 · estimates','8 / 9');
+    'Source: report §8 · analysis/model_cost.py OPTIONS: €4k GPU node (HA pair), 100 W, 0.1 FTE ops, 5-year life; EU API at $0.15/M tokens; box €400–2,000 · estimates','7 / 8');
   // AI cost per site per week, from model_cost.OPTIONS at these fleet sizes
   const N=[100,133,178,237,316,422,562,750,1000,1334,1778,2371,3162,4217,5623,7499,10000];
   const ONP=[1.7617,1.3246,0.9897,0.7433,0.5575,0.4175,0.3135,0.2349,0.1762,0.1321,0.0991,0.0743,0.0557,0.0418,0.0313,0.0235,0.0176];
@@ -288,14 +275,20 @@ const S={
     el(g,'text',{x:x(n),y:y(v)+38,'text-anchor':'middle',class:'lbl',style:'font-weight:600'},t)});
   el(g,'circle',{cx:x(1000),cy:y(0.1762),r:7,fill:css('--bg'),stroke:ag,'stroke-width':3});
   el(g,'text',{x:x(1000)+14,y:y(0.1762)-12,class:'sub',style:`fill:${css('--agent-text')}`},'€0.18 at 1,000 (our KPIs)');
-  M.insertAdjacentHTML('beforeend',`<div style="position:absolute;right:0;top:0;width:480px">
-    ${[['~1,500','sites','Self-hosted 8B beats the free rule after AI cost. Below that, start on an EU API with the same weights (~580 sites).',''],
-       ['€97–422','per site per year','Cost of the 3B box on site. It replans with no internet and keeps data on site, so Reply can sell it to clients who need that, at or above cost.','blue']]
-      .map((r,i)=>`<div class="stat" style="padding:${i?28:4}px 0 28px;border-bottom:1px solid var(--line)"><div class="v ${r[3]}">${r[0]}<small>${r[1]}</small></div><div class="t">${r[2]}</div></div>`).join('')}
-    <div style="margin-top:24px;font-size:19px;color:var(--ink2)">Self-hosting buys control, not a lower bill: Reply holds the weights, so no vendor can retire the model again.</div></div>`);
+  M.insertAdjacentHTML('beforeend',`<div style="position:absolute;right:0;top:0;width:500px">
+    <div class="colhead" style="margin-bottom:16px">Where ~1,500 comes from</div>
+    ${[['Servers, power, people per year','2 GPU nodes €2,160 + 0.1 FTE ops €7,000','€9,160'],
+       ['AI cost per site per week','€9,160 ÷ 52 weeks ÷ sites','€176 ÷ sites'],
+       ['Our lead over the free rule','before AI cost, per site per week','€0.12'],
+       ['AI cost below the lead when','€176 ÷ sites < €0.12','sites > 1,480']]
+      .map((r,i)=>`<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:12px 0;border-bottom:1px solid var(--faint)">
+        <div><div style="font-size:19px;${i===3?'font-weight:600':''}">${r[0]}</div><div class="k" style="font-size:16px">${r[1]}</div></div>
+        <div style="font:600 24px IS;white-space:nowrap;${i===3?'color:var(--agent-text)':''}">${r[2]}</div></div>`).join('')}
+    <div class="stat" style="padding-top:30px"><div class="v blue" style="font-size:56px">€97–422<small>per site per year</small></div>
+      <div class="t">Cost of a 3B box on each site. It replans with no internet and keeps data at home: sell it at or above cost to clients who need that.</div></div></div>`);
 },
-'9'(){
-  frame('One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client','Source: report §9, §10','9 / 9');
+'8'(){
+  frame('One modelled winter week supports a staged rollout, gated on a summer replay before any promise to a client','Source: report §9, §10','8 / 8');
   const R=[['Weeks 1–2','Fix the baseline','Free rule as a standard KPI; log agent proposals'],['Weeks 3–6','Prove decision value','Replay summer and spring weeks; must beat the rule'],
     ['Weeks 5–8','Carbon desk','Hourly ENTSO-E feed live; set λ with the client'],['Months 3–5','Pilot sites','Small group on an EU API; owner sees plan and reason'],['Month 6 on','In-house and scale','8B on Reply\'s platform at ~1,000 sites; 3B box offered']];
   M.innerHTML=`<div class="cols" style="grid-template-columns:1fr 1.35fr;gap:96px">

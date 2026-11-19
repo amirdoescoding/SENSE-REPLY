@@ -204,11 +204,10 @@
 - Phone: `.pipeline` overflow-x clips upward, so the tooltip opens in flow below the svg. Hover = mouse only, focus = `:focus-visible` only, or a tap opens and closes at once.
 
 ## Deck on Ministral (2026-11-19), branch `deck-ministral`, see docs/PRESENTATION.md, docs/deck/deck.html
-- **Structure:** 10 slides plus A1–A6.
-  - The KPI slide is a one-layer card grid, with the yardstick shown as the card's left edge. The user found the old 2-layer version unclear.
-  - Slide 7 reuses the grid with A/C/New dots: 5/19, 6/20, 15/20.
+- **Structure:** 9 slides (0–8) plus A1–A6. The user removed the verdict-grid slide because the demo's KPI tab already shows it.
+  - Slide 2: a left panel explains the free rule (2 lines: sun > house → charge; house > sun → discharge; €1.03/wk). The KPI cards sit on the right; a blue edge marks the 4 rule-based KPIs (S net, VORB, F1, S2b). The user found the yardstick split (rule / no battery / optimiser / target) confusing, so it was dropped.
   - Slide 5 is the platform diagram, inline. The pipeline is in A1.
-  - Slide 8 (new) is the fleet-size chart.
+  - Slide 7 is the fleet-size chart. Its right panel derives ~1,500: €9,160/yr (2 nodes × €1,080 + €7,000 ops) ÷ 52 ÷ sites < VORB €0.12 → sites > 1,480.
 - **Business numbers** (`model_cost.OPTIONS`):
   - on-prem 8B: N1 > 0 from ~155 sites, F1 > 0 from ~1,500;
   - EU API: F1 > 0 from ~580;
