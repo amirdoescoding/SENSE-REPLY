@@ -1,0 +1,818 @@
+{
+ "memory": {
+  "conservative": {
+   "S_net": 1.1561,
+   "VORB": 0.1141,
+   "S1_kg": 12.16,
+   "gemini_S_net": 1.1561,
+   "gemini_VORB": 0.1142,
+   "json_ok": 0,
+   "calls": 0,
+   "clamped_or_invalid": 0,
+   "gate_passed": 7,
+   "used": [
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan"
+   ],
+   "knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 3.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 3.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 3.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    }
+   ],
+   "gemini_knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 2.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    }
+   ],
+   "tok_in": 0,
+   "tok_out": 0,
+   "ms_mean": 0,
+   "prefill_tps": null,
+   "decode_tps": null,
+   "explanation_day1": "No model answer: copied the knobs of the most similar logged day (A day 3)."
+  },
+  "upside": {
+   "S_net": 1.5683,
+   "VORB": 0.5295,
+   "S1_kg": 15.57,
+   "gemini_S_net": 1.5683,
+   "gemini_VORB": 0.5295,
+   "json_ok": 0,
+   "calls": 0,
+   "clamped_or_invalid": 0,
+   "gate_passed": 7,
+   "used": [
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan"
+   ],
+   "knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    }
+   ],
+   "gemini_knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.11,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    }
+   ],
+   "tok_in": 0,
+   "tok_out": 0,
+   "ms_mean": 0,
+   "prefill_tps": null,
+   "decode_tps": null,
+   "explanation_day1": "No model answer: copied the knobs of the most similar logged day (C day 3)."
+  }
+ },
+ "qwen3.5-4b-q4": {
+  "conservative": {
+   "S_net": 1.1561,
+   "VORB": 0.1142,
+   "S1_kg": 12.16,
+   "gemini_S_net": 1.1561,
+   "gemini_VORB": 0.1142,
+   "json_ok": 7,
+   "calls": 7,
+   "clamped_or_invalid": 0,
+   "gate_passed": 5,
+   "used": [
+    "plan",
+    "plan",
+    "plan",
+    "previous valid plan",
+    "previous valid plan",
+    "plan",
+    "plan"
+   ],
+   "knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    }
+   ],
+   "gemini_knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 2.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    }
+   ],
+   "tok_in": 7877,
+   "tok_out": 971,
+   "ms_mean": 15024,
+   "prefill_tps": 172.4,
+   "decode_tps": 16.5,
+   "explanation_day1": "Based on the similar past days where this configuration yielded the best results, I set the floor to 0.1 to allow flexibility while maintaining safety, kept the evening reserve at zero to maximize self-consumption during the price spread, and matched the optimal export hold value of 0.1004 €/kWh. Since the price spread is relatively low (0.0477) and grid prices are high in the evening, holding extra energy for the evening is not cost-effective, and conservative mode forbids grid charging anyway."
+  },
+  "upside": {
+   "S_net": 1.5683,
+   "VORB": 0.5295,
+   "S1_kg": 15.57,
+   "gemini_S_net": 1.5683,
+   "gemini_VORB": 0.5295,
+   "json_ok": 7,
+   "calls": 7,
+   "clamped_or_invalid": 0,
+   "gate_passed": 7,
+   "used": [
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan"
+   ],
+   "knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    }
+   ],
+   "gemini_knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.11,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    }
+   ],
+   "tok_in": 8068,
+   "tok_out": 958,
+   "ms_mean": 16573,
+   "prefill_tps": 155.0,
+   "decode_tps": 15.1,
+   "explanation_day1": "Based on the similar past days where this configuration yielded the best results, I set the grid charge to night hours (0-6) to take advantage of low prices and high renewable generation, while keeping the export hold price at the optimal value of 0.1004 €/kWh. The SOC floor is set to 0.1 to allow the optimizer to fully utilize available solar energy without unnecessary restrictions."
+  }
+ },
+ "ministral-3-3b-q4": {
+  "conservative": {
+   "S_net": 1.1561,
+   "VORB": 0.1142,
+   "S1_kg": 12.16,
+   "gemini_S_net": 1.1561,
+   "gemini_VORB": 0.1142,
+   "json_ok": 7,
+   "calls": 7,
+   "clamped_or_invalid": 0,
+   "gate_passed": 3,
+   "used": [
+    "plan",
+    "plan",
+    "plan",
+    "previous valid plan",
+    "previous valid plan",
+    "previous valid plan",
+    "previous valid plan"
+   ],
+   "knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    }
+   ],
+   "gemini_knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 2.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": null
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": null
+    }
+   ],
+   "tok_in": 11846,
+   "tok_out": 1209,
+   "ms_mean": 12020,
+   "prefill_tps": 225.2,
+   "decode_tps": 21.8,
+   "explanation_day1": "I kept the conservative mode (no grid charging) since prices are low and CO₂ costs are high—grid buy would be inefficient. The evening reserve is set to 0 kWh because the forecasted evening demand is unlikely to be costly. The export hold value of €0.1004 balances midday solar sales against storage costs, matching past optimal settings for similar conditions. This ensures minimal regret while aligning with past successful configurations."
+  },
+  "upside": {
+   "S_net": 1.5683,
+   "VORB": 0.5295,
+   "S1_kg": 15.57,
+   "gemini_S_net": 1.5683,
+   "gemini_VORB": 0.5295,
+   "json_ok": 7,
+   "calls": 7,
+   "clamped_or_invalid": 0,
+   "gate_passed": 7,
+   "used": [
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan",
+    "plan"
+   ],
+   "knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    }
+   ],
+   "gemini_knobs": [
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1004,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.1,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.11,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    },
+    {
+     "soc_floor": 0.1,
+     "evening_reserve_kwh": 0.0,
+     "export_hold_eur": 0.12,
+     "grid_charge": {
+      "from": 0,
+      "to": 6
+     }
+    }
+   ],
+   "tok_in": 12023,
+   "tok_out": 1464,
+   "ms_mean": 14486,
+   "prefill_tps": 205.0,
+   "decode_tps": 21.0,
+   "explanation_day1": "I’ve kept the same knobs as in past successful days (0.10 SoC floor, no evening reserve, holding €0.10/kWh for stored energy, and grid charging allowed from midnight to 6 AM). This balances energy security with cost savings, especially given the low evening prices and persistent CO₂ spread. The rolling optimizer will adapt to solar forecasts while avoiding unnecessary grid charges during peak demand."
+  }
+ }
+}
