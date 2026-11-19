@@ -17,6 +17,12 @@
         ],
         "createdAt": "2026-11-18T21:41:55.073Z",
         "reason": "docs/DESIGN.md §4 specifies the agent 'why' block with a 3px --agent left rule; layout mock-1 chosen by the user in session 1"
+      },
+      {
+        "rule": "overused-font",
+        "value": "arial",
+        "createdAt": "2026-11-19T19:30:05.375Z",
+        "reason": "Claude: diagram mirrors Reply's own brief slide, which is set in Arial; matching it is the point"
       }
     ]
   }
